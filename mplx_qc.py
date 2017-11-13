@@ -2,8 +2,8 @@
 
 """
 Read a master XLSX workbook and output cram paths and json paths.
-Read cram paths and run subprocess to output RGs, and then output RG barcodes and samples.
-Parse JSON Merge objects and output merge barcodes and samples.
+Read cram paths and run subprocess to output RGs, and then output RG barcodes
+and samples. Parse JSON Merge objects and output merge barcodes and samples.
 Compare cram RG barcodes and samples to JSON merge barcodes and samples.
 """
 
@@ -12,9 +12,9 @@ import argparse
 from collections import Counter
 import json
 import os
+from pathlib import Path
 import sys
 from subprocess import run, DEVNULL, PIPE
-from pathlib import Path
 
 # after a blank line, import third-party libraries.
 import openpyxl
@@ -23,17 +23,18 @@ from openpyxl.styles import Font
 # After another blank line, import local libraries.
 from dump_js_barcodes import Merge
 
+
 def main():
     args = parse_args()
     run(args)
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-            'input_file',
-            nargs='?',
-            type=argparse.FileType('rb'),
-            default=sys.stdin)
+    parser.add_argument('input_file',
+                        nargs='?',
+                        type=argparse.FileType('rb'),
+                        default=sys.stdin)
     # parser.add_argument('--add-arg2', '-a', action='store_true')
     args = parser.parse_args()
     return args
@@ -48,6 +49,7 @@ def tracefunc(frame, event, arg):
 def run(args):
     input_file = args.input_file
     read_input(input_file)
+
 
 def process_json_stream(json_paths):
     pass
@@ -85,6 +87,7 @@ def read_input(input_file):
     return json_paths, cram_paths
     # print(json_paths, cram_paths, sep='\t')
     # sys.exit()
+
 
 class Generic:
     """To create objects with __dict__."""
