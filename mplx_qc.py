@@ -60,7 +60,8 @@ def process_cram(cram_paths):
 
 
 def read_input(input_file):
-    """Return file paths of reading master XLSX"""
+    """Read master XLSX of merged CRAMs and return list of objects containing
+    the file paths."""
     wb = openpyxl.load_workbook(filename=input_file)
     sheet = wb.get_sheet_by_name('smpls')
     active_sheet = wb.active
@@ -68,23 +69,15 @@ def read_input(input_file):
     row_iter = iter(active_sheet.rows)
     header_row = next(row_iter)
     column_names = [c.value for c in header_row]
-    json_paths = []
-    cram_paths = []
+    merged_crams = []
     for row in row_iter:
-        # records = [
-        #     dict(k, v.value) for k, v in zip(column_names, row)
-        #     if k in ('json_path', 'cram_path')
-        #     for row in row_iter
-        # ]
-        record = Generic()
+        merged_cram = Generic()
         for column_name, cell in zip(column_names, row):
-            if column_name == 'json_path':
+            if column_name in ['json_path', 'cram_path']:
                 value = cell.value
-                json_paths.append(value)
-            if column_name == 'cram_path':
-                value = cell.value
-                cram_paths.append(value)
-    return json_paths, cram_paths
+                setattr(merged_cram, column_name, value)
+        merged_crams.append(merged_cram)
+    return merged_crams
     # print(json_paths, cram_paths, sep='\t')
     # sys.exit()
 
