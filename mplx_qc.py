@@ -2,9 +2,9 @@
 
 """
 Read a master XLSX workbook and output cram paths and json paths.
-Read cram paths and run subprocess to output rgs, and then output rg barcodes and samples.
+Read cram paths and run subprocess to output RGs, and then output RG barcodes and samples.
 Parse JSON Merge objects and output merge barcodes and samples.
-Compare cram rg barcodes and samples to JSON merge barcodes and samples.
+Compare cram RG barcodes and samples to JSON merge barcodes and samples.
 """
 
 # First come standard libraries, in alphabetical order.
