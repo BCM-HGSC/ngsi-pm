@@ -52,10 +52,20 @@ def run(args):
 
 
 def process_json_stream(json_paths):
+    """from dump_js_barcodes.py import Merge,
+    and parse JSON merge barcodes and JSON merge samples"""
     pass
 
 
 def process_cram(cram_paths):
+    """Read cram_paths, run samtools to parse
+    CRAM barcodes and CRAM samples"""
+    pass
+
+
+def compare_barcodes(json_barcodes, cram_barcodes):
+    """Compare the set of JSON barcodes and samples to
+    the set of CRAM barcodes and samples"""
     pass
 
 
