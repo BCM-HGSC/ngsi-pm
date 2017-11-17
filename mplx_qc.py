@@ -37,6 +37,7 @@ def main():
     run(args)
     logging.shutdown()
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('input_file',
@@ -50,12 +51,6 @@ def parse_args():
     return args
 
 
-def tracefunc(frame, event, arg):
-    """Set the system tracing function."""
-    print(frame.f_lineno, event)
-    return tracefunc
-
-
 def config_logging(args):
     global logger
     level = logging.DEBUG if args.verbose else logging.INFO
@@ -66,15 +61,31 @@ def config_logging(args):
 def run(args):
     logger.debug('args: %r', args)
     input_file = args.input_file
-    read_input(input_file)
+    # read_input(input_file)
+    merged_crams = read_input(input_file)
+    # process_json_data(json_paths)
+    process_input(merged_crams)
     logger.debug('finished')
 
 
-def process_json_stream(json_paths):
+def process_json_data(json_paths):
     """from dump_js_barcodes.py import Merge,
     and parse JSON merge barcodes and JSON merge samples"""
     logger.debug('seaching: %s', json_paths)
-    pass
+    for merge in parse_merge_definition(json_path_stream):
+        for s in merge.sequencing_events:
+            row = [s.barcode, s.sample_name]
+            print(*row, sep='\t')
+    
+
+def parse_merge_definition(json_path_stream):
+    """json_path_stream is also known as json_paths, 
+    Generator of Merge objects."""
+    logger.debug('generating %s', 'Merge objects')
+    for line in json_path_stream:
+        json_path = line.rstrip('\n')
+        merge = Merge(json_path)
+        yield merge
 
 
 def process_cram(cram_paths):
@@ -89,6 +100,14 @@ def compare_barcodes(json_barcodes, cram_barcodes):
     the set of CRAM barcodes and samples"""
     logger.debug('searching: %s and %s', json_barcodes, cram_barcodes)
     pass
+
+
+def process_input(merged_crams):
+    """Read merged_crams and output json_paths and cram_paths"""
+    logger.debug('processing %s', merged_crams)
+    merge_dict = {}
+    for line in merged_crams:
+        pass
 
 
 def read_input(input_file):
@@ -111,6 +130,9 @@ def read_input(input_file):
                 value = cell.value
                 setattr(merged_cram, column_name, value)
         merged_crams.append(merged_cram)
+
+    logger.info('type: %s', type(merged_crams))
+    logger.info('found %s records', len(merged_crams))
     pprint.pprint(vars(merged_crams[0]))
     return merged_crams
     # sys.exit()
@@ -119,10 +141,6 @@ def read_input(input_file):
 class Generic:
     """To create objects with __dict__."""
     pass
-
-# sys.settrace(tracefunc)
-# input_file = 'AFIB_batch13_mplx.xlsx'
-# read_input(input_file)
 
 
 if __name__ == '__main__':
