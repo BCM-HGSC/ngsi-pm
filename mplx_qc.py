@@ -113,7 +113,31 @@ def process_crams(cram_paths):
     """Read cram_paths, run samtools to parse
     CRAM barcodes and samples"""
     logger.debug('seching: %s', cram_paths)
-    pass
+    rgs_list = dump_cram_rgs(cram_paths)
+    for line in rgs_list:
+        linesplit = line.rstrip().split('\t')
+        if linesplit[0] != '@RG':
+            continue
+        rg_dict = {}
+        for item in linesplit[1:]:
+            k, v = item.split(':', 1)
+            assert ':' not in k
+        rg_dict[k] = v
+        cram_rg_barcodes = rg_dict['PU']
+        cram_rg_samples = rg_dict['SM']
+        print(cram_rg_barcodes, cram_rg_samples, sep='\t')
+
+
+def dump_cram_rgs(cram_paths):
+    cram_paths = [l.strip() for l in fin]
+    rgs_list = []
+    for file in cram_paths:
+        cp = run(['samtools', 'view', '-H', file], stdin=DEVNULL, stdout=PIPE, universal_newlines=True, check=True)
+        cp.stdout.splitlines
+        headers = cp.stdout.splitlines()
+        rgs = [h for h in headers if h.startswith('@RG\t')]
+        rgs_list = '\n'.join(rgs)
+        return rgs_list
 
 
 def process_json_data(json_paths):
