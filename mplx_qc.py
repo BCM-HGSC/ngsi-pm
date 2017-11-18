@@ -81,12 +81,12 @@ def process_input(input_file,):
         json_paths.append(record.json_path)
     logger.info('type: %s, %s', type(cram_paths), type(json_paths))
     logger.info('found %s cram_paths, %s json_paths', len(cram_paths), len(json_paths))
-    print('finally...')
-    print(cram_paths[0]) 
-    print(json_paths[0])
+    pprint.pprint('finally...')
+    pprint.pprint(cram_paths[0]) 
+    pprint.pprint(json_paths[0])
     return cram_paths, json_paths 
-    # process_crams(cram_paths)
-    # process_json_data(json_paths)
+    process_crams(cram_paths)
+    process_json_data(json_paths)
     # compare_barcodes(cram_rg_barcodes, json_barcodes)  
                 
 
@@ -111,11 +111,6 @@ def read_input(input_file):
                 setattr(merged_cram, column_name, value)
         merged_crams.append(merged_cram)
     return merged_crams
-
-
-def add_file_paths(record):
-    """Read merged_crams and output merge_cram_paths and merge_json_paths"""
-    pass
 
 
 def process_crams(cram_paths):
