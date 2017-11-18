@@ -168,9 +168,7 @@ def compare_barcodes(cram_rg_barcodes, json_barcodes):
     """Compare a set of CRAM RG barcodes, samples to
     JSON barcodes, samples"""
     logger.debug('searching: %s and %s', cram_rg_barcodes, json_barcodes)
-    cram_rg_barcodes_set = set(cram_rg_barcodes)
-    json_barcodes_set = set(json_barcodes)
-    assert cram_rg_barcodes_set == json_barcodes_set
+    assert set(cram_rg_barcodes) == set(json_barcodes)
     return (
             set(cram_rg_barcodes) == set(json_barcodes) and
             len(cram_rg_barcodes) == len(json_barcodes)
