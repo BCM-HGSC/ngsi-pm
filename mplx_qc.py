@@ -61,11 +61,59 @@ def config_logging(args):
 def run(args):
     logger.debug('args: %r', args)
     input_file = args.input_file
-    # read_input(input_file)
-    merged_crams = read_input(input_file)
-    # process_json_data(json_paths)
-    process_input(merged_crams)
+    process_input(input_file, )
     logger.debug('finished')
+
+
+def process_input(input_file, ):
+    """A docsting should say something about the inputs and
+    any compare results.  In this case there are no return results."""
+    logger.debug('process_input %s -> %s', input_file, )
+    merged_crams = read_input(input_file)
+    logger.info('type: %s', type(merged_crams))
+    logger.info('found %s records', len(merged_crams))
+    pprint.pprint(vars(merged_crams[0]))
+    for record in merged_crams:
+        add_file_paths(record)
+    # process_crams(cram_paths)
+    # process_json_data(json_paths)
+    # compare_barcodes(cram_rg_barcodes, json_barcodes)  
+                
+
+def read_input(input_file):
+    """Read master XLSX of merged CRAMs and return list of objects containing
+    the file paths."""
+    wb = openpyxl.load_workbook(filename=input_file)
+    sheet = wb.get_sheet_by_name('smpls')
+    active_sheet = wb.active
+    assert sheet == active_sheet, (sheet.title, active_sheet.title)
+    logger.debug('active_sheet name: %s', active_sheet.title)
+    row_iter = iter(active_sheet.rows)
+    header_row = next(row_iter)
+    column_names = [c.value for c in header_row]
+    logger.debug('columns: %s', column_names)
+    merged_crams = []
+    for row in row_iter:
+        merged_cram = Generic()
+        for column_name, cell in zip(column_names, row):
+            if column_name in ['json_path', 'cram_path']:
+                value = cell.value
+                setattr(merged_cram, column_name, value)
+        merged_crams.append(merged_cram)
+    return merged_crams
+
+
+def add_file_paths(record):
+    """Read merged_crams and output merge_cram_paths and merge_json_paths"""
+    logger.debug('processing: %s', record)
+    pass
+
+
+def process_crams(cram_paths):
+    """Read cram_paths, run samtools to parse
+    CRAM barcodes and samples"""
+    logger.debug('seching: %s', cram_paths)
+    pass
 
 
 def process_json_data(json_paths):
@@ -88,54 +136,11 @@ def parse_merge_definition(json_path_stream):
         yield merge
 
 
-def process_cram(cram_paths):
-    """Read cram_paths, run samtools to parse
-    CRAM barcodes and CRAM samples"""
-    logger.debug('seching: %s', cram_paths)
+def compare_barcodes(cram_rg_barcodes, json_barcodes):
+    """Compare a set of CRAM RG barcodes, samples to
+    JSON barcodes, samples"""
+    logger.debug('searching: %s and %s', cram_rg_barcodes, json_barcodes)
     pass
-
-
-def compare_barcodes(json_barcodes, cram_barcodes):
-    """Compare the set of JSON barcodes and samples to
-    the set of CRAM barcodes and samples"""
-    logger.debug('searching: %s and %s', json_barcodes, cram_barcodes)
-    pass
-
-
-def process_input(merged_crams):
-    """Read merged_crams and output json_paths and cram_paths"""
-    logger.debug('processing %s', merged_crams)
-    merge_dict = {}
-    for line in merged_crams:
-        pass
-
-
-def read_input(input_file):
-    """Read master XLSX of merged CRAMs and return list of objects containing
-    the file paths."""
-    wb = openpyxl.load_workbook(filename=input_file)
-    sheet = wb.get_sheet_by_name('smpls')
-    active_sheet = wb.active
-    assert sheet == active_sheet, (sheet.title, active_sheet.title)
-    logger.debug('active_sheet name: %s', active_sheet.title)
-    row_iter = iter(active_sheet.rows)
-    header_row = next(row_iter)
-    column_names = [c.value for c in header_row]
-    logger.debug('columns: %s', column_names)
-    merged_crams = []
-    for row in row_iter:
-        merged_cram = Generic()
-        for column_name, cell in zip(column_names, row):
-            if column_name in ['json_path', 'cram_path']:
-                value = cell.value
-                setattr(merged_cram, column_name, value)
-        merged_crams.append(merged_cram)
-
-    logger.info('type: %s', type(merged_crams))
-    logger.info('found %s records', len(merged_crams))
-    pprint.pprint(vars(merged_crams[0]))
-    return merged_crams
-    # sys.exit()
 
 
 class Generic:
