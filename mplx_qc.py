@@ -87,7 +87,7 @@ def process_input(input_file,):
     return cram_paths, json_paths 
     process_crams(cram_paths)
     process_json_data(json_paths)
-    # compare_barcodes(cram_rg_barcodes, json_barcodes)  
+    compare_barcodes(cram_rg_barcodes, json_barcodes)  
                 
 
 def read_input(input_file):
@@ -168,7 +168,13 @@ def compare_barcodes(cram_rg_barcodes, json_barcodes):
     """Compare a set of CRAM RG barcodes, samples to
     JSON barcodes, samples"""
     logger.debug('searching: %s and %s', cram_rg_barcodes, json_barcodes)
-    pass
+    cram_rg_barcodes_set = set(cram_rg_barcodes)
+    json_barcodes_set = set(json_barcodes)
+    assert cram_rg_barcodes_set == json_barcodes_set
+    return (
+            set(cram_rg_barcodes) == set(json_barcodes) and
+            len(cram_rg_barcodes) == len(json_barcodes)
+            )
 
 
 class Generic:
