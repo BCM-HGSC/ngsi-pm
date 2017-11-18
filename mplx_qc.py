@@ -61,20 +61,30 @@ def config_logging(args):
 def run(args):
     logger.debug('args: %r', args)
     input_file = args.input_file
-    process_input(input_file, )
+    process_input(input_file,)
     logger.debug('finished')
 
 
-def process_input(input_file, ):
+def process_input(input_file,):
     """A docsting should say something about the inputs and
     any compare results.  In this case there are no return results."""
-    logger.debug('process_input %s -> %s', input_file, )
+    logger.debug('process_input %s -> %s', input_file,)
     merged_crams = read_input(input_file)
     logger.info('type: %s', type(merged_crams))
     logger.info('found %s records', len(merged_crams))
     pprint.pprint(vars(merged_crams[0]))
+    pprint.pprint(vars(merged_crams[-1]))
+    cram_paths = []
+    json_paths = []
     for record in merged_crams:
-        add_file_paths(record)
+        cram_paths.append(record.cram_path)
+        json_paths.append(record.json_path)
+    logger.info('type: %s, %s', type(cram_paths), type(json_paths))
+    logger.info('found %s cram_paths, %s json_paths', len(cram_paths), len(json_paths))
+    print('finally...')
+    print(cram_paths[0]) 
+    print(json_paths[0])
+    return cram_paths, json_paths 
     # process_crams(cram_paths)
     # process_json_data(json_paths)
     # compare_barcodes(cram_rg_barcodes, json_barcodes)  
@@ -105,7 +115,6 @@ def read_input(input_file):
 
 def add_file_paths(record):
     """Read merged_crams and output merge_cram_paths and merge_json_paths"""
-    logger.debug('processing: %s', record)
     pass
 
 
@@ -137,7 +146,7 @@ def dump_cram_rgs(cram_paths):
         headers = cp.stdout.splitlines()
         rgs = [h for h in headers if h.startswith('@RG\t')]
         rgs_list = '\n'.join(rgs)
-        return rgs_list
+    return rgs_list
 
 
 def process_json_data(json_paths):
