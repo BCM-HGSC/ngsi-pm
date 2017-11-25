@@ -114,8 +114,8 @@ def read_input(input_file):
 
 
 def process_crams(cram_paths):
-    """Read cram_paths, run samtools to parse
-    CRAM barcodes and samples"""
+    """Read cram_paths, parse RGs List and then
+    CRAM RG barcodes and CRAM RG samples"""
     logger.debug('seching: %s', cram_paths)
     rgs_list = dump_cram_rgs(cram_paths)
     for line in rgs_list:
@@ -134,9 +134,11 @@ def process_crams(cram_paths):
     return cram_barcodes
 
 def dump_cram_rgs(cram_paths):
-    cram_paths = [l.strip() for l in fin]
+    """Read cram_paths, run samtools to parse RGs List"""
+    logger.debug('seaching: %s', cram_paths)
+    cram_paths_path = [l.rstrip() for l in cram_paths]
     rgs_list = []
-    for file in cram_paths:
+    for file in cram_paths_path:
         cp = run(['samtools', 'view', '-H', file], stdin=DEVNULL, stdout=PIPE, universal_newlines=True, check=True)
         cp.stdout.splitlines
         headers = cp.stdout.splitlines()
