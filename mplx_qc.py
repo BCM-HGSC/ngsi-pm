@@ -126,11 +126,12 @@ def process_crams(cram_paths):
         for item in linesplit[1:]:
             k, v = item.split(':', 1)
             assert ':' not in k
-        rg_dict[k] = v
+            rg_dict[k] = v
         cram_rg_barcodes = rg_dict['PU']
         cram_rg_samples = rg_dict['SM']
-        print(cram_rg_barcodes, cram_rg_samples, sep='\t')
-
+        cram_barcodes = [cram_rg_barcodes, cram_rg_samples]
+        # print(cram_rg_barcodes, cram_rg_samples, sep='\t')
+    return cram_barcodes
 
 def dump_cram_rgs(cram_paths):
     cram_paths = [l.strip() for l in fin]
@@ -151,7 +152,8 @@ def process_json_data(json_paths):
     for merge in parse_merge_definition(json_path_stream):
         for s in merge.sequencing_events:
             row = [s.barcode, s.sample_name]
-            print(*row, sep='\t')
+            # print(*row, sep='\t')
+    return row            
     
 
 def parse_merge_definition(json_path_stream):
