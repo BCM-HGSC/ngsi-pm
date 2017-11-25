@@ -15,6 +15,7 @@ import logging
 import os
 from pathlib import Path
 import pprint
+import re
 import sys
 from subprocess import run, DEVNULL, PIPE
 
@@ -170,6 +171,8 @@ def parse_merge_definition(json_path_stream):
 def compare_barcodes(cram_barcodes, json_barcodes):
     """Compare a set of CRAM RG barcodes, samples to
     JSON barcodes, samples"""
+    cram_barcodes = process_crams(cram_paths)
+    cram_barcodes = process_json_data(json_paths)
     logger.debug('searching: %s and %s', cram_barcodes, json_barcodes)
     assert set(cram_barcodes) == set(json_barcodes)
     return (
