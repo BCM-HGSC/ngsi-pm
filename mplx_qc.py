@@ -168,14 +168,14 @@ def parse_merge_definition(json_path_stream):
         yield merge
 
 
-def compare_barcodes(cram_rg_barcodes, json_barcodes):
+def compare_barcodes(cram_barcodes, json_barcodes):
     """Compare a set of CRAM RG barcodes, samples to
     JSON barcodes, samples"""
-    logger.debug('searching: %s and %s', cram_rg_barcodes, json_barcodes)
-    assert set(cram_rg_barcodes) == set(json_barcodes)
+    logger.debug('searching: %s and %s', cram_barcodes, json_barcodes)
+    assert set(cram_barcodes) == set(json_barcodes)
     return (
-            set(cram_rg_barcodes) == set(json_barcodes) and
-            len(cram_rg_barcodes) == len(json_barcodes)
+            set(cram_barcodes) == set(json_barcodes) and
+            len(cram_barcodes) == len(json_barcodes)
             )
 
 
