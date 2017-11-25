@@ -84,9 +84,7 @@ def process_input(input_file,):
     logger.info('found %s cram_paths, %s json_paths', len(cram_paths), len(json_paths))
     pprint.pprint(cram_paths[0]) 
     pprint.pprint(json_paths[0])
-    return cram_paths, json_paths 
-    process_crams(cram_paths)
-    process_json_data(json_paths)
+    # return cram_paths, json_paths 
     # compare_barcodes(cram_barcodes, json_barcodes)  
                 
 
