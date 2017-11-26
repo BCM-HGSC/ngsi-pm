@@ -82,10 +82,9 @@ def process_input(input_file,):
         json_paths.append(record.json_path)
     logger.info('type: %s, %s', type(cram_paths), type(json_paths))
     logger.info('found %s cram_paths, %s json_paths', len(cram_paths), len(json_paths))
-    pprint.pprint(cram_paths[0]) 
+    pprint.pprint(cram_paths[0])
     pprint.pprint(json_paths[0])
-    # return cram_paths, json_paths 
-    # compare_barcodes(cram_barcodes, json_barcodes)  
+    # compare_barcodes(cram_paths, json_paths)  
                 
 
 def read_input(input_file):
@@ -166,12 +165,16 @@ def parse_merge_definition(json_path_stream):
         yield merge
 
 
-def compare_barcodes(cram_barcodes, json_barcodes):
+def compare_barcodes(cram_paths, json_paths):
     """Compare a set of CRAM RG barcodes, samples to
     JSON barcodes, samples"""
     cram_barcodes = process_crams(cram_paths)
     cram_barcodes = process_json_data(json_paths)
     logger.debug('searching: %s and %s', cram_barcodes, json_barcodes)
+    logger.info('type: %s, %s', type(cram_barcodes), type(json_barcodes))
+    logger.info('found %s cram_barcodes, %s json_barcodes', len(cram_barcodes), len(json_barcodes))
+    pprint.pprint(cram_barcodes[0])
+    pprint.pprint(json_barcodes[0])
     assert set(cram_barcodes) == set(json_barcodes)
     return (
             set(cram_barcodes) == set(json_barcodes) and
