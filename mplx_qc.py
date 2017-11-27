@@ -66,10 +66,10 @@ def run(args):
     logger.debug('finished')
 
 
-def process_input(input_file,):
+def process_input(input_file):
     """A docsting should say something about the inputs and
     any compare results.  In this case there are no return results."""
-    logger.debug('process_input %s -> %s', input_file,)
+    logger.debug('process_input %s', input_file)
     merged_crams = read_input(input_file)
     logger.info('type: %s', type(merged_crams))
     logger.info('found %s records', len(merged_crams))
