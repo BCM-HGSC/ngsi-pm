@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 def main():
     args = parse_args()
     config_logging(args)
-    run(args)
+    run_qc(args)
     logging.shutdown()
 
 
@@ -56,7 +56,7 @@ def config_logging(args):
     logger = logging.getLogger('mplx_qc')
 
 
-def run(args):
+def run_qc(args):
     logger.debug('args: %r', args)
     input_file = args.input_file
     process_input(input_file,)
