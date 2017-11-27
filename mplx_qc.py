@@ -113,7 +113,6 @@ def compare_barcodes(cram_paths, json_paths):
     JSON barcodes, samples"""
     cram_barcodes = process_crams(cram_paths)
     json_barcodes = process_json_data(json_paths)
-    logger.debug('searching: %s and %s', cram_barcodes, json_barcodes)
     logger.info('type: %s, %s', type(cram_barcodes), type(json_barcodes))
     logger.info('found %s cram_barcodes, %s json_barcodes',
                 len(cram_barcodes), len(json_barcodes))
@@ -130,7 +129,6 @@ def compare_barcodes(cram_paths, json_paths):
 def process_crams(cram_paths):
     """Read cram_paths, parse RGs List and then
     CRAM RG barcodes and CRAM RG samples"""
-    logger.debug('seching: %s', cram_paths)
     rgs_list = dump_cram_rgs(cram_paths)
     # TODO
     # pat1 = re.compile(r'PU:([\w-]+)')
@@ -155,10 +153,10 @@ def process_crams(cram_paths):
 
 def dump_cram_rgs(cram_paths):
     """Read cram_paths, run samtools to parse RGs List"""
-    logger.debug('seaching: %s', cram_paths)
     cram_paths_path = [l.rstrip() for l in cram_paths]
     rgs_list = []
     for cram_path in cram_paths_path:
+        logger.debug('examining: %s', cram_path)
         cp = run(['samtools', 'view', '-H', cram_path],
                  stdin=DEVNULL, stdout=PIPE,
                  universal_newlines=True, check=True)
