@@ -41,10 +41,7 @@ def main():
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('input_file',
-                        nargs='?',
-                        type=argparse.FileType('rb'),
-                        default=sys.stdin)
+    parser.add_argument('input_file')
     parser.add_argument('-v', '--verbose', action='store_true')
     parser.add_argument('--version', action='version',
                         version='%(prog)s {}'.format(__version__))
