@@ -81,11 +81,12 @@ def process_input(input_file,):
         cram_paths.append(record.cram_path)
         json_paths.append(record.json_path)
     logger.info('type: %s, %s', type(cram_paths), type(json_paths))
-    logger.info('found %s cram_paths, %s json_paths', len(cram_paths), len(json_paths))
+    logger.info('found %s cram_paths, %s json_paths',
+                len(cram_paths), len(json_paths))
     pprint.pprint(cram_paths[0])
     pprint.pprint(json_paths[0])
-    # compare_barcodes(cram_paths, json_paths)  
-                
+    # compare_barcodes(cram_paths, json_paths)
+
 
 def read_input(input_file):
     """Read master XLSX of merged CRAMs and return list of objects containing
@@ -135,13 +136,16 @@ def process_crams(cram_paths):
     cram_barcodes = [cram_rg_barcodes, cram_rg_samples]
     return cram_barcodes
 
+
 def dump_cram_rgs(cram_paths):
     """Read cram_paths, run samtools to parse RGs List"""
     logger.debug('seaching: %s', cram_paths)
     cram_paths_path = [l.rstrip() for l in cram_paths]
     rgs_list = []
     for file in cram_paths_path:
-        cp = run(['samtools', 'view', '-H', file], stdin=DEVNULL, stdout=PIPE, universal_newlines=True, check=True)
+        cp = run(['samtools', 'view', '-H', file],
+                 stdin=DEVNULL, stdout=PIPE,
+                 universal_newlines=True, check=True)
         cp.stdout.splitlines
         headers = cp.stdout.splitlines()
         rgs = [h for h in headers if h.startswith('@RG\t')]
@@ -157,11 +161,11 @@ def process_json_data(json_paths):
         for s in merge.sequencing_events:
             row = [s.barcode, s.sample_name]
             # print(*row, sep='\t')
-    return row            
-    
+    return row
+
 
 def parse_merge_definition(json_path_stream):
-    """json_path_stream is also known as json_paths, 
+    """json_path_stream is also known as json_paths,
     Generator of Merge objects."""
     logger.debug('generating %s', 'Merge objects')
     for line in json_path_stream:
@@ -177,7 +181,8 @@ def compare_barcodes(cram_paths, json_paths):
     json_barcodes = process_json_data(json_paths)
     logger.debug('searching: %s and %s', cram_barcodes, json_barcodes)
     logger.info('type: %s, %s', type(cram_barcodes), type(json_barcodes))
-    logger.info('found %s cram_barcodes, %s json_barcodes', len(cram_barcodes), len(json_barcodes))
+    logger.info('found %s cram_barcodes, %s json_barcodes',
+                len(cram_barcodes), len(json_barcodes))
     pprint.pprint(cram_barcodes[0])
     pprint.pprint(json_barcodes[0])
     assert set(cram_barcodes) == set(json_barcodes)
