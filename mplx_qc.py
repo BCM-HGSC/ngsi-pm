@@ -82,7 +82,7 @@ def process_input(input_file):
                 len(cram_paths), len(json_paths))
     pprint.pprint(cram_paths[0])
     pprint.pprint(json_paths[0])
-    # compare_barcodes(cram_paths, json_paths)
+    compare_barcodes(cram_paths, json_paths)
 
 
 def read_input(input_file):
