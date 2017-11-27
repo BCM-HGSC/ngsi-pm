@@ -158,8 +158,8 @@ def dump_cram_rgs(cram_paths):
     logger.debug('seaching: %s', cram_paths)
     cram_paths_path = [l.rstrip() for l in cram_paths]
     rgs_list = []
-    for file in cram_paths_path:
-        cp = run(['samtools', 'view', '-H', file],
+    for cram_path in cram_paths_path:
+        cp = run(['samtools', 'view', '-H', cram_path],
                  stdin=DEVNULL, stdout=PIPE,
                  universal_newlines=True, check=True)
         cp.stdout.splitlines
