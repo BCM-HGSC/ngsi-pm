@@ -115,6 +115,11 @@ def process_crams(cram_paths):
     CRAM RG barcodes and CRAM RG samples"""
     logger.debug('seching: %s', cram_paths)
     rgs_list = dump_cram_rgs(cram_paths)
+    # TODO
+    # pat1 = re.compile(r'PU:([\w-]+)')
+    # cram_rg_barcodes = [pat1.search(r).group(1) for r in rgs_list]
+    # pat2 = re.compile(r'SM:([\w-]+)')
+    # cram_rg_samples = [pat2.search(r).group(1) for r in rgs_list]
     for line in rgs_list:
         linesplit = line.rstrip().split('\t')
         if linesplit[0] != '@RG':
@@ -126,8 +131,8 @@ def process_crams(cram_paths):
             rg_dict[k] = v
         cram_rg_barcodes = rg_dict['PU']
         cram_rg_samples = rg_dict['SM']
-        cram_barcodes = [cram_rg_barcodes, cram_rg_samples]
         # print(cram_rg_barcodes, cram_rg_samples, sep='\t')
+    cram_barcodes = [cram_rg_barcodes, cram_rg_samples]
     return cram_barcodes
 
 def dump_cram_rgs(cram_paths):
@@ -169,17 +174,18 @@ def compare_barcodes(cram_paths, json_paths):
     """Compare a set of CRAM RG barcodes, samples to
     JSON barcodes, samples"""
     cram_barcodes = process_crams(cram_paths)
-    cram_barcodes = process_json_data(json_paths)
+    json_barcodes = process_json_data(json_paths)
     logger.debug('searching: %s and %s', cram_barcodes, json_barcodes)
     logger.info('type: %s, %s', type(cram_barcodes), type(json_barcodes))
     logger.info('found %s cram_barcodes, %s json_barcodes', len(cram_barcodes), len(json_barcodes))
     pprint.pprint(cram_barcodes[0])
     pprint.pprint(json_barcodes[0])
     assert set(cram_barcodes) == set(json_barcodes)
-    return (
+    results = (
             set(cram_barcodes) == set(json_barcodes) and
             len(cram_barcodes) == len(json_barcodes)
             )
+    print(results)
 
 
 class Generic:
