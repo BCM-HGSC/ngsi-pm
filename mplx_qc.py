@@ -15,7 +15,6 @@ import json
 import logging
 import os
 from pathlib import Path
-import pprint
 import re
 import sys
 from subprocess import run, DEVNULL, PIPE
@@ -123,8 +122,6 @@ def compare_read_groups(cram_path, json_path):
     json_rg_barcodes, json_rg_samples = process_json(json_path)
     logger.info('found %s cram_rg_samples, %s json_rg_samples',
                 len(cram_rg_barcodes), len(json_rg_barcodes))
-    pprint.pprint(cram_rg_barcodes[0])
-    pprint.pprint(json_rg_barcodes[0])
     cram_rg_sample_set = set(cram_rg_samples)
     json_rg_sample_set = set(json_rg_samples)
     if len(cram_rg_sample_set) != 1:
