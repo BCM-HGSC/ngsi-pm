@@ -43,7 +43,7 @@ def main():
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('input_file')
-    parser.add_argument('-v', '--verbose', action='store_true')
+    parser.add_argument('-v', '--verbose', action='count')
     parser.add_argument('--version', action='version',
                         version='%(prog)s {}'.format(__version__))
     args = parser.parse_args()
@@ -52,7 +52,12 @@ def parse_args():
 
 def config_logging(args):
     global logger
-    level = logging.DEBUG if args.verbose else logging.INFO
+    if not args.verbose:
+        level = logging.WARNING
+    elif args.verbose == 1:
+        level = logging.INFO
+    else:
+        level = logging.DEBUG
     logging.basicConfig(level=level)
     logger = logging.getLogger('mplx_qc')
 
@@ -76,6 +81,7 @@ def process_input(input_file):
     logger.debug('last record: %r', vars(merged_crams[-1]))
     error_code = 0  # no error
     for record in merged_crams:
+        logger.info('checking %s', record.merge_id)
         ec = compare_read_groups(record.cram_path, record.json_path)
         if ec:
             print(ec, record.merge_id, record.cram_path, record.json_path,
