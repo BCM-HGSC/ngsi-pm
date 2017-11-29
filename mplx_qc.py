@@ -71,7 +71,6 @@ def process_input(input_file):
     means no errors, otherwise corresponding to the most severe error."""
     logger.debug('process_input %s', input_file)
     merged_crams = read_input(input_file)
-    logger.info('type: %s', type(merged_crams))
     logger.info('found %s records', len(merged_crams))
     logger.debug('first record: %r', vars(merged_crams[0]))
     logger.debug('last record: %r', vars(merged_crams[-1]))
@@ -122,6 +121,8 @@ def compare_read_groups(cram_path, json_path):
     json_rg_barcodes, json_rg_samples = process_json(json_path)
     logger.info('found %s cram_rg_samples, %s json_rg_samples',
                 len(cram_rg_barcodes), len(json_rg_barcodes))
+    logger.debug('first barcodes: %s, %s',
+                 cram_rg_barcodes[0], json_rg_barcodes[0])
     cram_rg_sample_set = set(cram_rg_samples)
     json_rg_sample_set = set(json_rg_samples)
     if len(cram_rg_sample_set) != 1:
