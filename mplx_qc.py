@@ -87,6 +87,7 @@ def process_input(input_file):
             print(ec, record.merge_id, record.cram_path, record.json_path,
                   sep='\t')
         error_code = max(error_code, ec)
+    return error_code
 
 
 def read_input(input_file):
