@@ -201,25 +201,14 @@ def dump_cram_rgs(cram_path):
     return rg_lines
 
 
-def process_json_data(json_paths):
+def process_json(json_path):
     """from dump_js_barcodes.py import Merge,
     and parse JSON merge barcodes and JSON merge samples"""
-    logger.debug('seaching: %s', json_paths)
-    for merge in parse_merge_definition(json_path_stream):
-        for s in merge.sequencing_events:
-            row = [s.barcode, s.sample_name]
-            # print(*row, sep='\t')
-    return row
-
-
-def parse_merge_definition(json_path_stream):
-    """json_path_stream is also known as json_paths,
-    Generator of Merge objects."""
-    logger.debug('generating %s', 'Merge objects')
-    for line in json_path_stream:
-        json_path = line.rstrip('\n')
-        merge = Merge(json_path)
-        yield merge
+    logger.debug('parsing: %s', json_path)
+    merge = Merge(json_path)
+    barcodes = [s.barcode for s in merge.sequencing_events]
+    samples = [s.sample_name for s in merge.sequencing_events]
+    return barcodes, samples
 
 
 class Generic:
