@@ -79,7 +79,7 @@ def process_input(input_file):
     for record in merged_crams:
         ec = compare_read_groups(record.cram_path, record.json_path)
         if ec:
-            print(record.merge_id, record.cram_path, record.json_path,
+            print(ec, record.merge_id, record.cram_path, record.json_path,
                   sep='\t')
         error_code = max(error_code, ec)
 
