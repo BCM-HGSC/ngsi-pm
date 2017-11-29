@@ -1,7 +1,8 @@
 #! /usr/bin/env python3
 
 """
-Read a master XLSX workbook and output cram paths and json paths.
+Read a master XLSX workbook and output the bad merges. The output is in TSV
+format and includes merge ID, CRAM path, and json path. To check the merges:
 Read cram paths and run subprocess to output RGs, and then output RG barcodes
 and samples. Parse JSON Merge objects and output merge barcodes and samples.
 Compare cram RG barcodes and samples to JSON merge barcodes and samples.
@@ -78,6 +79,9 @@ def process_input(input_file):
     error_code = 0  # no error
     for record in merged_crams:
         ec = compare_read_groups(record.cram_path, record.json_path)
+        if ec:
+            print(record.merge_id, record.cram_path, record.json_path,
+                  sep='\t')
         error_code = max(error_code, ec)
 
 
@@ -97,7 +101,7 @@ def read_input(input_file):
     for row in row_iter:
         merged_cram = Generic()
         for column_name, cell in zip(column_names, row):
-            if column_name in ['json_path', 'cram_path']:
+            if column_name in ['merge_id', 'json_path', 'cram_path']:
                 value = cell.value
                 setattr(merged_cram, column_name, value)
         merged_crams.append(merged_cram)
