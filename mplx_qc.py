@@ -1,7 +1,8 @@
 #! /usr/bin/env python3
 
 """
-Read a master XLSX workbook and output cram paths and json paths.
+Read a master XLSX workbook and output the bad merges. The output is in TSV
+format and includes merge ID, CRAM path, and json path. To check the merges:
 Read cram paths and run subprocess to output RGs, and then output RG barcodes
 and samples. Parse JSON Merge objects and output merge barcodes and samples.
 Compare cram RG barcodes and samples to JSON merge barcodes and samples.
@@ -14,7 +15,6 @@ import json
 import logging
 import os
 from pathlib import Path
-import pprint
 import re
 import sys
 from subprocess import run, DEVNULL, PIPE
@@ -27,7 +27,7 @@ from openpyxl.styles import Font
 from dump_js_barcodes import Merge
 from dump_js_barcodes import SequencingEvent
 
-__version__ = '1.0.0-development'
+__version__ = '1.0.0'
 
 logger = logging.getLogger(__name__)
 
@@ -35,17 +35,15 @@ logger = logging.getLogger(__name__)
 def main():
     args = parse_args()
     config_logging(args)
-    run(args)
+    error_code = run_qc(args)
     logging.shutdown()
+    sys.exit(error_code)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('input_file',
-                        nargs='?',
-                        type=argparse.FileType('rb'),
-                        default=sys.stdin)
-    parser.add_argument('-v', '--verbose', action='store_true')
+    parser.add_argument('input_file')
+    parser.add_argument('-v', '--verbose', action='count')
     parser.add_argument('--version', action='version',
                         version='%(prog)s {}'.format(__version__))
     args = parser.parse_args()
@@ -54,38 +52,43 @@ def parse_args():
 
 def config_logging(args):
     global logger
-    level = logging.DEBUG if args.verbose else logging.INFO
+    if not args.verbose:
+        level = logging.WARNING
+    elif args.verbose == 1:
+        level = logging.INFO
+    else:
+        level = logging.DEBUG
     logging.basicConfig(level=level)
     logger = logging.getLogger('mplx_qc')
 
 
-def run(args):
+def run_qc(args):
     logger.debug('args: %r', args)
     input_file = args.input_file
-    process_input(input_file,)
+    error_code = process_input(input_file)
     logger.debug('finished')
+    return error_code
 
 
-def process_input(input_file,):
-    """A docsting should say something about the inputs and
-    any compare results.  In this case there are no return results."""
-    logger.debug('process_input %s -> %s', input_file,)
+def process_input(input_file):
+    """Read the XLSX input for a batch of merged CRAMs. Verify that the CRAM
+    headers and JSON metadata are consistent. Return an error code, where 0
+    means no errors, otherwise corresponding to the most severe error."""
+    logger.debug('process_input %s', input_file)
     merged_crams = read_input(input_file)
-    logger.info('type: %s', type(merged_crams))
     logger.info('found %s records', len(merged_crams))
-    pprint.pprint(vars(merged_crams[0]))
-    pprint.pprint(vars(merged_crams[-1]))
-    cram_paths = []
-    json_paths = []
+    logger.debug('first record: %r', vars(merged_crams[0]))
+    logger.debug('last record: %r', vars(merged_crams[-1]))
+    error_code = 0  # no error
     for record in merged_crams:
-        cram_paths.append(record.cram_path)
-        json_paths.append(record.json_path)
-    logger.info('type: %s, %s', type(cram_paths), type(json_paths))
-    logger.info('found %s cram_paths, %s json_paths', len(cram_paths), len(json_paths))
-    pprint.pprint(cram_paths[0])
-    pprint.pprint(json_paths[0])
-    # compare_barcodes(cram_paths, json_paths)  
-                
+        logger.info('checking %s', record.merge_id)
+        ec = compare_read_groups(record.cram_path, record.json_path)
+        if ec:
+            print(ec, record.merge_id, record.cram_path, record.json_path,
+                  sep='\t')
+        error_code = max(error_code, ec)
+    return error_code
+
 
 def read_input(input_file):
     """Read master XLSX of merged CRAMs and return list of objects containing
@@ -103,89 +106,114 @@ def read_input(input_file):
     for row in row_iter:
         merged_cram = Generic()
         for column_name, cell in zip(column_names, row):
-            if column_name in ['json_path', 'cram_path']:
+            if column_name in ['merge_id', 'json_path', 'cram_path']:
                 value = cell.value
                 setattr(merged_cram, column_name, value)
         merged_crams.append(merged_cram)
     return merged_crams
 
 
-def process_crams(cram_paths):
-    """Read cram_paths, parse RGs List and then
+def compare_read_groups(cram_path, json_path):
+    """Compare a set of CRAM RG barcodes & samples to JSON barcodes & samples
+    for one merged CRAM, returning most severe error code.
+
+    Expectations:
+        set(cram_rg_barcodes) == set(json_rg_barcodes)
+        len(set(cram_rg_barcodes)) == len(cram_rg_barcodes)
+        len(set(json_rg_barcodes)) == len(json_rg_barcodes)
+        len(set(cram_rg_samples)) == len(set(json_rg_samples)) == 1
+        set(cram_rg_samples) == set(json_rg_samples)
+    """
+    cram_rg_barcodes, cram_rg_samples = process_cram(cram_path)
+    json_rg_barcodes, json_rg_samples = process_json(json_path)
+    logger.info('found %s cram_rg_barcodes, %s json_rg_barcodes',
+                len(cram_rg_barcodes), len(json_rg_barcodes))
+    logger.debug('first barcodes: %s, %s',
+                 cram_rg_barcodes[0], json_rg_barcodes[0])
+    cram_rg_sample_set = set(cram_rg_samples)
+    json_rg_sample_set = set(json_rg_samples)
+    if len(cram_rg_sample_set) != 1:
+        error_code = 5
+        logger.error('CRAM contains multiple values for sample. '
+                     'CRAM=%r samples=%r',
+                     cram_path, cram_rg_samples)
+    elif cram_rg_sample_set != json_rg_sample_set:
+        error_code = 4
+        logger.error('CRAM and JSON have different sample names. '
+                     'CRAM=%r JSON=%r cram_sample=%r json_sample=%r',
+                     cram_path, json_path,
+                     cram_rg_sample_set, json_rg_sample_set)
+    elif len(set(cram_rg_barcodes)) != len(cram_rg_barcodes):
+        error_code = 3  # same barcode included twice
+        ctr = Counter(cram_rg_barcodes)
+        duplicate_barcodes = [bc for bc, count in ctr.items() if count > 1]
+        logger.error('Duplicate barcodes in CRAM. CRAM=%r dupes=%r',
+                     cram_path, duplicate_barcodes)
+        # TODO: Resolve duplicated code in next case.
+    elif len(set(json_rg_barcodes)) != len(json_rg_barcodes):
+        error_code = 2  # same barcode included twice
+        ctr = Counter(json_rg_barcodes)
+        duplicate_barcodes = [bc for bc, count in ctr.items() if count > 1]
+        logger.error('Duplicate barcodes in JSON. JSON=%r dupes=%r',
+                     json_path, duplicate_barcodes)
+    elif set(cram_rg_barcodes) != set(json_rg_barcodes):
+        error_code = 1
+        logger.error('CRAM and JSON have mismatching sets of barcodes. '
+                     'CRAM=%r JSON=%r',
+                     cram_path, json_path)
+    else:
+        error_code = 0
+    return error_code
+
+
+MULTIPLE = object()  # For corrupt data with two PUs or SMs in the same RG.
+
+
+def process_cram(cram_path):
+    """Read header of CRAM, parse resulting RGs and then return
     CRAM RG barcodes and CRAM RG samples"""
-    logger.debug('seching: %s', cram_paths)
-    rgs_list = dump_cram_rgs(cram_paths)
-    # TODO
-    # pat1 = re.compile(r'PU:([\w-]+)')
-    # cram_rg_barcodes = [pat1.search(r).group(1) for r in rgs_list]
-    # pat2 = re.compile(r'SM:([\w-]+)')
-    # cram_rg_samples = [pat2.search(r).group(1) for r in rgs_list]
-    for line in rgs_list:
-        linesplit = line.rstrip().split('\t')
-        if linesplit[0] != '@RG':
-            continue
-        rg_dict = {}
-        for item in linesplit[1:]:
-            k, v = item.split(':', 1)
-            assert ':' not in k
-            rg_dict[k] = v
-        cram_rg_barcodes = rg_dict['PU']
-        cram_rg_samples = rg_dict['SM']
-        # print(cram_rg_barcodes, cram_rg_samples, sep='\t')
-    cram_barcodes = [cram_rg_barcodes, cram_rg_samples]
-    return cram_barcodes
-
-def dump_cram_rgs(cram_paths):
-    """Read cram_paths, run samtools to parse RGs List"""
-    logger.debug('seaching: %s', cram_paths)
-    cram_paths_path = [l.rstrip() for l in cram_paths]
-    rgs_list = []
-    for file in cram_paths_path:
-        cp = run(['samtools', 'view', '-H', file], stdin=DEVNULL, stdout=PIPE, universal_newlines=True, check=True)
-        cp.stdout.splitlines
-        headers = cp.stdout.splitlines()
-        rgs = [h for h in headers if h.startswith('@RG\t')]
-        rgs_list = '\n'.join(rgs)
-    return rgs_list
+    rg_lines = dump_cram_rgs(cram_path)
+    cram_rg_barcodes = []
+    cram_rg_samples = []
+    for rg_line in rg_lines:
+        rg_items = rg_line.rstrip().split('\t')[1:]
+        pu = sm = None
+        for rg_item in rg_items:
+            if rg_item.startswith('PU:'):
+                if pu is not None:
+                    pu = MULTIPLE
+                else:
+                    pu = rg_item[3:]
+            elif rg_item.startswith('SM:'):
+                if sm is not None:
+                    sm = MULTIPLE
+                else:
+                    sm = rg_item[3:]
+        cram_rg_barcodes.append(pu)
+        cram_rg_samples.append(sm)
+    return cram_rg_barcodes, cram_rg_samples
 
 
-def process_json_data(json_paths):
+def dump_cram_rgs(cram_path):
+    """Read cram_path using samtools and return list of RG lines."""
+    logger.debug('samtools view -H %r', cram_path)
+    # TODO: Should we try to handle an error here?
+    cp = run(['samtools', 'view', '-H', cram_path],
+             stdin=DEVNULL, stdout=PIPE,
+             universal_newlines=True, check=True)
+    headers = cp.stdout.splitlines()
+    rg_lines = [h for h in headers if h.startswith('@RG\t')]
+    return rg_lines
+
+
+def process_json(json_path):
     """from dump_js_barcodes.py import Merge,
     and parse JSON merge barcodes and JSON merge samples"""
-    logger.debug('seaching: %s', json_paths)
-    for merge in parse_merge_definition(json_path_stream):
-        for s in merge.sequencing_events:
-            row = [s.barcode, s.sample_name]
-            # print(*row, sep='\t')
-    return row            
-    
-
-def parse_merge_definition(json_path_stream):
-    """json_path_stream is also known as json_paths, 
-    Generator of Merge objects."""
-    logger.debug('generating %s', 'Merge objects')
-    for line in json_path_stream:
-        json_path = line.rstrip('\n')
-        merge = Merge(json_path)
-        yield merge
-
-
-def compare_barcodes(cram_paths, json_paths):
-    """Compare a set of CRAM RG barcodes, samples to
-    JSON barcodes, samples"""
-    cram_barcodes = process_crams(cram_paths)
-    json_barcodes = process_json_data(json_paths)
-    logger.debug('searching: %s and %s', cram_barcodes, json_barcodes)
-    logger.info('type: %s, %s', type(cram_barcodes), type(json_barcodes))
-    logger.info('found %s cram_barcodes, %s json_barcodes', len(cram_barcodes), len(json_barcodes))
-    pprint.pprint(cram_barcodes[0])
-    pprint.pprint(json_barcodes[0])
-    assert set(cram_barcodes) == set(json_barcodes)
-    results = (
-            set(cram_barcodes) == set(json_barcodes) and
-            len(cram_barcodes) == len(json_barcodes)
-            )
-    print(results)
+    logger.debug('parsing: %s', json_path)
+    merge = Merge(json_path)
+    barcodes = [s.barcode for s in merge.sequencing_events]
+    samples = [s.sample_name for s in merge.sequencing_events]
+    return barcodes, samples
 
 
 class Generic:
