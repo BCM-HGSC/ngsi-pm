@@ -126,7 +126,7 @@ def compare_read_groups(cram_path, json_path):
     """
     cram_rg_barcodes, cram_rg_samples = process_cram(cram_path)
     json_rg_barcodes, json_rg_samples = process_json(json_path)
-    logger.info('found %s cram_rg_samples, %s json_rg_samples',
+    logger.info('found %s cram_rg_barcodes, %s json_rg_barcodes',
                 len(cram_rg_barcodes), len(json_rg_barcodes))
     logger.debug('first barcodes: %s, %s',
                  cram_rg_barcodes[0], json_rg_barcodes[0])
