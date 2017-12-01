@@ -30,13 +30,14 @@ REQUIRED_INPUT_COLUMN_NAMES = '''
     merge_id
     hgsc_xfer_subdir
     batch
-    current_cram_name
-    new_cram_name
     merge_path
 '''.split()  # The order of the columns in the output
 
 REQUIRED_INPUT_COLUMN_NAMES_SET = set(REQUIRED_INPUT_COLUMN_NAMES)
 ADDITIONAL_OUTPUT_COLUMN_NAMES = '''
+    current_cram_name
+    new_cram_name
+    new_new_cram_name
     json_path
     cram_path
 '''.split()  # The order of the columns in the output
@@ -161,12 +162,14 @@ def add_file_paths(record):
             record.json_path = os.path.join(merge_path, file_name)
 
 def get_new_cram_name(record):
-    """new_cram_name = sample_id_nwd_id + "-" + current_cram_name"""
+    """new_cram_name = sample_id_nwd_id + "-" + current_cram_name
+    new_new_cram_name = sample_id_nwd_id + '.hgv.cram'"""
     sample_id_nwd_id = record.sample_id_nwd_id
     logger.debug('searching: %s', sample_id_nwd_id)
     current_cram_name = record.current_cram_name
     logger.debug('searching: %s', current_cram_name)
     record.new_cram_name = sample_id_nwd_id + "-" + current_cram_name
+    record.new_new_cram_name = sample_id_nwd_id + ".hgv.cram"
 
 
 def write_annotated_workbook(output_file, data):
