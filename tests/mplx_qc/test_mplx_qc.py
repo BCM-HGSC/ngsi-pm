@@ -16,9 +16,10 @@ def test_b():
 def test_first_xlsx(tmpdir):
     xlsx_path = str(tmpdir.join('test.xlsx'))
     print(xlsx_path)
-    convert_tsv('tests/mplx_qc/resources/tsv_jwatt/batchee_mplx_b.xlsx.tsv', xlsx_path)
+    convert_tsv('tests/mplx_qc/resources/tsv_jwatt/batchee_mplx_b.xlsx.tsv',
+                xlsx_path)
     args = [SCRIPT_PATH, xlsx_path]
-    cp = run(args, stdin=DEVNULL)  #, stdout=PIPE, stderr=PIPE, timeout=2)
+    cp = run(args, stdin=DEVNULL)  # , stdout=PIPE, stderr=PIPE, timeout=2)
     assert cp.returncode == 0
 
 
