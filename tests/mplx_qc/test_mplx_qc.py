@@ -5,6 +5,11 @@ from subprocess import run, DEVNULL, PIPE
 SCRIPT_PATH = 'bin/mplx_qc.py'
 
 
+# TODO: Check against sample provided by worklist.
+# TODO: Check stdout and stderr.
+# TODO: Check error codes 1 - 5.
+
+
 def test_first_xlsx(tmpdir):
     xlsx_path = str(tmpdir.join('test.xlsx'))
     print(xlsx_path)
