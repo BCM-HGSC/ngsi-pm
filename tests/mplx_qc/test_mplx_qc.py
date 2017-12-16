@@ -5,14 +5,6 @@ from subprocess import run, DEVNULL, PIPE
 SCRIPT_PATH = 'bin/mplx_qc.py'
 
 
-def test_a():
-    pass
-
-
-def test_b():
-    pass
-
-
 def test_first_xlsx(tmpdir):
     xlsx_path = str(tmpdir.join('test.xlsx'))
     print(xlsx_path)
