@@ -9,7 +9,7 @@ RESOURCE_BASE = Path('tests/mplx_qc/resources')
 
 # TODO: Check against sample provided by worklist.
 # TODO: Check stdout and stderr.
-# TODO: Check error codes 2 - 5.
+# TODO: Check error codes 3 & 5.
 
 
 def test_first_xlsx(tmpdir):
@@ -20,6 +20,16 @@ def test_first_xlsx(tmpdir):
 def test_ec1(tmpdir):
     cp = run_qc(tmpdir, 'tsv_jwatt/ec_1_b.xlsx.tsv')
     assert cp.returncode == 1
+
+
+def test_ec2(tmpdir):
+    cp = run_qc(tmpdir, 'tsv_jwatt/ec_2_b.xlsx.tsv')
+    assert cp.returncode == 2
+
+
+def test_ec4(tmpdir):
+    cp = run_qc(tmpdir, 'tsv_jwatt/ec_4_b.xlsx.tsv')
+    assert cp.returncode == 4
 
 
 def run_qc(tmpdir, input_path):
