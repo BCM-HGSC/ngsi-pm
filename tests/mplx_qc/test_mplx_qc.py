@@ -9,28 +9,49 @@ RESOURCE_BASE = Path('tests/mplx_qc/resources')
 
 
 # TODO: Check against sample provided by worklist.
-# TODO: Check stdout and stderr.
 # TODO: Check error codes 3 & 5.
 
 
 def test_first_xlsx(tmpdir):
     cp = run_qc(tmpdir, 'tsv_jwatt/batchee_mplx_b.xlsx.tsv')
     assert cp.returncode == 0
+    assert not cp.stdout
+    assert not cp.stderr
 
 
 def test_ec1(tmpdir):
     cp = run_qc(tmpdir, 'tsv_jwatt/ec_1_b.xlsx.tsv')
     assert cp.returncode == 1
+    expect_path = Path('tests/mplx_qc/resources/tsv_jwatt/ec_1_expect.tsv')
+    assert cp.stdout == expect_path.read_text()
+    error_lines = cp.stderr.splitlines()
+    for l in error_lines:
+        assert l.startswith('ERROR:mplx_qc:CRAM and JSON '
+                            'have mismatching sets of barcodes.')
+    assert len(error_lines) == 3
 
 
 def test_ec2(tmpdir):
     cp = run_qc(tmpdir, 'tsv_jwatt/ec_2_b.xlsx.tsv')
     assert cp.returncode == 2
+    expect_path = Path('tests/mplx_qc/resources/tsv_jwatt/ec_2_expect.tsv')
+    assert cp.stdout == expect_path.read_text()
+    error_lines = cp.stderr.splitlines()
+    for l in error_lines:
+        assert l.startswith('ERROR:mplx_qc:Duplicate barcodes in JSON.')
+    assert len(error_lines) == 3
 
 
-def test_ec4(tmpdir):
+def test_ec4(tmpdir):  # TODO: DRY out this code.
     cp = run_qc(tmpdir, 'tsv_jwatt/ec_4_b.xlsx.tsv')
     assert cp.returncode == 4
+    expect_path = Path('tests/mplx_qc/resources/tsv_jwatt/ec_4_expect.tsv')
+    assert cp.stdout == expect_path.read_text()
+    error_lines = cp.stderr.splitlines()
+    for l in error_lines:
+        assert l.startswith('ERROR:mplx_qc:CRAM and JSON '
+                            'have different sample names.')
+    assert len(error_lines) == 3
 
 
 def run_qc(tmpdir, input_path):
