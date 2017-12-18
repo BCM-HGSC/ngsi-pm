@@ -14,8 +14,8 @@ RESOURCE_BASE = Path('tests/mplx_qc/resources')
 # TODO: Check error codes 3 & 5.
 
 
-def test_first_xlsx(tmpdir):
-    cp = run_qc(tmpdir, 'tsv_jwatt/batchee_mplx_b.xlsx.tsv')
+def test_ec0(tmpdir):
+    cp = run_qc(tmpdir, 'tsv_main/ec_0.xlsx.tsv')
     assert cp.returncode == 0
     assert not cp.stdout
     assert not cp.stderr
