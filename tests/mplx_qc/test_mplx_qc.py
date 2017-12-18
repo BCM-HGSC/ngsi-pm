@@ -3,6 +3,8 @@ from pathlib import Path
 from subprocess import run, DEVNULL, PIPE
 import sys
 
+import pytest
+
 
 SCRIPT_PATH = 'bin/mplx_qc.py'
 RESOURCE_BASE = Path('tests/mplx_qc/resources')
@@ -31,7 +33,12 @@ def test_ec1(tmpdir):
     assert len(error_lines) == 3
 
 
+@pytest.mark.skip(reason="no way of currently testing this")
 def test_ec2(tmpdir):
+    """Note thot the JSON schema means that any attempt to use the same barcode
+    twice in a JSON file will result in having one less sequencing event. This
+    is because barcode is a dictionary key. Thus generating error code 2 is
+    impossible."""
     cp = run_qc(tmpdir, 'tsv_jwatt/ec_2_b.xlsx.tsv')
     assert cp.returncode == 2
     expect_path = Path('tests/mplx_qc/resources/tsv_jwatt/ec_2_expect.tsv')
