@@ -10,7 +10,6 @@ SCRIPT_PATH = 'bin/mplx_qc.py'
 RESOURCE_BASE = Path('tests/mplx_qc/resources')
 
 
-# TODO: Check against sample provided by worklist.
 # TODO: Check error codes 3 & 5.
 
 
@@ -44,6 +43,13 @@ def test_ec4(tmpdir):
     check_results(cp, 4, 3,
                   'ERROR:mplx_qc:CRAM and JSON have different sample names.',
                   'tests/mplx_qc/resources/tsv_jwatt/ec_4_expect.tsv')
+
+
+def test_ec6(tmpdir):
+    cp = run_qc(tmpdir, 'tsv_main/ec_6.xlsx.tsv')
+    check_results(cp, 6, 1,
+                  'ERROR:mplx_qc:CRAM has wrong sample name.',
+                  'tests/mplx_qc/resources/tsv_main/ec_6_expect.tsv')
 
 
 def check_results(cp, returncode, num_errs, error_prefix, expected_out_path):
