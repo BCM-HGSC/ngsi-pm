@@ -1,6 +1,7 @@
 from openpyxl import Workbook
 from pathlib import Path
 from subprocess import run, DEVNULL, PIPE
+import sys
 
 
 SCRIPT_PATH = 'bin/mplx_qc.py'
@@ -39,7 +40,10 @@ def run_qc(tmpdir, input_path):
     print(xlsx_path)
     convert_tsv(RESOURCE_BASE/input_path, xlsx_path)
     args = [SCRIPT_PATH, xlsx_path]
-    cp = run(args, stdin=DEVNULL)  # , stdout=PIPE, stderr=PIPE, timeout=2)
+    cp = run(args, stdin=DEVNULL, stdout=PIPE, stderr=PIPE,
+             universal_newlines=True, timeout=2)
+    print(cp.stdout)
+    print(cp.stderr, file=sys.stderr)
     return cp
 
 
