@@ -307,17 +307,17 @@
             "isMerge": true,
             "gender": "Male"
         },
-        "HC72YCCXY-2-IDDUI043": {
+        "HC77YCCXY-2-IDDUI043": {
             "eventId": "HC77YCCXY-2-IDDUI043",
-            "path": "/stornext/snfs130/next-gen/Illumina/Instruments/E00186/171006_ST-E00186_0609_AHC72YCCXY/Results/Project_HC72YCCXY/Sample_HC72YCCXY-2-IDDUI043",
-            "FASTQfile1": "/stornext/snfs130/next-gen/Illumina/Instruments/E00186/171006_ST-E00186_0609_AHC72YCCXY/Results/Project_HC72YCCXY/Sample_HC72YCCXY-2-IDDUI043/HC72YCCXY-2-IDDUI043_S6_L002_R1_001.fastq.gz",
-            "FASTQfile2": "/stornext/snfs130/next-gen/Illumina/Instruments/E00186/171006_ST-E00186_0609_AHC72YCCXY/Results/Project_HC72YCCXY/Sample_HC72YCCXY-2-IDDUI043/HC72YCCXY-2-IDDUI043_S6_L002_R2_001.fastq.gz",
+            "path": "/stornext/snfs130/next-gen/Illumina/Instruments/E00186/171006_ST-E00186_0609_AHC72YCCXY/Results/Project_HC72YCCXY/Sample_HC77YCCXY-2-IDDUI043",
+            "FASTQfile1": "/stornext/snfs130/next-gen/Illumina/Instruments/E00186/171006_ST-E00186_0609_AHC72YCCXY/Results/Project_HC72YCCXY/Sample_HC77YCCXY-2-IDDUI043/HC77YCCXY-2-IDDUI043_S6_L002_R1_001.fastq.gz",
+            "FASTQfile2": "/stornext/snfs130/next-gen/Illumina/Instruments/E00186/171006_ST-E00186_0609_AHC72YCCXY/Results/Project_HC72YCCXY/Sample_HC77YCCXY-2-IDDUI043/HC77YCCXY-2-IDDUI043_S6_L002_R2_001.fastq.gz",
             "reference": "/stornext/snfs5/next-gen/Illumina/bwa_references/g/GRCh38_1000Genomes",
-            "bamFile": "/stornext/snfs130/next-gen/Illumina/Instruments/E00186/171006_ST-E00186_0609_AHC72YCCXY/Results/Project_HC72YCCXY/Sample_HC72YCCXY-2-IDDUI043/HC72YCCXY-2-IDDUI043.hgv.bam",
+            "bamFile": "/stornext/snfs130/next-gen/Illumina/Instruments/E00186/171006_ST-E00186_0609_AHC72YCCXY/Results/Project_HC72YCCXY/Sample_HC77YCCXY-2-IDDUI043/HC77YCCXY-2-IDDUI043.hgv.bam",
             "sampleName": "NWD204470",
             "applicationType": "WGS",
             "isWGS": true,
-            "RGstring": "@RG\\tID:0\\tSM:NWD204470\\tLB:ATRFIB.NWD204470-1_2AMP\\tPU:HC72YCCXY-2-IDDUI043\\tCN:BCM\\tDT:2017-10-19T16:14:11-0500\\tPL:Illumina",
+            "RGstring": "@RG\\tID:0\\tSM:NWD204470\\tLB:ATRFIB.NWD204470-1_2AMP\\tPU:HC77YCCXY-2-IDDUI043\\tCN:BCM\\tDT:2017-10-19T16:14:11-0500\\tPL:Illumina",
             "libraryName": "IWG_IND-ATRFIB.NWD204470-1_2pA",
             "plannedComputeLocation": "HGSC",
             "sampleType": "DNA",
@@ -326,7 +326,7 @@
             "readType": "paired",
             "readLength": 151,
             "metaProject": "ATRFIB",
-            "platformUnit": "HC72YCCXY-2-IDDUI043",
+            "platformUnit": "HC77YCCXY-2-IDDUI043",
             "isMerge": true,
             "gender": "Male"
         },
