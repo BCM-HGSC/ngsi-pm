@@ -16,21 +16,15 @@ RESOURCE_BASE = Path('tests/mplx_qc/resources')
 
 def test_ec0(tmpdir):
     cp = run_qc(tmpdir, 'tsv_main/ec_0.xlsx.tsv')
-    assert cp.returncode == 0
-    assert not cp.stdout
-    assert not cp.stderr
+    check_results(cp, 0, 0, None, None)
 
 
 def test_ec1(tmpdir):
     cp = run_qc(tmpdir, 'tsv_jwatt/ec_1_b.xlsx.tsv')
-    assert cp.returncode == 1
-    expect_path = Path('tests/mplx_qc/resources/tsv_jwatt/ec_1_expect.tsv')
-    assert cp.stdout == expect_path.read_text()
-    error_lines = cp.stderr.splitlines()
-    for l in error_lines:
-        assert l.startswith('ERROR:mplx_qc:CRAM and JSON '
-                            'have mismatching sets of barcodes.')
-    assert len(error_lines) == 3
+    check_results(cp, 1, 3,
+                  'ERROR:mplx_qc:CRAM and JSON '
+                  'have mismatching sets of barcodes.',
+                  'tests/mplx_qc/resources/tsv_jwatt/ec_1_expect.tsv')
 
 
 @pytest.mark.skip(reason="no way of currently testing this")
@@ -40,25 +34,33 @@ def test_ec2(tmpdir):
     is because barcode is a dictionary key. Thus generating error code 2 is
     impossible."""
     cp = run_qc(tmpdir, 'tsv_jwatt/ec_2_b.xlsx.tsv')
-    assert cp.returncode == 2
-    expect_path = Path('tests/mplx_qc/resources/tsv_jwatt/ec_2_expect.tsv')
-    assert cp.stdout == expect_path.read_text()
-    error_lines = cp.stderr.splitlines()
-    for l in error_lines:
-        assert l.startswith('ERROR:mplx_qc:Duplicate barcodes in JSON.')
-    assert len(error_lines) == 3
+    check_results(cp, 2, 3,
+                  'ERROR:mplx_qc:Duplicate barcodes in JSON.',
+                  'tests/mplx_qc/resources/tsv_jwatt/ec_2_expect.tsv')
 
 
-def test_ec4(tmpdir):  # TODO: DRY out this code.
+def test_ec4(tmpdir):
     cp = run_qc(tmpdir, 'tsv_jwatt/ec_4_b.xlsx.tsv')
-    assert cp.returncode == 4
-    expect_path = Path('tests/mplx_qc/resources/tsv_jwatt/ec_4_expect.tsv')
-    assert cp.stdout == expect_path.read_text()
+    check_results(cp, 4, 3,
+                  'ERROR:mplx_qc:CRAM and JSON have different sample names.',
+                  'tests/mplx_qc/resources/tsv_jwatt/ec_4_expect.tsv')
+
+
+def check_results(cp, returncode, num_errs, error_prefix, expected_out_path):
+    """Given a completed process, check the return code, the standard output
+    against the contents of the file at expected_out_path, and the standard
+    error agains a prefix that should appear at the start of every line and
+    the expected number of lines."""
+    assert bool(num_errs) == bool(error_prefix), 'bad test code'
+    assert cp.returncode == returncode
     error_lines = cp.stderr.splitlines()
+    assert len(error_lines) == num_errs
     for l in error_lines:
-        assert l.startswith('ERROR:mplx_qc:CRAM and JSON '
-                            'have different sample names.')
-    assert len(error_lines) == 3
+        assert l.startswith(error_prefix)
+    if expected_out_path:
+        assert cp.stdout == Path(expected_out_path).read_text()
+    else:
+        assert not cp.stdout
 
 
 def run_qc(tmpdir, input_path):
