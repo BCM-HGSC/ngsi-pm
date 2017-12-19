@@ -27,7 +27,7 @@ from openpyxl.styles import Font
 from dump_js_barcodes import Merge
 from dump_js_barcodes import SequencingEvent
 
-__version__ = '1.0.0'
+__version__ = '1.0.0-beta1'
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +82,9 @@ def process_input(input_file):
     error_code = 0  # no error
     for record in merged_crams:
         logger.info('checking %s', record.merge_id)
-        ec = compare_read_groups(record.cram_path, record.json_path)
+        ec = compare_read_groups(record.sample_id_nwd_id,
+                                 record.cram_path,
+                                 record.json_path)
         if ec:
             print(ec, record.merge_id, record.cram_path, record.json_path,
                   sep='\t')
@@ -106,14 +108,15 @@ def read_input(input_file):
     for row in row_iter:
         merged_cram = Generic()
         for column_name, cell in zip(column_names, row):
-            if column_name in ['merge_id', 'json_path', 'cram_path']:
+            if column_name in ['sample_id_nwd_id', 'merge_id',
+                               'json_path', 'cram_path']:
                 value = cell.value
                 setattr(merged_cram, column_name, value)
         merged_crams.append(merged_cram)
     return merged_crams
 
 
-def compare_read_groups(cram_path, json_path):
+def compare_read_groups(sample_id_nwd_id, cram_path, json_path):
     """Compare a set of CRAM RG barcodes & samples to JSON barcodes & samples
     for one merged CRAM, returning most severe error code.
 
@@ -132,11 +135,17 @@ def compare_read_groups(cram_path, json_path):
                  cram_rg_barcodes[0], json_rg_barcodes[0])
     cram_rg_sample_set = set(cram_rg_samples)
     json_rg_sample_set = set(json_rg_samples)
+    cram_rg_sample = next(iter(cram_rg_sample_set))
     if len(cram_rg_sample_set) != 1:
-        error_code = 5
+        error_code = 7
         logger.error('CRAM contains multiple values for sample. '
                      'CRAM=%r samples=%r',
                      cram_path, cram_rg_samples)
+    elif cram_rg_sample != sample_id_nwd_id:
+        error_code = 6
+        logger.error('CRAM has wrong sample name. '
+                     'CRAM=%r sample=%r expect=%r',
+                     cram_path, cram_rg_sample, sample_id_nwd_id)
     elif cram_rg_sample_set != json_rg_sample_set:
         error_code = 4
         logger.error('CRAM and JSON have different sample names. '
