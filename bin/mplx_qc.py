@@ -27,7 +27,7 @@ from openpyxl.styles import Font
 from dump_js_barcodes import Merge
 from dump_js_barcodes import SequencingEvent
 
-__version__ = '1.0.0'
+__version__ = '1.0.0-beta1'
 
 logger = logging.getLogger(__name__)
 
