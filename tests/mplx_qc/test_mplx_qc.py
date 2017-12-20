@@ -10,7 +10,7 @@ SCRIPT_PATH = 'bin/mplx_qc.py'
 RESOURCE_BASE = Path('tests/mplx_qc/resources')
 
 
-# TODO: Check error codes 4 & 7.
+# TODO: Check error code 7.
 
 
 def test_ec0(tmpdir):
@@ -36,6 +36,13 @@ def test_ec3(tmpdir):
     check_results(cp, 3, 3,
                   'ERROR:mplx_qc:Duplicate barcodes in JSON.',
                   'tests/mplx_qc/resources/tsv_jwatt/ec_3_expect.tsv')
+
+
+def test_ec4(tmpdir):
+    cp = run_qc(tmpdir, 'tsv_main/ec_4.xlsx.tsv')
+    check_results(cp, 4, 1,
+                  'ERROR:mplx_qc:Duplicate barcodes in CRAM.',
+                  'tests/mplx_qc/resources/tsv_main/ec_4_expect.tsv')
 
 
 def test_ec5(tmpdir):
