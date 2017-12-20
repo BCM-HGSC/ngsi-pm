@@ -10,9 +10,6 @@ SCRIPT_PATH = 'bin/mplx_qc.py'
 RESOURCE_BASE = Path('tests/mplx_qc/resources')
 
 
-# TODO: Check error code 7.
-
-
 def test_ec0(tmpdir):
     cp = run_qc(tmpdir, 'tsv_main/ec_0.xlsx.tsv')
     check_results(cp, 0, 0, None, None)
