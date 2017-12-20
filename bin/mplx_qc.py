@@ -21,7 +21,6 @@ from subprocess import run, DEVNULL, PIPE
 
 # after a blank line, import third-party libraries.
 import openpyxl
-from openpyxl.styles import Font
 
 # After another blank line, import local libraries.
 from dump_js_barcodes import Merge
