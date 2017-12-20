@@ -10,7 +10,7 @@ SCRIPT_PATH = 'bin/mplx_qc.py'
 RESOURCE_BASE = Path('tests/mplx_qc/resources')
 
 
-# TODO: Check error codes 3 & 5.
+# TODO: Check error codes 4 & 7.
 
 
 def test_ec0(tmpdir):
@@ -18,31 +18,31 @@ def test_ec0(tmpdir):
     check_results(cp, 0, 0, None, None)
 
 
-def test_ec1(tmpdir):
-    cp = run_qc(tmpdir, 'tsv_jwatt/ec_1_b.xlsx.tsv')
-    check_results(cp, 1, 3,
+def test_ec2(tmpdir):
+    cp = run_qc(tmpdir, 'tsv_jwatt/ec_2_b.xlsx.tsv')
+    check_results(cp, 2, 3,
                   'ERROR:mplx_qc:CRAM and JSON '
                   'have mismatching sets of barcodes.',
-                  'tests/mplx_qc/resources/tsv_jwatt/ec_1_expect.tsv')
+                  'tests/mplx_qc/resources/tsv_jwatt/ec_2_expect.tsv')
 
 
 @pytest.mark.skip(reason="no way of currently testing this")
-def test_ec2(tmpdir):
+def test_ec3(tmpdir):
     """Note thot the JSON schema means that any attempt to use the same barcode
     twice in a JSON file will result in having one less sequencing event. This
     is because barcode is a dictionary key. Thus generating error code 2 is
     impossible."""
-    cp = run_qc(tmpdir, 'tsv_jwatt/ec_2_b.xlsx.tsv')
-    check_results(cp, 2, 3,
+    cp = run_qc(tmpdir, 'tsv_jwatt/ec_3_b.xlsx.tsv')
+    check_results(cp, 3, 3,
                   'ERROR:mplx_qc:Duplicate barcodes in JSON.',
-                  'tests/mplx_qc/resources/tsv_jwatt/ec_2_expect.tsv')
+                  'tests/mplx_qc/resources/tsv_jwatt/ec_3_expect.tsv')
 
 
-def test_ec4(tmpdir):
-    cp = run_qc(tmpdir, 'tsv_jwatt/ec_4_b.xlsx.tsv')
-    check_results(cp, 4, 3,
+def test_ec5(tmpdir):
+    cp = run_qc(tmpdir, 'tsv_jwatt/ec_5_b.xlsx.tsv')
+    check_results(cp, 5, 3,
                   'ERROR:mplx_qc:CRAM and JSON have different sample names.',
-                  'tests/mplx_qc/resources/tsv_jwatt/ec_4_expect.tsv')
+                  'tests/mplx_qc/resources/tsv_jwatt/ec_5_expect.tsv')
 
 
 def test_ec6(tmpdir):
