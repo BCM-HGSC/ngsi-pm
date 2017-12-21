@@ -86,7 +86,12 @@ def run_qc_xlsx(tmpdir, input_path):
     xlsx_path = str(tmpdir.join('test.xlsx'))
     print(xlsx_path)
     convert_tsv(RESOURCE_BASE/input_path, xlsx_path)
-    args = [SCRIPT_PATH, xlsx_path]
+    return run_qc(xlsx_path)
+
+
+def run_qc(input_path):
+    """Runs mplx_qc, returning the completed process object."""
+    args = [SCRIPT_PATH, input_path]
     cp = run(args, stdin=DEVNULL, stdout=PIPE, stderr=PIPE,
              universal_newlines=True, timeout=2)
     print(cp.stdout)
