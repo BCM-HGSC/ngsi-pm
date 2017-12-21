@@ -21,13 +21,12 @@ from subprocess import run, DEVNULL, PIPE
 
 # after a blank line, import third-party libraries.
 import openpyxl
-from openpyxl.styles import Font
 
 # After another blank line, import local libraries.
 from dump_js_barcodes import Merge
 from dump_js_barcodes import SequencingEvent
 
-__version__ = '1.0.0-beta1'
+__version__ = '1.0.0-rc3'
 
 logger = logging.getLogger(__name__)
 
@@ -147,26 +146,26 @@ def compare_read_groups(sample_id_nwd_id, cram_path, json_path):
                      'CRAM=%r sample=%r expect=%r',
                      cram_path, cram_rg_sample, sample_id_nwd_id)
     elif cram_rg_sample_set != json_rg_sample_set:
-        error_code = 4
+        error_code = 5
         logger.error('CRAM and JSON have different sample names. '
                      'CRAM=%r JSON=%r cram_sample=%r json_sample=%r',
                      cram_path, json_path,
                      cram_rg_sample_set, json_rg_sample_set)
     elif len(set(cram_rg_barcodes)) != len(cram_rg_barcodes):
-        error_code = 3  # same barcode included twice
+        error_code = 4  # same barcode included twice
         ctr = Counter(cram_rg_barcodes)
         duplicate_barcodes = [bc for bc, count in ctr.items() if count > 1]
         logger.error('Duplicate barcodes in CRAM. CRAM=%r dupes=%r',
                      cram_path, duplicate_barcodes)
         # TODO: Resolve duplicated code in next case.
     elif len(set(json_rg_barcodes)) != len(json_rg_barcodes):
-        error_code = 2  # same barcode included twice
+        error_code = 3  # same barcode included twice
         ctr = Counter(json_rg_barcodes)
         duplicate_barcodes = [bc for bc, count in ctr.items() if count > 1]
         logger.error('Duplicate barcodes in JSON. JSON=%r dupes=%r',
                      json_path, duplicate_barcodes)
     elif set(cram_rg_barcodes) != set(json_rg_barcodes):
-        error_code = 1
+        error_code = 2
         logger.error('CRAM and JSON have mismatching sets of barcodes. '
                      'CRAM=%r JSON=%r',
                      cram_path, json_path)
