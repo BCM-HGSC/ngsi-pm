@@ -94,25 +94,30 @@ def process_input(input_file):
 def read_input(input_file):
     """Read master XLSX of merged CRAMs and return list of objects containing
     the file paths."""
-    wb = openpyxl.load_workbook(filename=input_file)
-    sheet = wb.get_sheet_by_name('smpls')
-    active_sheet = wb.active
-    assert sheet == active_sheet, (sheet.title, active_sheet.title)
-    logger.debug('active_sheet name: %s', active_sheet.title)
-    row_iter = iter(active_sheet.rows)
-    header_row = next(row_iter)
-    column_names = [c.value for c in header_row]
+    row_iter = generate_xlsx_rows(input_file)
+    column_names = next(row_iter)
     logger.debug('columns: %s', column_names)
     merged_crams = []
     for row in row_iter:
         merged_cram = Generic()
-        for column_name, cell in zip(column_names, row):
+        for column_name, value in zip(column_names, row):
             if column_name in ['sample_id_nwd_id', 'merge_id',
                                'json_path', 'cram_path']:
-                value = cell.value
                 setattr(merged_cram, column_name, value)
         merged_crams.append(merged_cram)
     return merged_crams
+
+
+def generate_xlsx_rows(input_file):
+    """Generator function that yields lists of cell values from the "smpls"
+    worksheet."""
+    wb = openpyxl.load_workbook(input_file, data_only=True, read_only=True)
+    sheet = wb.get_sheet_by_name('smpls')
+    active_sheet = wb.active
+    assert sheet == active_sheet, (sheet.title, active_sheet.title)
+    logger.debug('active_sheet name: %s', active_sheet.title)
+    for row in active_sheet.rows:
+        yield [c.value for c in row]
 
 
 def compare_read_groups(sample_id_nwd_id, cram_path, json_path):
