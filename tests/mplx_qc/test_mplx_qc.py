@@ -63,6 +63,11 @@ def test_ec7(tmpdir):
                   'tests/mplx_qc/resources/tsv_main/ec_7_expect.tsv')
 
 
+def test_ec0_tsv():
+    cp = run_qc(RESOURCE_BASE/'tsv_main/ec_0.xlsx.tsv')
+    check_results(cp, 0, 0, None, None)
+
+
 def check_results(cp, returncode, num_errs, error_prefix, expected_out_path):
     """Given a completed process, check the return code, the standard output
     against the contents of the file at expected_out_path, and the standard
