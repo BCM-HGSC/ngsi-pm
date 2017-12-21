@@ -56,7 +56,7 @@ def test_ec6(tmpdir):
                   'tests/mplx_qc/resources/tsv_main/ec_6_expect.tsv')
 
 
-def test_ec6(tmpdir):
+def test_ec7(tmpdir):
     cp = run_qc(tmpdir, 'tsv_main/ec_7.xlsx.tsv')
     check_results(cp, 7, 1,
                   'ERROR:mplx_qc:CRAM contains multiple values for sample.',
