@@ -1,11 +1,12 @@
 #! /usr/bin/env python3
 
 """
-Read a master XLSX workbook and output the bad merges. The output is in TSV
-format and includes merge ID, CRAM path, and json path. To check the merges:
-Read cram paths and run subprocess to output RGs, and then output RG barcodes
-and samples. Parse JSON Merge objects and output merge barcodes and samples.
-Compare cram RG barcodes and samples to JSON merge barcodes and samples.
+Read a master XLSX workbook or TSV and output the bad merges. The output is in
+TSV format and includes merge ID, CRAM path, and json path. To check the
+merges: Read cram paths and run subprocess to output RGs, and then output RG
+barcodes and samples. Parse JSON Merge objects and output merge barcodes and
+samples. Compare cram RG barcodes and samples to JSON merge barcodes and
+samples.
 """
 
 # First come standard libraries, in alphabetical order.
@@ -94,7 +95,12 @@ def process_input(input_file):
 def read_input(input_file):
     """Read master XLSX of merged CRAMs and return list of objects containing
     the file paths."""
-    row_iter = generate_xlsx_rows(input_file)
+    if input_file.endswith('.xlsx'):
+        row_iter = generate_xlsx_rows(input_file)
+    elif input_file.endswith('.tsv'):
+        row_iter = generate_tsv_rows(input_file)
+    else:
+        raise RuntimeError('file name must end in .xlsx or .tsv ' + input_file)
     column_names = next(row_iter)
     logger.debug('columns: %s', column_names)
     merged_crams = []
@@ -118,6 +124,13 @@ def generate_xlsx_rows(input_file):
     logger.debug('active_sheet name: %s', active_sheet.title)
     for row in active_sheet.rows:
         yield [c.value for c in row]
+
+
+def generate_tsv_rows(input_file):
+    """Generator function that yields rows as lists of values from the TSV."""
+    with open(input_file) as fin:
+        for raw_line in fin:
+            yield raw_line.rstrip('\r\n').split('\t')
 
 
 def compare_read_groups(sample_id_nwd_id, cram_path, json_path):
