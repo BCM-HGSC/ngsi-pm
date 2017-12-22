@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 def main():
     args = parse_args()
     config_logging(args)
-    error_code = run_qc(args)
+    error_code = run_qc(args.input_file)
     logging.shutdown()
     sys.exit(error_code)
 
@@ -62,9 +62,8 @@ def config_logging(args):
     logger = logging.getLogger('mplx_qc')
 
 
-def run_qc(args):
-    logger.debug('args: %r', args)
-    input_file = args.input_file
+def run_qc(input_file):
+    logger.debug('input_file: %r', input_file)
     try:
         error_code = process_input(input_file)
     except Exception as e:
