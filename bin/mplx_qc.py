@@ -66,7 +66,7 @@ def run_qc(input_file):
     logger.debug('input_file: %r', input_file)
     try:
         error_code = process_input(input_file)
-    except Exception as e:
+    except RuntimeError as e:
         error_code = 10
         print(e, file=sys.stderr)
     logger.debug('finished')
