@@ -11,12 +11,12 @@ RESOURCE_BASE = Path('tests/mplx_qc/resources')
 
 
 def test_ec0(tmpdir):
-    cp = run_qc_xlsx(tmpdir, 'tsv_main/ec_0.xlsx.tsv')
+    cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_0.xlsx.tsv')
     check_results(cp, 0, 0, None, None)
 
 
 def test_ec2(tmpdir):
-    cp = run_qc_xlsx(tmpdir, 'tsv_jwatt/ec_2_b.xlsx.tsv')
+    cp = run_mplx_qc_xlsx(tmpdir, 'tsv_jwatt/ec_2_b.xlsx.tsv')
     check_results(cp, 2, 3,
                   'ERROR:mplx_qc:CRAM and JSON '
                   'have mismatching sets of barcodes.',
@@ -29,52 +29,52 @@ def test_ec3(tmpdir):
     twice in a JSON file will result in having one less sequencing event. This
     is because barcode is a dictionary key. Thus generating error code 2 is
     impossible."""
-    cp = run_qc_xlsx(tmpdir, 'tsv_jwatt/ec_3_b.xlsx.tsv')
+    cp = run_mplx_qc_xlsx(tmpdir, 'tsv_jwatt/ec_3_b.xlsx.tsv')
     check_results(cp, 3, 3,
                   'ERROR:mplx_qc:Duplicate barcodes in JSON.',
                   'tests/mplx_qc/resources/tsv_jwatt/ec_3_expect.tsv')
 
 
 def test_ec4(tmpdir):
-    cp = run_qc_xlsx(tmpdir, 'tsv_main/ec_4.xlsx.tsv')
+    cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_4.xlsx.tsv')
     check_results(cp, 4, 1,
                   'ERROR:mplx_qc:Duplicate barcodes in CRAM.',
                   'tests/mplx_qc/resources/tsv_main/ec_4_expect.tsv')
 
 
 def test_ec5(tmpdir):
-    cp = run_qc_xlsx(tmpdir, 'tsv_jwatt/ec_5_b.xlsx.tsv')
+    cp = run_mplx_qc_xlsx(tmpdir, 'tsv_jwatt/ec_5_b.xlsx.tsv')
     check_results(cp, 5, 3,
                   'ERROR:mplx_qc:CRAM and JSON have different sample names.',
                   'tests/mplx_qc/resources/tsv_jwatt/ec_5_expect.tsv')
 
 
 def test_ec6(tmpdir):
-    cp = run_qc_xlsx(tmpdir, 'tsv_main/ec_6.xlsx.tsv')
+    cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_6.xlsx.tsv')
     check_results(cp, 6, 1,
                   'ERROR:mplx_qc:CRAM has wrong sample name.',
                   'tests/mplx_qc/resources/tsv_main/ec_6_expect.tsv')
 
 
 def test_ec7(tmpdir):
-    cp = run_qc_xlsx(tmpdir, 'tsv_main/ec_7.xlsx.tsv')
+    cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_7.xlsx.tsv')
     check_results(cp, 7, 1,
                   'ERROR:mplx_qc:CRAM contains multiple values for sample.',
                   'tests/mplx_qc/resources/tsv_main/ec_7_expect.tsv')
 
 
 def test_ec0_tsv():
-    cp = run_qc(RESOURCE_BASE/'tsv_main/ec_0.xlsx.tsv')
+    cp = run_mplx_qc(RESOURCE_BASE/'tsv_main/ec_0.xlsx.tsv')
     check_results(cp, 0, 0, None, None)
 
 
-def run_qc_xlsx(tmpdir, input_path):
+def run_mplx_qc_xlsx(tmpdir, input_path):
     """Sets up all the paths, and then runs mplx_qc, returning the
     completed process object."""
     xlsx_path = str(tmpdir.join('test.xlsx'))
     print(xlsx_path)
     convert_tsv(RESOURCE_BASE/input_path, xlsx_path)
-    return run_qc(xlsx_path)
+    return run_mplx_qc(xlsx_path)
 
 
 def convert_tsv(tsv_path, dst_path):
@@ -87,7 +87,7 @@ def convert_tsv(tsv_path, dst_path):
     wb.save(dst_path)
 
 
-def run_qc(input_path):
+def run_mplx_qc(input_path):
     """Runs mplx_qc, returning the completed process object."""
     args = [SCRIPT_PATH, input_path]
     cp = run(args, stdin=DEVNULL, stdout=PIPE, stderr=PIPE,
