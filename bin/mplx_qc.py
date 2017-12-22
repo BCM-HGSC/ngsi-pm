@@ -65,7 +65,11 @@ def config_logging(args):
 def run_qc(args):
     logger.debug('args: %r', args)
     input_file = args.input_file
-    error_code = process_input(input_file)
+    try:
+        error_code = process_input(input_file)
+    except Exception as e:
+        error_code = 10
+        print(e, file=sys.stderr)
     logger.debug('finished')
     return error_code
 
@@ -100,7 +104,11 @@ def read_input(input_file):
     elif input_file.endswith('.tsv'):
         row_iter = generate_tsv_rows(input_file)
     else:
-        raise RuntimeError('file name must end in .xlsx or .tsv ' + input_file)
+        raise RuntimeError(
+            'Bad file {!r}. The name must end in ".xlsx" or ".tsv".'.format(
+                input_file
+            )
+        )
     column_names = next(row_iter)
     logger.debug('columns: %s', column_names)
     merged_crams = []
