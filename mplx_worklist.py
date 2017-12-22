@@ -37,7 +37,6 @@ REQUIRED_INPUT_COLUMN_NAMES_SET = set(REQUIRED_INPUT_COLUMN_NAMES)
 ADDITIONAL_OUTPUT_COLUMN_NAMES = '''
     current_cram_name
     new_cram_name
-    new_new_cram_name
     json_path
     cram_path
 '''.split()  # The order of the columns in the output
@@ -120,7 +119,6 @@ def read_input(input_file):
     column_names = [c.value for c in header_row]
     # fix bad names
     column_names = [n.replace('/', '_') for n in column_names]
-    # column_names = re.sub(r\'[-"/\.$]', '_', column_names)
     logger.debug('columns: %s', column_names)
     missing = REQUIRED_INPUT_COLUMN_NAMES_SET - set(column_names)
     assert not missing, 'missing: {}'.format(sorted(missing))
@@ -168,8 +166,8 @@ def get_new_cram_name(record):
     logger.debug('searching: %s', sample_id_nwd_id)
     current_cram_name = record.current_cram_name
     logger.debug('searching: %s', current_cram_name)
-    record.new_cram_name = sample_id_nwd_id + "-" + current_cram_name
-    record.new_new_cram_name = sample_id_nwd_id + ".hgv.cram"
+    # record.new_cram_name = sample_id_nwd_id + "-" + current_cram_name
+    record.new_cram_name = sample_id_nwd_id + ".hgv.cram"
 
 
 def write_annotated_workbook(output_file, data):
@@ -189,7 +187,6 @@ def write_annotated_workbook(output_file, data):
 
     # TODO: Investigate setting column widths.
 
-    # wh: replace 'sample_id_nwd_id' back to 'sample_id/nwd_id' for wb.save
     wb.save(output_file)
 
 
