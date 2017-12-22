@@ -68,6 +68,35 @@ def test_ec0_tsv():
     check_results(cp, 0, 0, None, None)
 
 
+def run_qc_xlsx(tmpdir, input_path):
+    """Sets up all the paths, and then runs mplx_qc, returning the
+    completed process object."""
+    xlsx_path = str(tmpdir.join('test.xlsx'))
+    print(xlsx_path)
+    convert_tsv(RESOURCE_BASE/input_path, xlsx_path)
+    return run_qc(xlsx_path)
+
+
+def convert_tsv(tsv_path, dst_path):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'smpls'
+    with open(tsv_path) as fin:
+        for line in fin.readlines():
+            ws.append(line.rstrip().split('\t'))
+    wb.save(dst_path)
+
+
+def run_qc(input_path):
+    """Runs mplx_qc, returning the completed process object."""
+    args = [SCRIPT_PATH, input_path]
+    cp = run(args, stdin=DEVNULL, stdout=PIPE, stderr=PIPE,
+             universal_newlines=True, timeout=2)
+    print(cp.stdout)
+    print(cp.stderr, file=sys.stderr)
+    return cp
+
+
 def check_results(cp, returncode, num_errs, error_prefix, expected_out_path):
     """Given a completed process, check the return code, the standard output
     against the contents of the file at expected_out_path, and the standard
@@ -83,32 +112,3 @@ def check_results(cp, returncode, num_errs, error_prefix, expected_out_path):
         assert cp.stdout == Path(expected_out_path).read_text()
     else:
         assert not cp.stdout
-
-
-def run_qc_xlsx(tmpdir, input_path):
-    """Sets up all the paths, and then runs mplx_qc, returning the
-    completed process object."""
-    xlsx_path = str(tmpdir.join('test.xlsx'))
-    print(xlsx_path)
-    convert_tsv(RESOURCE_BASE/input_path, xlsx_path)
-    return run_qc(xlsx_path)
-
-
-def run_qc(input_path):
-    """Runs mplx_qc, returning the completed process object."""
-    args = [SCRIPT_PATH, input_path]
-    cp = run(args, stdin=DEVNULL, stdout=PIPE, stderr=PIPE,
-             universal_newlines=True, timeout=2)
-    print(cp.stdout)
-    print(cp.stderr, file=sys.stderr)
-    return cp
-
-
-def convert_tsv(tsv_path, dst_path):
-    wb = Workbook()
-    ws = wb.active
-    ws.title = 'smpls'
-    with open(tsv_path) as fin:
-        for line in fin.readlines():
-            ws.append(line.rstrip().split('\t'))
-    wb.save(dst_path)
