@@ -12,15 +12,15 @@ RESOURCE_BASE = Path('tests/mplx_qc/resources')
 
 def test_ec0(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_0.xlsx.tsv')
-    check_results(cp, 0, 0, None, None)
+    check_output(cp, 0, 0, None, None)
 
 
 def test_ec2(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_jwatt/ec_2_b.xlsx.tsv')
-    check_results(cp, 2, 3,
-                  'ERROR:mplx_qc:CRAM and JSON '
-                  'have mismatching sets of barcodes.',
-                  'tests/mplx_qc/resources/tsv_jwatt/ec_2_expect.tsv')
+    check_output(cp, 2, 3,
+                 'ERROR:mplx_qc:CRAM and JSON '
+                 'have mismatching sets of barcodes.',
+                 'tests/mplx_qc/resources/tsv_jwatt/ec_2_expect.tsv')
 
 
 @pytest.mark.skip(reason="no way of currently testing this")
@@ -30,42 +30,42 @@ def test_ec3(tmpdir):
     is because barcode is a dictionary key. Thus generating error code 2 is
     impossible."""
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_jwatt/ec_3_b.xlsx.tsv')
-    check_results(cp, 3, 3,
-                  'ERROR:mplx_qc:Duplicate barcodes in JSON.',
-                  'tests/mplx_qc/resources/tsv_jwatt/ec_3_expect.tsv')
+    check_output(cp, 3, 3,
+                 'ERROR:mplx_qc:Duplicate barcodes in JSON.',
+                 'tests/mplx_qc/resources/tsv_jwatt/ec_3_expect.tsv')
 
 
 def test_ec4(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_4.xlsx.tsv')
-    check_results(cp, 4, 1,
-                  'ERROR:mplx_qc:Duplicate barcodes in CRAM.',
-                  'tests/mplx_qc/resources/tsv_main/ec_4_expect.tsv')
+    check_output(cp, 4, 1,
+                 'ERROR:mplx_qc:Duplicate barcodes in CRAM.',
+                 'tests/mplx_qc/resources/tsv_main/ec_4_expect.tsv')
 
 
 def test_ec5(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_jwatt/ec_5_b.xlsx.tsv')
-    check_results(cp, 5, 3,
-                  'ERROR:mplx_qc:CRAM and JSON have different sample names.',
-                  'tests/mplx_qc/resources/tsv_jwatt/ec_5_expect.tsv')
+    check_output(cp, 5, 3,
+                 'ERROR:mplx_qc:CRAM and JSON have different sample names.',
+                 'tests/mplx_qc/resources/tsv_jwatt/ec_5_expect.tsv')
 
 
 def test_ec6(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_6.xlsx.tsv')
-    check_results(cp, 6, 1,
-                  'ERROR:mplx_qc:CRAM has wrong sample name.',
-                  'tests/mplx_qc/resources/tsv_main/ec_6_expect.tsv')
+    check_output(cp, 6, 1,
+                 'ERROR:mplx_qc:CRAM has wrong sample name.',
+                 'tests/mplx_qc/resources/tsv_main/ec_6_expect.tsv')
 
 
 def test_ec7(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_7.xlsx.tsv')
-    check_results(cp, 7, 1,
-                  'ERROR:mplx_qc:CRAM contains multiple values for sample.',
-                  'tests/mplx_qc/resources/tsv_main/ec_7_expect.tsv')
+    check_output(cp, 7, 1,
+                 'ERROR:mplx_qc:CRAM contains multiple values for sample.',
+                 'tests/mplx_qc/resources/tsv_main/ec_7_expect.tsv')
 
 
 def test_ec0_tsv():
     cp = run_mplx_qc(RESOURCE_BASE/'tsv_main/ec_0.xlsx.tsv')
-    check_results(cp, 0, 0, None, None)
+    check_output(cp, 0, 0, None, None)
 
 
 def run_mplx_qc_xlsx(tmpdir, input_path):
@@ -97,7 +97,7 @@ def run_mplx_qc(input_path):
     return cp
 
 
-def check_results(cp, returncode, num_errs, error_prefix, expected_out_path):
+def check_output(cp, returncode, num_errs, error_prefix, expected_out_path):
     """Given a completed process, check the return code, the standard output
     against the contents of the file at expected_out_path, and the standard
     error agains a prefix that should appear at the start of every line and
