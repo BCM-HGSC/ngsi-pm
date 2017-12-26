@@ -88,7 +88,7 @@ def run_qc(tmpdir, input_path):
     convert_tsv(RESOURCE_BASE/input_path, xlsx_path)
     args = [SCRIPT_PATH, xlsx_path]
     cp = run(args, stdin=DEVNULL, stdout=PIPE, stderr=PIPE,
-             universal_newlines=True, timeout=2)
+             universal_newlines=True, timeout=10)
     print(cp.stdout)
     print(cp.stderr, file=sys.stderr)
     return cp
