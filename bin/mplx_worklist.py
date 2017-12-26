@@ -20,7 +20,7 @@ from openpyxl.styles import Font
 
 # After another blank line, import local libraries.
 
-__version__ = '1.0.0-unstable'
+__version__ = '1.0.0'
 
 logger = logging.getLogger(__name__)
 
