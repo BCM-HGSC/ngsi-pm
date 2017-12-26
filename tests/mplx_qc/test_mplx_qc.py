@@ -5,10 +5,14 @@ import sys
 
 import pytest
 
+import mplx_qc
+
 
 SCRIPT_PATH = 'bin/mplx_qc.py'
 RESOURCE_BASE = Path('tests/mplx_qc/resources')
 
+
+# Functional tests
 
 def test_ec0(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_0.xlsx.tsv')
@@ -112,3 +116,44 @@ def check_output(cp, returncode, num_errs, error_prefix, expected_out_path):
         assert cp.stdout == Path(expected_out_path).read_text()
     else:
         assert not cp.stdout
+
+
+# Unit tetss
+
+def test_ec0_unit(capsys):
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_0.xlsx.tsv'))
+    out, err = capsys.readouterr()
+    print(out)
+    print(err, file=sys.stderr)
+    assert error_code == 0
+
+
+def test_ec2_unit(capsys):
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_jwatt/ec_2_b.xlsx.tsv'))
+    assert error_code == 2
+    check_run_qc(capsys, 3,
+                 'CRAM and JSON have mismatching sets of barcodes.',
+                 'tests/mplx_qc/resources/tsv_jwatt/ec_2_expect.tsv')
+
+
+def check_run_qc(capsys, num_errs, error_prefix, expected_out_path):
+    out, err = capsys.readouterr()
+    print(out)
+    print(err, file=sys.stderr)
+    error_lines = err.splitlines()
+    assert len(error_lines) == num_errs
+    for l in error_lines:
+        assert l.startswith(error_prefix)
+    assert out == Path(expected_out_path).read_text()
+
+
+def test_ec4_unit(capsys):
+    pass
+
+
+def test_ec5_unit(capsys):
+    pass
+
+
+def test_ec6_unit(capsys):
+    pass
