@@ -66,12 +66,14 @@ class Merge:
             SequencingEvent(key, json_data)
             for key, json_data in ses.items()
         ]
-        assert len(self.sequencing_events) == self.num_sequencing_events
+        assert len(self.sequencing_events) == self.num_sequencing_events, (
+            json_path, len(self.sequencing_events), self.num_sequencing_events
+        )
         c = Counter(se.sample_name for se in self.sequencing_events)
-        assert len(c) == 1
+        assert len(c) == 1, json_path
         self.sample_name = c.most_common(1)[0][0]
         r = Counter((se.reference for se in self.sequencing_events))
-        assert len(r) == 1
+        assert len(r) == 1, json_path
         self.reference = r.most_common(1)[0][0]
 
 
@@ -79,7 +81,7 @@ class SequencingEvent:
     """Represents everything about a single sequencing event"""
     def __init__(self, key, json_data):
         self.barcode = json_data['eventId']
-        assert self.barcode == key
+        assert self.barcode == key, key
         self.sample_name = json_data['sampleName']
         self.reference = json_data['reference']
 
