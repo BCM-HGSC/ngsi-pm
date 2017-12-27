@@ -95,7 +95,7 @@ def run_mplx_qc(input_path):
     """Runs mplx_qc, returning the completed process object."""
     args = [SCRIPT_PATH, input_path]
     cp = run(args, stdin=DEVNULL, stdout=PIPE, stderr=PIPE,
-             universal_newlines=True, timeout=2)
+             universal_newlines=True, timeout=20)
     print(cp.stdout)
     print(cp.stderr, file=sys.stderr)
     return cp
