@@ -175,6 +175,106 @@ def test_ec7_unit(capsys):
                  RESOURCE_BASE/'tsv_main/ec_7_expect.tsv')
 
 
+@pytest.mark.xfail
+def test_ec12_unit(capsys):
+    """If a JSON file is too bad to read..."""
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_12.tsv'))
+    assert error_code == 12
+    check_run_qc(capsys, 1,
+                 'JSON is missing:',
+                 RESOURCE_BASE/'tsv_main/ec_12_expect.tsv')
+
+
+@pytest.mark.xfail
+def test_ec13_unit(capsys):
+    """If a CRAM file is too bad to read..."""
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_13.tsv'))
+    assert error_code == 13
+    check_run_qc(capsys, 1,
+                 'CRAM is missing:',
+                 RESOURCE_BASE/'tsv_main/ec_13_expect.tsv')
+
+
+@pytest.mark.xfail
+def test_ec14_unit(capsys):
+    """If a JSON is missing or not a file..."""
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_14.xlsx.tsv'))
+    assert error_code == 14
+    check_run_qc(capsys, 1,
+                 'JSON is missing:',
+                 RESOURCE_BASE/'tsv_main/ec_14_expect.tsv')
+
+
+@pytest.mark.xfail
+def test_ec15_unit(capsys):
+    """If a CRAM is missing or not a file..."""
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_15.tsv'))
+    assert error_code == 15
+    check_run_qc(capsys, 1,
+                 'CRAM is missing:',
+                 RESOURCE_BASE/'tsv_main/ec_15_expect.tsv')
+
+
+@pytest.mark.xfail
+def test_ec17_unit(capsys):
+    """If the input worklist file has bad contents..."""
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_17.tsv'))
+    assert error_code == 17
+    check_run_qc(capsys, 1,
+                 'Input file has bad contents:',
+                 RESOURCE_BASE/'empty_file')
+
+
+@pytest.mark.xfail
+def test_ec17_unit(capsys):
+    """If the input worklist file has bad contents..."""
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'bad.xlsx'))
+    assert error_code == 17
+    check_run_qc(capsys, 1,
+                 'Input file has bad contents:',
+                 RESOURCE_BASE/'empty_file')
+
+
+@pytest.mark.xfail
+def test_ec18_unit(capsys):
+    """If the input worklist file has the wrong extension..."""
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'foo.foo'))
+    assert error_code == 18
+    check_run_qc(capsys, 1,
+                 'Input file has bad extension:',
+                 RESOURCE_BASE/'empty_file')
+
+
+@pytest.mark.xfail
+def test_ec19_unit(capsys):
+    """If the input worklist file isn't a file..."""
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE))
+    assert error_code == 19
+    check_run_qc(capsys, 1,
+                 'Input is not a file:',
+                 RESOURCE_BASE/'empty_file')
+
+
+@pytest.mark.xfail
+def test_ec20_unit(capsys):
+    """If the input worklist file doesn't even exist..."""
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'foo.tsv'))
+    assert error_code == 20
+    check_run_qc(capsys, 1,
+                 'Input file is missing:',
+                 RESOURCE_BASE/'empty_file')
+
+
+@pytest.mark.xfail
+def test_ec20_xlsx_unit(capsys):
+    """If the input worklist file doesn't even exist..."""
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'foo.xlsx'))
+    assert error_code == 20
+    check_run_qc(capsys, 1,
+                 'Input file is missing:',
+                 RESOURCE_BASE/'empty_file')
+
+
 def check_run_qc(capsys, num_errs, error_prefix, expected_out_path):
     out, err = capsys.readouterr()
     print(out)
