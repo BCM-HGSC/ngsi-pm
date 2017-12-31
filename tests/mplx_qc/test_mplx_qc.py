@@ -72,6 +72,13 @@ def test_ec0_tsv():
     check_output(cp, 0, 0, None, None)
 
 
+def test_ec7_tsv():
+    cp = run_mplx_qc(RESOURCE_BASE/'tsv_main/ec_7.xlsx.tsv')
+    check_output(cp, 7, 1,
+                 'ERROR:mplx_qc:CRAM contains multiple values for sample.',
+                 RESOURCE_BASE/'tsv_main/ec_7_expect.tsv')
+
+
 def run_mplx_qc_xlsx(tmpdir, input_path):
     """Sets up all the paths, and then runs mplx_qc, returning the
     completed process object."""
