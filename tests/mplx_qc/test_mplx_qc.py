@@ -136,6 +136,38 @@ def test_ec2_unit(capsys):
                  'tests/mplx_qc/resources/tsv_jwatt/ec_2_expect.tsv')
 
 
+def test_ec4_unit(capsys):
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_4.xlsx.tsv'))
+    assert error_code == 4
+    check_run_qc(capsys, 1,
+                 'Duplicate barcodes in CRAM.',
+                 'tests/mplx_qc/resources/tsv_main/ec_4_expect.tsv')
+
+
+def test_ec5_unit(capsys):
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_jwatt/ec_5_b.xlsx.tsv'))
+    assert error_code == 5
+    check_run_qc(capsys, 3,
+                 'CRAM and JSON have different sample names.',
+                 'tests/mplx_qc/resources/tsv_jwatt/ec_5_expect.tsv')
+
+
+def test_ec6_unit(capsys):
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_6.xlsx.tsv'))
+    assert error_code == 6
+    check_run_qc(capsys, 1,
+                 'CRAM has wrong sample name.',
+                 'tests/mplx_qc/resources/tsv_main/ec_6_expect.tsv')
+
+
+def test_ec7_unit(capsys):
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_7.xlsx.tsv'))
+    assert error_code == 7
+    check_run_qc(capsys, 1,
+                 'CRAM contains multiple values for sample.',
+                 'tests/mplx_qc/resources/tsv_main/ec_7_expect.tsv')
+
+
 def check_run_qc(capsys, num_errs, error_prefix, expected_out_path):
     out, err = capsys.readouterr()
     print(out)
@@ -145,15 +177,3 @@ def check_run_qc(capsys, num_errs, error_prefix, expected_out_path):
     for l in error_lines:
         assert l.startswith(error_prefix)
     assert out == Path(expected_out_path).read_text()
-
-
-def test_ec4_unit(capsys):
-    pass
-
-
-def test_ec5_unit(capsys):
-    pass
-
-
-def test_ec6_unit(capsys):
-    pass
