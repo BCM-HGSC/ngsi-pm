@@ -24,7 +24,7 @@ def test_ec2(tmpdir):
     check_output(cp, 2, 3,
                  'ERROR:mplx_qc:CRAM and JSON '
                  'have mismatching sets of barcodes.',
-                 'tests/mplx_qc/resources/tsv_jwatt/ec_2_expect.tsv')
+                 RESOURCE_BASE/'tsv_jwatt/ec_2_expect.tsv')
 
 
 @pytest.mark.skip(reason="no way of currently testing this")
@@ -36,35 +36,35 @@ def test_ec3(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_jwatt/ec_3_b.xlsx.tsv')
     check_output(cp, 3, 3,
                  'ERROR:mplx_qc:Duplicate barcodes in JSON.',
-                 'tests/mplx_qc/resources/tsv_jwatt/ec_3_expect.tsv')
+                 RESOURCE_BASE/'tsv_jwatt/ec_3_expect.tsv')
 
 
 def test_ec4(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_4.xlsx.tsv')
     check_output(cp, 4, 1,
                  'ERROR:mplx_qc:Duplicate barcodes in CRAM.',
-                 'tests/mplx_qc/resources/tsv_main/ec_4_expect.tsv')
+                 RESOURCE_BASE/'tsv_main/ec_4_expect.tsv')
 
 
 def test_ec5(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_jwatt/ec_5_b.xlsx.tsv')
     check_output(cp, 5, 3,
                  'ERROR:mplx_qc:CRAM and JSON have different sample names.',
-                 'tests/mplx_qc/resources/tsv_jwatt/ec_5_expect.tsv')
+                 RESOURCE_BASE/'tsv_jwatt/ec_5_expect.tsv')
 
 
 def test_ec6(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_6.xlsx.tsv')
     check_output(cp, 6, 1,
                  'ERROR:mplx_qc:CRAM has wrong sample name.',
-                 'tests/mplx_qc/resources/tsv_main/ec_6_expect.tsv')
+                 RESOURCE_BASE/'tsv_main/ec_6_expect.tsv')
 
 
 def test_ec7(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_7.xlsx.tsv')
     check_output(cp, 7, 1,
                  'ERROR:mplx_qc:CRAM contains multiple values for sample.',
-                 'tests/mplx_qc/resources/tsv_main/ec_7_expect.tsv')
+                 RESOURCE_BASE/'tsv_main/ec_7_expect.tsv')
 
 
 def test_ec0_tsv():
@@ -133,7 +133,7 @@ def test_ec2_unit(capsys):
     assert error_code == 2
     check_run_qc(capsys, 3,
                  'CRAM and JSON have mismatching sets of barcodes.',
-                 'tests/mplx_qc/resources/tsv_jwatt/ec_2_expect.tsv')
+                 RESOURCE_BASE/'tsv_jwatt/ec_2_expect.tsv')
 
 
 def test_ec4_unit(capsys):
@@ -141,7 +141,7 @@ def test_ec4_unit(capsys):
     assert error_code == 4
     check_run_qc(capsys, 1,
                  'Duplicate barcodes in CRAM.',
-                 'tests/mplx_qc/resources/tsv_main/ec_4_expect.tsv')
+                 RESOURCE_BASE/'tsv_main/ec_4_expect.tsv')
 
 
 def test_ec5_unit(capsys):
@@ -149,7 +149,7 @@ def test_ec5_unit(capsys):
     assert error_code == 5
     check_run_qc(capsys, 3,
                  'CRAM and JSON have different sample names.',
-                 'tests/mplx_qc/resources/tsv_jwatt/ec_5_expect.tsv')
+                 RESOURCE_BASE/'tsv_jwatt/ec_5_expect.tsv')
 
 
 def test_ec6_unit(capsys):
@@ -157,7 +157,7 @@ def test_ec6_unit(capsys):
     assert error_code == 6
     check_run_qc(capsys, 1,
                  'CRAM has wrong sample name.',
-                 'tests/mplx_qc/resources/tsv_main/ec_6_expect.tsv')
+                 RESOURCE_BASE/'tsv_main/ec_6_expect.tsv')
 
 
 def test_ec7_unit(capsys):
@@ -165,7 +165,7 @@ def test_ec7_unit(capsys):
     assert error_code == 7
     check_run_qc(capsys, 1,
                  'CRAM contains multiple values for sample.',
-                 'tests/mplx_qc/resources/tsv_main/ec_7_expect.tsv')
+                 RESOURCE_BASE/'tsv_main/ec_7_expect.tsv')
 
 
 def check_run_qc(capsys, num_errs, error_prefix, expected_out_path):
