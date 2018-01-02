@@ -12,7 +12,7 @@ samples.
 # First come standard libraries, in alphabetical order.
 import argparse
 from collections import Counter
-import json
+from json import JSONDecodeError
 import logging
 import os
 from pathlib import Path
@@ -267,10 +267,11 @@ def dump_cram_rgs(cram_path):
     if not Path(cram_path).is_file():
         raise GrosslyBadError(15, 'CRAM is missing: {}', cram_path)
     logger.debug('samtools view -H %r', cram_path)
-    # TODO: Should we try to handle an error here?
     cp = run(['samtools', 'view', '-H', cram_path],
              stdin=DEVNULL, stdout=PIPE,
-             universal_newlines=True, check=True)
+             universal_newlines=True)
+    if cp.returncode:
+        raise GrosslyBadError(13, 'CRAM is bad: {}', cram_path)
     headers = cp.stdout.splitlines()
     rg_lines = [h for h in headers if h.startswith('@RG\t')]
     return rg_lines
@@ -282,7 +283,10 @@ def process_json(json_path):
     if not Path(json_path).is_file():
         raise GrosslyBadError(14, 'JSON is missing: {}', json_path)
     logger.debug('parsing: %s', json_path)
-    merge = Merge(json_path)
+    try:
+        merge = Merge(json_path)
+    except JSONDecodeError as e:
+        raise GrosslyBadError(12, 'JSON is bad: {}', json_path)
     barcodes = [s.barcode for s in merge.sequencing_events]
     samples = [s.sample_name for s in merge.sequencing_events]
     return barcodes, samples
