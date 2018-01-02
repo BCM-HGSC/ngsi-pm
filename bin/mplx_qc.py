@@ -145,7 +145,7 @@ def check_column_names(column_names):
         raise GrosslyBadError(
             17,
             'Input file has bad contents: '
-            'missing_columns={}'
+            'missing_columns={} '
             'column_names={}',
             sorted(missing_columns),
             column_names
