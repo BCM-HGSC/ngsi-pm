@@ -67,9 +67,9 @@ def run_qc(input_file):
     input_path = Path(input_file)
     try:
         error_code = process_input(input_path)
-    except RuntimeError as e:
-        error_code = 10
-        print(e, file=sys.stderr)
+    except GrosslyBadError as e:
+        error_code = e.error_code
+        logger.error(e.message)
     logger.debug('finished')
     return error_code
 
@@ -99,6 +99,8 @@ def process_input(input_path):
 def read_input(input_path):
     """Read master XLSX of merged CRAMs and return list of objects containing
     the file paths."""
+    if not input_path.exists():
+        raise GrosslyBadError(20, 'Input file is missing: {}', input_path)
     if input_path.suffix == '.xlsx':
         row_iter = generate_xlsx_rows(input_path)
     elif input_path.suffix == '.tsv':
@@ -253,6 +255,13 @@ def process_json(json_path):
 class Generic:
     """To create objects with __dict__."""
     pass
+
+
+class GrosslyBadError(Exception):
+    """Raised when an input is grossly BAD"""
+    def __init__(self, error_code, message, *args):
+        self.error_code = error_code
+        self.message = message.format(*args)
 
 
 if __name__ == '__main__':

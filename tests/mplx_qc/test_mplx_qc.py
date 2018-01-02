@@ -255,7 +255,6 @@ def test_ec19_unit(capsys):
                  RESOURCE_BASE/'empty_file')
 
 
-@pytest.mark.xfail
 def test_ec20_unit(capsys):
     """If the input worklist file doesn't even exist..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'foo.tsv'))
@@ -265,7 +264,6 @@ def test_ec20_unit(capsys):
                  RESOURCE_BASE/'empty_file')
 
 
-@pytest.mark.xfail
 def test_ec20_xlsx_unit(capsys):
     """If the input worklist file doesn't even exist..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'foo.xlsx'))
