@@ -99,17 +99,12 @@ def process_input(input_path):
 def read_input(input_path):
     """Read master XLSX of merged CRAMs and return list of objects containing
     the file paths."""
-    if not input_path.exists():
-        raise GrosslyBadError(20, 'Input file is missing: {}', input_path)
-    if not input_path.is_file():
-        raise GrosslyBadError(19, 'Input is not a file: {}', input_path)
+    check_input_path(input_path)
     if input_path.suffix == '.xlsx':
         row_iter = generate_xlsx_rows(input_path)
-    elif input_path.suffix == '.tsv':
-        row_iter = generate_tsv_rows(input_path)
     else:
-        raise GrosslyBadError(18, 
-                              'Input file has bad extension: {}', input_path)
+        assert input_path.suffix == '.tsv'
+        row_iter = generate_tsv_rows(input_path)
     column_names = next(row_iter)
     logger.debug('columns: %s', column_names)
     merged_crams = []
@@ -121,6 +116,16 @@ def read_input(input_path):
                 setattr(merged_cram, column_name, value)
         merged_crams.append(merged_cram)
     return merged_crams
+
+
+def check_input_path(input_path):
+    if not input_path.exists():
+        raise GrosslyBadError(20, 'Input file is missing: {}', input_path)
+    if not input_path.is_file():
+        raise GrosslyBadError(19, 'Input is not a file: {}', input_path)
+    if input_path.suffix not in ('.tsv', '.xlsx'):
+        raise GrosslyBadError(18,
+                              'Input file has bad extension: {}', input_path)
 
 
 def generate_xlsx_rows(input_path):
