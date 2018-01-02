@@ -215,7 +215,6 @@ def test_ec15_unit(capsys):
                  RESOURCE_BASE/'tsv_main/ec_15_expect.tsv')
 
 
-@pytest.mark.xfail
 def test_ec17_unit(capsys):
     """If the input worklist file has bad contents..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_17.tsv'))
@@ -225,8 +224,7 @@ def test_ec17_unit(capsys):
                  RESOURCE_BASE/'empty_file')
 
 
-@pytest.mark.xfail
-def test_ec17_unit(capsys):
+def test_ec17_xlsx_unit(capsys):
     """If the input worklist file has bad contents..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'bad.xlsx'))
     assert error_code == 17

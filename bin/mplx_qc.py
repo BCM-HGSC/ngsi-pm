@@ -31,6 +31,8 @@ __version__ = '1.1.0-a0'
 
 logger = logging.getLogger(__name__)
 
+COLUMNS_NEEDED = set('sample_id_nwd_id merge_id json_path cram_path'.split())
+
 
 def main():
     args = parse_args()
@@ -100,13 +102,21 @@ def read_input(input_path):
     """Read master XLSX of merged CRAMs and return list of objects containing
     the file paths."""
     check_input_path(input_path)
-    if input_path.suffix == '.xlsx':
-        row_iter = generate_xlsx_rows(input_path)
-    else:
-        assert input_path.suffix == '.tsv'
-        row_iter = generate_tsv_rows(input_path)
-    column_names = next(row_iter)
-    logger.debug('columns: %s', column_names)
+    try:
+        if input_path.suffix == '.xlsx':
+            row_iter = generate_xlsx_rows(input_path)
+        else:
+            assert input_path.suffix == '.tsv'
+            row_iter = generate_tsv_rows(input_path)
+        column_names = next(row_iter)
+    except Exception as e:
+        raise GrosslyBadError(
+            17,
+            'Input file has bad contents: {}. {}',
+            input_path,
+            e
+        )
+    check_column_names(column_names)
     merged_crams = []
     for row in row_iter:
         merged_cram = Generic()
@@ -126,6 +136,20 @@ def check_input_path(input_path):
     if input_path.suffix not in ('.tsv', '.xlsx'):
         raise GrosslyBadError(18,
                               'Input file has bad extension: {}', input_path)
+
+
+def check_column_names(column_names):
+    logger.debug('columns: %s', column_names)
+    missing_columns = COLUMNS_NEEDED - set(column_names)
+    if missing_columns:
+        raise GrosslyBadError(
+            17,
+            'Input file has bad contents: '
+            'missing_columns={}'
+            'column_names={}',
+            sorted(missing_columns),
+            column_names
+        )
 
 
 def generate_xlsx_rows(input_path):
