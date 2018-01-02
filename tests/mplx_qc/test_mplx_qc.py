@@ -195,10 +195,9 @@ def test_ec13_unit(capsys):
                  RESOURCE_BASE/'tsv_main/ec_13_expect.tsv')
 
 
-@pytest.mark.xfail
 def test_ec14_unit(capsys):
     """If a JSON is missing or not a file..."""
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_14.xlsx.tsv'))
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_14.tsv'))
     assert error_code == 14
     check_run_qc(capsys, 1,
                  'JSON is missing:',

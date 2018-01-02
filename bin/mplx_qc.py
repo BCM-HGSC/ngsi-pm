@@ -279,6 +279,8 @@ def dump_cram_rgs(cram_path):
 def process_json(json_path):
     """from dump_js_barcodes.py import Merge,
     and parse JSON merge barcodes and JSON merge samples"""
+    if not Path(json_path).is_file():
+        raise GrosslyBadError(14, 'JSON is missing: {}', json_path)
     logger.debug('parsing: %s', json_path)
     merge = Merge(json_path)
     barcodes = [s.barcode for s in merge.sequencing_events]
