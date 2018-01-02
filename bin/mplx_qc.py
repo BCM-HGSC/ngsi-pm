@@ -88,9 +88,13 @@ def process_input(input_path):
     error_code = 0  # no error
     for record in merged_crams:
         logger.info('checking %s', record.merge_id)
-        ec = compare_read_groups(record.sample_id_nwd_id,
-                                 record.cram_path,
-                                 record.json_path)
+        try:
+            ec = compare_read_groups(record.sample_id_nwd_id,
+                                     record.cram_path,
+                                     record.json_path)
+        except GrosslyBadError as e:
+            logger.error(e.message)
+            ec = e.error_code
         if ec:
             print(ec, record.merge_id, record.cram_path, record.json_path,
                   sep='\t')
@@ -260,6 +264,8 @@ def process_cram(cram_path):
 
 def dump_cram_rgs(cram_path):
     """Read cram_path using samtools and return list of RG lines."""
+    if not Path(cram_path).is_file():
+        raise GrosslyBadError(15, 'CRAM is missing: {}', cram_path)
     logger.debug('samtools view -H %r', cram_path)
     # TODO: Should we try to handle an error here?
     cp = run(['samtools', 'view', '-H', cram_path],

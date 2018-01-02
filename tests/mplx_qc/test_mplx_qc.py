@@ -205,7 +205,6 @@ def test_ec14_unit(capsys):
                  RESOURCE_BASE/'tsv_main/ec_14_expect.tsv')
 
 
-@pytest.mark.xfail
 def test_ec15_unit(capsys):
     """If a CRAM is missing or not a file..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_15.tsv'))
