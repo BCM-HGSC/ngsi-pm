@@ -64,8 +64,9 @@ def config_logging(args):
 
 def run_qc(input_file):
     logger.debug('input_file: %r', input_file)
+    input_path = Path(input_file)
     try:
-        error_code = process_input(input_file)
+        error_code = process_input(input_path)
     except RuntimeError as e:
         error_code = 10
         print(e, file=sys.stderr)
@@ -73,12 +74,12 @@ def run_qc(input_file):
     return error_code
 
 
-def process_input(input_file):
+def process_input(input_path):
     """Read the XLSX input for a batch of merged CRAMs. Verify that the CRAM
     headers and JSON metadata are consistent. Return an error code, where 0
     means no errors, otherwise corresponding to the most severe error."""
-    logger.debug('process_input %s', input_file)
-    merged_crams = read_input(input_file)
+    logger.debug('process_input %s', input_path)
+    merged_crams = read_input(input_path)
     logger.info('found %s records', len(merged_crams))
     logger.debug('first record: %r', vars(merged_crams[0]))
     logger.debug('last record: %r', vars(merged_crams[-1]))
@@ -95,17 +96,17 @@ def process_input(input_file):
     return error_code
 
 
-def read_input(input_file):
+def read_input(input_path):
     """Read master XLSX of merged CRAMs and return list of objects containing
     the file paths."""
-    if input_file.endswith('.xlsx'):
-        row_iter = generate_xlsx_rows(input_file)
-    elif input_file.endswith('.tsv'):
-        row_iter = generate_tsv_rows(input_file)
+    if input_path.suffix == '.xlsx':
+        row_iter = generate_xlsx_rows(input_path)
+    elif input_path.suffix == '.tsv':
+        row_iter = generate_tsv_rows(input_path)
     else:
         raise RuntimeError(
             'Bad file {!r}. The name must end in ".xlsx" or ".tsv".'.format(
-                input_file
+                input_path
             )
         )
     column_names = next(row_iter)
@@ -121,10 +122,10 @@ def read_input(input_file):
     return merged_crams
 
 
-def generate_xlsx_rows(input_file):
+def generate_xlsx_rows(input_path):
     """Generator function that yields lists of cell values from the "smpls"
     worksheet."""
-    wb = openpyxl.load_workbook(input_file, data_only=True, read_only=True)
+    wb = openpyxl.load_workbook(input_path, data_only=True, read_only=True)
     sheet = wb.get_sheet_by_name('smpls')
     active_sheet = wb.active
     assert sheet == active_sheet, (sheet.title, active_sheet.title)
@@ -133,9 +134,9 @@ def generate_xlsx_rows(input_file):
         yield [c.value for c in row]
 
 
-def generate_tsv_rows(input_file):
+def generate_tsv_rows(input_path):
     """Generator function that yields rows as lists of values from the TSV."""
-    with open(input_file) as fin:
+    with open(input_path) as fin:
         for raw_line in fin:
             yield raw_line.rstrip('\r\n').split('\t')
 
