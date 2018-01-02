@@ -101,16 +101,15 @@ def read_input(input_path):
     the file paths."""
     if not input_path.exists():
         raise GrosslyBadError(20, 'Input file is missing: {}', input_path)
+    if not input_path.is_file():
+        raise GrosslyBadError(19, 'Input is not a file: {}', input_path)
     if input_path.suffix == '.xlsx':
         row_iter = generate_xlsx_rows(input_path)
     elif input_path.suffix == '.tsv':
         row_iter = generate_tsv_rows(input_path)
     else:
-        raise RuntimeError(
-            'Bad file {!r}. The name must end in ".xlsx" or ".tsv".'.format(
-                input_path
-            )
-        )
+        raise GrosslyBadError(18, 
+                              'Input file has bad extension: {}', input_path)
     column_names = next(row_iter)
     logger.debug('columns: %s', column_names)
     merged_crams = []

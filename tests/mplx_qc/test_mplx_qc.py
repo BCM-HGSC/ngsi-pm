@@ -235,7 +235,6 @@ def test_ec17_unit(capsys):
                  RESOURCE_BASE/'empty_file')
 
 
-@pytest.mark.xfail
 def test_ec18_unit(capsys):
     """If the input worklist file has the wrong extension..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'foo.foo'))
@@ -245,7 +244,6 @@ def test_ec18_unit(capsys):
                  RESOURCE_BASE/'empty_file')
 
 
-@pytest.mark.xfail
 def test_ec19_unit(capsys):
     """If the input worklist file isn't a file..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE))
