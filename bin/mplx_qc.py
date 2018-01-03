@@ -257,6 +257,12 @@ def process_cram(cram_path):
                     sm = MULTIPLE
                 else:
                     sm = rg_item[3:]
+        if not sm:
+            raise GrosslyBadError(
+                10, 'An RG in the CRAM is missing its SM: {} {}'.format(
+                    cram_path, rg_items
+                )
+            )
         cram_rg_barcodes.append(pu)
         cram_rg_samples.append(sm)
     return cram_rg_barcodes, cram_rg_samples
