@@ -175,6 +175,15 @@ def test_ec7_unit(capsys):
                  RESOURCE_BASE/'tsv_main/ec_7_expect.tsv')
 
 
+def test_ec9_unit(capsys):
+    """If an RG in a CRAM file is missing a PU..."""
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_9.tsv'))
+    assert error_code == 9
+    check_run_qc(capsys, 1,
+                 'An RG in the CRAM is missing its PU:',
+                 RESOURCE_BASE/'tsv_main/ec_9_expect.tsv')
+
+
 def test_ec10_unit(capsys):
     """If an RG in a CRAM file is missing an SM..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_10.tsv'))
