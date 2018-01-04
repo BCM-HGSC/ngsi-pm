@@ -159,7 +159,8 @@ def check_column_names(column_names):
 def generate_xlsx_rows(input_path):
     """Generator function that yields lists of cell values from the "smpls"
     worksheet."""
-    wb = openpyxl.load_workbook(input_path, data_only=True, read_only=True)
+    wb = openpyxl.load_workbook(str(input_path),
+                                data_only=True, read_only=True)
     sheet = wb.get_sheet_by_name('smpls')
     active_sheet = wb.active
     assert sheet == active_sheet, (sheet.title, active_sheet.title)
