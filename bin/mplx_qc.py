@@ -27,7 +27,7 @@ import openpyxl
 from dump_js_barcodes import Merge
 from dump_js_barcodes import SequencingEvent
 
-__version__ = '1.1.0-a0'
+__version__ = '1.1.0-rc1'
 
 logger = logging.getLogger(__name__)
 
