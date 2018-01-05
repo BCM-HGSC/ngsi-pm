@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-"""To create CRAM WORKLIST.
-Read a master workbook and output an XLSX workbook.""" 
+"""To create MPLEX CRAM WORKLIST.
+Read a master workbook and output an TSV file."""
 
 # First come standard libraries, in alphabetical order.
 import argparse
@@ -20,7 +20,7 @@ from openpyxl.styles import Font
 
 # After another blank line, import local libraries.
 
-__version__ = '1.0.0'
+__version__ = '2.0.0'
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +34,7 @@ REQUIRED_INPUT_COLUMN_NAMES = '''
 '''.split()  # The order of the columns in the output
 
 REQUIRED_INPUT_COLUMN_NAMES_SET = set(REQUIRED_INPUT_COLUMN_NAMES)
+
 ADDITIONAL_OUTPUT_COLUMN_NAMES = '''
     current_cram_name
     new_cram_name
@@ -58,12 +59,12 @@ def parse_args():
     parser.add_argument(
         'input_file',
         help='an XLSX workbook containing a master worklist '
-            'in the first worksheet'
+             'in the first worksheet'
     )
     parser.add_argument('-o', '--output_file',
-                        help='will default to MASTER_globus.xlsx')
-    parser.add_argument('-v', '--verbose', action='store_true', 
-                        help='increase output verbosity') 
+                        help='will default to MASTER_mplx.tsv')
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='increase output verbosity')
     parser.add_argument('--version', action='version',
                         version='%(prog)s {}'.format(__version__))
     args = parser.parse_args()
@@ -73,9 +74,9 @@ def parse_args():
 
 
 def munge_input_file_name(input_file_name):
-    """X.xlsx ->X_mplx.xlsx"""
+    """X.xlsx ->X_mplx.tsv"""
     assert input_file_name.endswith('.xlsx')
-    return input_file_name[:-5] + '_mplx.xlsx'
+    return input_file_name[:-5] + '_mplx.tsv'
 
 
 def config_logging(args):
@@ -104,7 +105,7 @@ def process_input(input_file, output_file):
         add_file_paths(record)
         get_new_cram_name(record)
     pprint.pprint(vars(data[0]))
-    write_annotated_workbook(output_file, data)
+    write_tsv_file(output_file, data)
 
 
 def read_input(input_file):
@@ -139,8 +140,9 @@ def find_master_worksheet(wb):
     for ws in wb:
         logger.debug('found: %s', ws.title)
         if ws.title.endswith('_smpls') or ws.title == 'smpls':
-            assert master_worksheet is None, 'ambiguous worksheets: {}, {}'.format(
-                master_worksheet.title, ws.title
+            assert master_worksheet is None, (
+                'ambiguous worksheets: {}, {}'.format(master_worksheet.title,
+                                                      ws.title)
             )
             master_worksheet = ws
     assert master_worksheet, 'no worksheet with correct name'
@@ -155,9 +157,9 @@ def add_file_paths(record):
         if file_name.endswith(CRAM_EXT):
             record.current_cram_name = file_name
             record.cram_path = os.path.join(merge_path, file_name)
-
         elif file_name.endswith(JSON_EXT):
             record.json_path = os.path.join(merge_path, file_name)
+
 
 def get_new_cram_name(record):
     """new_cram_name = sample_id_nwd_id + "-" + current_cram_name
@@ -170,24 +172,15 @@ def get_new_cram_name(record):
     record.new_cram_name = sample_id_nwd_id + ".hgv.cram"
 
 
-def write_annotated_workbook(output_file, data):
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "smpls"
-    header = REQUIRED_INPUT_COLUMN_NAMES + ADDITIONAL_OUTPUT_COLUMN_NAMES
-    ws.append(header)
-    for record in data:
-        row = [getattr(record, name) for name in header]
-        ws.append(row)
-    # bold = openpyxl.styles.Font(bold=True)
-
-    # Enumerate the cells in the header row
-    # for c in ws.rows[0]:
-    #     c.font = bold
-
-    # TODO: Investigate setting column widths.
-
-    wb.save(output_file)
+def write_tsv_file(output_file, data):
+    """Write data to TSV file"""
+    with open(output_file, 'w') as fout:
+        writer = csv.writer(fout, delimiter='\t', lineterminator='\n')
+        header = REQUIRED_INPUT_COLUMN_NAMES + ADDITIONAL_OUTPUT_COLUMN_NAMES
+        writer.writerow(header)
+        for record in data:
+            row = [getattr(record, name) for name in header]
+            writer.writerow(row)
 
 
 class Generic:
