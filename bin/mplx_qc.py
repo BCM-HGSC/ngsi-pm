@@ -43,7 +43,10 @@ def main():
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(
+        description=__doc__+run_qc.__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument('input_file')
     parser.add_argument('-v', '--verbose', action='count')
     parser.add_argument('--version', action='version',
@@ -65,6 +68,29 @@ def config_logging(args):
 
 
 def run_qc(input_file):
+    """
+    Error codes:
+     0: no errors
+     1: reserved for failed assertions (program bugs) and uncaught exceptions
+     2: CRAM and JSON have mismatching sets of barcodes
+     3: (not possible with current schema) Duplicate barcodes in JSON
+     4: Duplicate barcodes in CRAM
+     5: CRAM and JSON have different sample names
+     6: CRAM has wrong sample name
+     7: CRAM contains multiple values for sample
+     8: unused
+     9: An RG in the CRAM is missing its PU
+    10: An RG in the CRAM is missing its SM
+    11: unused
+    12: JSON is bad (invalid as JSON)
+    13: CRAM is bad (invalid as CRAM)
+    14: JSON is missing
+    15: CRAM is missing
+    16: unused
+    17: Input file has bad contents
+    18: Input file has bad extension
+    19: Input is not a file
+    20: Input file is missing"""
     logger.debug('input_file: %r', input_file)
     input_path = Path(input_file)
     try:
