@@ -20,20 +20,26 @@ import openpyxl
 
 __version__ = '1.0.0a0'
 
+logger = getLogger(__name__)
+
+
 def main():
     args = parse_args()
     config_logging(args)
     run_cram_qc(args.arg1, args.arg2, args.arg3)
     logging.shutdown()
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('arg1',
-                        nargs='?',
-                        type=argparse.FileType('r'),
-                        default=sys.stdin)
-    parser.add_argument('--add-arg2', '-a', action='store_true')
-    parser.add_argument('--add-arg3', '-b', action='store_true')
+    parser.add_argument(
+        'input_file',
+        help='an XLSX workbook containing a master worklist '
+             'in the first worksheet'
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='increase output verbosity')
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s {}'.format(__version__))
     args = parser.parse_args()
     return args
 
