@@ -18,6 +18,8 @@ import openpyxl
 
 # After another blank line, import local libraries.
 
+__version__ = '1.0.0a0'
+
 def main():
     args = parse_args()
     config_logging(args)
