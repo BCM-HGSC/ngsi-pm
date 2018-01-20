@@ -20,8 +20,9 @@ import openpyxl
 
 def main():
     args = parse_args()
-    run(args.arg1, args.arg2, args.arg3)
-
+    config_logging(args)
+    run_cram_qc(args.arg1, args.arg2, args.arg3)
+    logging.shutdown()
 
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -35,7 +36,18 @@ def parse_args():
     return args
 
 
-def run(arg1, arg2, arg3):
+def config_logging(args):
+    global logger
+    if not args.verbose:
+        level = logging.WARNING
+    elif args.verbose:
+        level = logging.INFO
+    else:
+        level = logging.DEBUG
+    logging.basicConfig(level=level)
+    logger = logging.getLogger('cram_qc')
+
+def run_cram_qc(arg1, arg2, arg3):
     pass
 
 
