@@ -55,17 +55,46 @@ def config_logging(args):
     logging.basicConfig(level=level)
     logger = logging.getLogger('cram_qc')
 
-def run_cram_qc(arg1, arg2, arg3):
+def run_cram_qc(input_file):
     pass
 
 
-def func1(arg1):
-    """Add description here."""
+def process_input(input_path):
+    """Read the TSV input for a batch of CRAMs, barcodes and samples.
+    Process CRAMs to dump RGs and verify that CRAM header barcodes and samples are 
+    consistent with TSV barcodes and samples"""
     pass
 
 
-def func2(arg1):
-    """Add description here."""
+def read_input(input_path):
+    """Read TSV input and return list of objects containing the file paths"""
+    pass
+
+
+def generate_tsv_rows(input_path):
+    """Generator function that yield rows as lists of values from the TSV."""
+    pass
+
+
+def compare_barcodes_samples(cram_paths, sample_id_nwd_id, lane_barcode):
+    """Compare a set of CRAM RG barcodes & samples to TSV barcodes & samples for 
+    a single lane sample."""
+    pass
+
+
+def process_cram(cram_path):
+    """Read header of CRAM, parse resulting RGs and then return
+    CRAM RG barcodes and CRAM RG samples"""
+    pass
+
+
+def dump_cram_rgs(cram_path):
+    """Read cram_path using samtools and return list of RG lines."""
+    pass
+
+
+class Generic:
+    """To create objects with __dict__."""
     pass
 
 
