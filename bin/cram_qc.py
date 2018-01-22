@@ -8,8 +8,10 @@ Compare CRAM RG barcodes and samples to cram_worklist barcodes and samples.
 # First come standard libraries, in alphabetical order.
 import argparse
 from collections import Counter
-import json
+import logging
 import os
+from pathlib import Path
+import re
 import sys
 from subprocess import run, DEVNULL, PIPE
 
@@ -26,7 +28,7 @@ logger = getLogger(__name__)
 def main():
     args = parse_args()
     config_logging(args)
-    run_cram_qc(args.arg1, args.arg2, args.arg3)
+    run_cram_qc(input_file)
     logging.shutdown()
 
 
@@ -55,25 +57,47 @@ def config_logging(args):
     logging.basicConfig(level=level)
     logger = logging.getLogger('cram_qc')
 
+
 def run_cram_qc(input_file):
-    pass
+    """input_file is XLSX workbook."""
+    logger.debug('input_file: %r', input_file)
+    input_path = Path(input_file)
+    process_input(input_path)
+    logger.debug('finished')
+    # TODO
+    # return error_code or results
 
 
 def process_input(input_path):
     """Read the TSV input for a batch of CRAMs, barcodes and samples.
     Process CRAMs to dump RGs and verify that CRAM header barcodes and samples are 
     consistent with TSV barcodes and samples"""
+    logger.debug('process_input %s', input_path)
+    sl_crams = read_input(input_path)
+    logger.info('found %s records', len(sl_crams))
+    logger.debug('first record: %r', vars(sl_crams[0]))
+    logger.debug('last record: %r', vars(sl_crams[-1]))
     pass
 
 
 def read_input(input_path):
     """Read TSV input and return list of objects containing the file paths"""
-    pass
+    assert input_path.suffix == '.tsv'
+    row_iter = generate_tsv_rows(input_path)
+    column_names = next(row_iter)
+    sl_crams = []
+    for column_name, value in zip(column_names, row):
+        if column_name in ['sample_id_nwd_id', 'lane_barcode', 'cram_path']:
+            setattr(sl_cram, column_name, value)
+        sl_crams.append(sl_cram)
+    return sl_crams
 
 
 def generate_tsv_rows(input_path):
     """Generator function that yield rows as lists of values from the TSV."""
-    pass
+    with open(input_path) as fin:
+        for raw_line in fin:
+            yield raw_line.rstrip('\r\n').split('\t')
 
 
 def compare_barcodes_samples(cram_paths, lane_barcodes, sample_id_nwd_id):
@@ -85,13 +109,13 @@ def compare_barcodes_samples(cram_paths, lane_barcodes, sample_id_nwd_id):
 def process_cram(cram_path):
     """Read header of CRAM, parse resulting RGs and then return
     CRAM RG barcodes and CRAM RG samples"""
+    rg_lines = dump_cram_rgs(cram_path)
     pass
-
 
 def dump_cram_rgs(cram_path):
     """Read cram_path using samtools and return list of RG lines."""
     logger.debug('samtools view -H %r', cram_path)
-    cp = run(['samtools', 'view', '-H', cram_path)
+    cp = run(['samtools', 'view', '-H', cram_path]
             stdin=DEVNULL, stdout=PIPE,
             universal_newlines=True)
     if cp.returncode:
