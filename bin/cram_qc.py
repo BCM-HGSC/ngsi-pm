@@ -76,7 +76,7 @@ def generate_tsv_rows(input_path):
     pass
 
 
-def compare_barcodes_samples(cram_paths, sample_id_nwd_id, lane_barcode):
+def compare_barcodes_samples(cram_paths, lane_barcodes, sample_id_nwd_id):
     """Compare a set of CRAM RG barcodes & samples to TSV barcodes & samples for 
     a single lane sample."""
     pass
@@ -90,7 +90,15 @@ def process_cram(cram_path):
 
 def dump_cram_rgs(cram_path):
     """Read cram_path using samtools and return list of RG lines."""
-    pass
+    logger.debug('samtools view -H %r', cram_path)
+    cp = run(['samtools', 'view', '-H', cram_path)
+            stdin=DEVNULL, stdout=PIPE,
+            universal_newlines=True)
+    if cp.returncode:
+        break
+    headers = cp.stdout.splitlines()
+    rg_lines = [h for h in headers if h.startswith('@RG\t')]
+    return rg_lines
 
 
 class Generic:
