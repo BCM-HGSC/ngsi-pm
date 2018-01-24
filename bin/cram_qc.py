@@ -28,8 +28,9 @@ logger = getLogger(__name__)
 def main():
     args = parse_args()
     config_logging(args)
-    run_cram_qc(input_file)
+    error_code = run_cram_qc(args.input_file)
     logging.shutdown()
+    sys.exit(error_code)
 
 
 def parse_args():
@@ -65,7 +66,7 @@ def run_cram_qc(input_file):
     process_input(input_path)
     logger.debug('finished')
     # TODO
-    # return error_code or results
+    # return error_code that is 0 or 1
 
 
 def process_input(input_path):
@@ -110,7 +111,26 @@ def process_cram(cram_path):
     """Read header of CRAM, parse resulting RGs and then return
     CRAM RG barcodes and CRAM RG samples"""
     rg_lines = dump_cram_rgs(cram_path)
-    pass
+    cram_rg_barcodes = []
+    cram_rg_samples = []
+    for rg_line in rg_lines:
+        rg_items = rg_line.rstrip().split('\t')[1:]
+        pu = sm = None
+        for rg_item in rg_items:
+            if rg_item.startswith['PU:']:
+                if pu is not None:
+                    pu = MULTIPLE
+                else:
+                    pat = re.compile(r'PU:(?:[\w-]+_)?([\w-]+)')
+                    pu = pat.search(rg_item).group(1)
+            elif rg_item.startswith['SM:']:
+                if sm is not in None:
+                    sm = MULTIPLE
+                else:
+                    sm = rg_item[3:]
+        cram_rg_barcodes.append[pm]
+        cram_rg_samples.append[sm]
+    return cram_rg_barcodes, cram_rg_samples                
 
 def dump_cram_rgs(cram_path):
     """Read cram_path using samtools and return list of RG lines."""
