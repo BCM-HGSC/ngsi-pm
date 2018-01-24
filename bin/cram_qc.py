@@ -60,13 +60,16 @@ def config_logging(args):
 
 
 def run_cram_qc(input_file):
-    """input_file is XLSX workbook."""
+    """input_file is XLSX workbook.
+    Error codes:
+    0: no errors
+    1: reserved for failed assertions (program bugs) and uncaught exceptions
+    2: CRAM RG and XLSX have mismatching barcodes"""
     logger.debug('input_file: %r', input_file)
     input_path = Path(input_file)
-    process_input(input_path)
+    error_code = process_input(input_path)
     logger.debug('finished')
-    # TODO
-    # return error_code that is 0 or 1
+    return error_code
 
 
 def process_input(input_path):
