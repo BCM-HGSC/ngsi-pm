@@ -64,7 +64,7 @@ def run_cram_qc(input_file):
     Error codes:
     0: no errors
     1: reserved for failed assertions (program bugs) and uncaught exceptions
-    2: CRAM RG and XLSX have mismatching barcodes"""
+    2: CRAM RG and TSV have mismatching barcodes"""
     logger.debug('input_file: %r', input_file)
     input_path = Path(input_file)
     error_code = process_input(input_path)
@@ -81,7 +81,17 @@ def process_input(input_path):
     logger.info('found %s records', len(sl_crams))
     logger.debug('first record: %r', vars(sl_crams[0]))
     logger.debug('last record: %r', vars(sl_crams[-1]))
-    pass
+    error_code = 0
+    for record in sl_crams:
+        logger.info('checking %s', record.lane_barcode)
+        ec = compare_read_groups(record.sample_id_nwd_id,
+                                 record.lane_barcode,
+                                 record.cram_path)
+        if ec:
+            print(ec, record.sample_id_nwd_id, record.lane_barcode,
+                  record.cram_path, sep='\t')
+        error_code = max(error_code)
+    return error_code
 
 
 def read_input(input_path):
@@ -104,9 +114,10 @@ def generate_tsv_rows(input_path):
             yield raw_line.rstrip('\r\n').split('\t')
 
 
-def compare_barcodes_samples(cram_paths, lane_barcodes, sample_id_nwd_id):
+def compare_read_groups(cram_paths, lane_barcodes, sample_id_nwd_id):
     """Compare a set of CRAM RG barcodes & samples to TSV barcodes & samples for 
-    a single lane sample."""
+    a single lane samples."""
+    cram_rg_barcodes, cram_rg_samples = process_cram(cram_paths)
     pass
 
 
@@ -134,6 +145,7 @@ def process_cram(cram_path):
         cram_rg_barcodes.append[pm]
         cram_rg_samples.append[sm]
     return cram_rg_barcodes, cram_rg_samples                
+
 
 def dump_cram_rgs(cram_path):
     """Read cram_path using samtools and return list of RG lines."""
