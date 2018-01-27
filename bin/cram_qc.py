@@ -100,9 +100,11 @@ def read_input(input_path):
     row_iter = generate_tsv_rows(input_path)
     column_names = next(row_iter)
     sl_crams = []
-    for column_name, value in zip(column_names, row):
-        if column_name in ['sample_id_nwd_id', 'lane_barcode', 'cram_path']:
-            setattr(sl_cram, column_name, value)
+    for row in row_iter:
+        sl_cram = Generic()
+        for column_name, value in zip(column_names, row):
+            if column_name in ['sample_id_nwd_id', 'lane_barcode', 'cram_path']:
+                setattr(sl_cram, column_name, value)
         sl_crams.append(sl_cram)
     return sl_crams
 
