@@ -116,12 +116,20 @@ def generate_tsv_rows(input_path):
             yield raw_line.rstrip('\r\n').split('\t')
 
 
-def compare_read_groups(cram_paths, lane_barcodes, sample_id_nwd_id):
+def compare_read_groups(sample_id_nwd_id, lane_barcode, cram_path):
     """Compare a set of CRAM RG barcodes & samples to TSV barcodes & samples for 
     a single lane samples."""
-    cram_rg_barcodes, cram_rg_samples = process_cram(cram_paths)
-    pass
+    cram_rg_barcode, cram_rg_sample = process_cram(cram_path)
+    if cram_rg_barcode != lane_barcode:
+        error_code = 3
+    elif cram_rg_sample != sample_id_nwd_id:
+        error_code = 2
+    else:
+        error_code = 0
+    return error_code
 
+
+MULTIPLE = object()
 
 def process_cram(cram_path):
     """Read header of CRAM, parse resulting RGs and then return
@@ -140,11 +148,11 @@ def process_cram(cram_path):
                     pat = re.compile(r'PU:(?:[\w-]+_)?([\w-]+)')
                     pu = pat.search(rg_item).group(1)
             elif rg_item.startswith['SM:']:
-                if sm is not in None:
+                if sm is not None:
                     sm = MULTIPLE
                 else:
                     sm = rg_item[3:]
-        cram_rg_barcodes.append[pm]
+        cram_rg_barcodes.append[pu]
         cram_rg_samples.append[sm]
     return cram_rg_barcodes, cram_rg_samples                
 
