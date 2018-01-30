@@ -120,20 +120,31 @@ def generate_tsv_rows(input_path):
 
 def compare_read_groups(sample_id_nwd_id, lane_barcode, cram_path):
     """Compare CRAM RG barcodes & samples to TSV barcodes & samples for 
-    one single lane CRAM."""
-    cram_rg_barcodes, cram_rg_samples = process_cram(cram_path)
-    logger.info('found %s cram_rg_barcodes, %s cram_rg_samples',
-                len(cram_rg_barcodes), len(cram_rg_samples))
-    logger.info('cram_rg_barcode: %s', cram_rg_barcodes[0])
-    logger.info('cram_rg_sample: %s', cram_rg_samples[0])
-    cram_rg_barcode = next(iter(cram_rg_barcodes))
-    cram_rg_sample = next(iter(cram_rg_samples))
-    if cram_rg_barcode != lane_barcode:
-        error_code = 3
-    elif cram_rg_sample != sample_id_nwd_id:
-        error_code = 2
+    one single lane CRAM. Since this is for single lane, there must be exactly
+    one RG line."""
+    error_code = 0  # Optimistically assuming no error
+    try:
+        cram_rg_barcodes, cram_rg_samples = process_cram(cram_path)
+    except Exception:
+        logger.exception('Bad CRAM: %s', cram_path)
+        error_code = 6
     else:
-        error_code = 0
+        logger.info('found %s cram_rg_barcodes, %s cram_rg_samples',
+                    len(cram_rg_barcodes), len(cram_rg_samples))
+        logger.info('cram_rg_barcode: %s', cram_rg_barcodes)
+        logger.info('cram_rg_sample: %s', cram_rg_samples)
+        assert len(cram_rg_barcodes) == len(cram_rg_samples)
+        if len(cram_rg_barcodes) > 1:  # multiple RGs!
+            error_code = 5
+        elif not cram_rg_barcodes:  # no RGs found!
+            error_code = 4
+        else:
+            cram_rg_barcode = cram_rg_barcodes[0]
+            cram_rg_sample = cram_rg_samples[0]
+            if cram_rg_barcode != lane_barcode:
+                error_code = 3
+            elif cram_rg_sample != sample_id_nwd_id:
+                error_code = 2
     return error_code
 
 
