@@ -22,7 +22,7 @@ import openpyxl
 
 __version__ = '1.0.0a0'
 
-logger = getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -39,6 +39,7 @@ def parse_args():
         'input_file',
         help='an XLSX workbook containing a master worklist '
              'in the first worksheet'
+    )
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='increase output verbosity')
     parser.add_argument('--version', action='version',
@@ -64,7 +65,8 @@ def run_cram_qc(input_file):
     Error codes:
     0: no errors
     1: reserved for failed assertions (program bugs) and uncaught exceptions
-    2: CRAM RG and TSV have mismatching barcodes"""
+    2: CRAM RG and TSV have mismatching barcodes
+    3: CRAM RG and TSV have mismatching samples"""
     logger.debug('input_file: %r', input_file)
     input_path = Path(input_file)
     error_code = process_input(input_path)
@@ -90,7 +92,7 @@ def process_input(input_path):
         if ec:
             print(ec, record.sample_id_nwd_id, record.lane_barcode,
                   record.cram_path, sep='\t')
-        error_code = max(error_code)
+        error_code = max(error_code, ec)
     return error_code
 
 
@@ -117,9 +119,15 @@ def generate_tsv_rows(input_path):
 
 
 def compare_read_groups(sample_id_nwd_id, lane_barcode, cram_path):
-    """Compare a set of CRAM RG barcodes & samples to TSV barcodes & samples for 
-    a single lane samples."""
-    cram_rg_barcode, cram_rg_sample = process_cram(cram_path)
+    """Compare CRAM RG barcodes & samples to TSV barcodes & samples for 
+    one single lane CRAM."""
+    cram_rg_barcodes, cram_rg_samples = process_cram(cram_path)
+    logger.info('found %s cram_rg_barcodes, %s cram_rg_samples',
+                len(cram_rg_barcodes), len(cram_rg_samples))
+    logger.info('cram_rg_barcode: %s', cram_rg_barcodes[0])
+    logger.info('cram_rg_sample: %s', cram_rg_samples[0])
+    cram_rg_barcode = next(iter(cram_rg_barcodes))
+    cram_rg_sample = next(iter(cram_rg_samples))
     if cram_rg_barcode != lane_barcode:
         error_code = 3
     elif cram_rg_sample != sample_id_nwd_id:
@@ -141,30 +149,30 @@ def process_cram(cram_path):
         rg_items = rg_line.rstrip().split('\t')[1:]
         pu = sm = None
         for rg_item in rg_items:
-            if rg_item.startswith['PU:']:
+            if rg_item.startswith('PU:'):
                 if pu is not None:
                     pu = MULTIPLE
                 else:
                     pat = re.compile(r'PU:(?:[\w-]+_)?([\w-]+)')
                     pu = pat.search(rg_item).group(1)
-            elif rg_item.startswith['SM:']:
+            elif rg_item.startswith('SM:'):
                 if sm is not None:
                     sm = MULTIPLE
                 else:
                     sm = rg_item[3:]
-        cram_rg_barcodes.append[pu]
-        cram_rg_samples.append[sm]
+        cram_rg_barcodes.append(pu)
+        cram_rg_samples.append(sm)
     return cram_rg_barcodes, cram_rg_samples                
 
 
 def dump_cram_rgs(cram_path):
     """Read cram_path using samtools and return list of RG lines."""
     logger.debug('samtools view -H %r', cram_path)
-    cp = run(['samtools', 'view', '-H', cram_path]
-            stdin=DEVNULL, stdout=PIPE,
-            universal_newlines=True)
+    cp = run(['samtools', 'view', '-H', cram_path],
+             stdin=DEVNULL, stdout=PIPE,
+             universal_newlines=True)
     if cp.returncode:
-        break
+        raise exceptionError
     headers = cp.stdout.splitlines()
     rg_lines = [h for h in headers if h.startswith('@RG\t')]
     return rg_lines
