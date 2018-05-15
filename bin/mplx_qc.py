@@ -278,7 +278,8 @@ def process_cram(cram_path):
                 if bc is not None:
                     bc = MULTIPLE
                 else:
-                    bc = rg_item[3:]
+                    pat = re.compile(r'PU:(?:[\w-]+_)?([\w-]+)')
+                    bc = pat.search(rg_item).group(1)
             elif rg_item.startswith('SM:'):
                 if sm is not None:
                     sm = MULTIPLE
