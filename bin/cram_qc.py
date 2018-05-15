@@ -50,12 +50,10 @@ def parse_args():
 
 def config_logging(args):
     global logger
-    if not args.verbose:
-        level = logging.WARNING
-    elif args.verbose:
+    if args.verbose:
         level = logging.INFO
     else:
-        level = logging.DEBUG
+        level = logging.WARNING
     logging.basicConfig(level=level)
     logger = logging.getLogger('cram_qc')
 
