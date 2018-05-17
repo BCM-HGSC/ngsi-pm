@@ -278,8 +278,12 @@ def process_cram(cram_path):
                 if bc is not None:
                     bc = MULTIPLE
                 else:
-                    pat = re.compile(r'PU:(?:[\w-]+_)?([\w-]+)')
-                    bc = pat.search(rg_item).group(1)
+                    pat = re.compile(r'PU:(?:[\w-]+_)?([\w-]+)$')
+                    match = pat.match(rg_item)
+                    if match:
+                        bc = match.group(1)
+                    else:
+                        logger.error('bad PU tag in @RG for %r, PU=%r', cram_path, rg_item)
             elif rg_item.startswith('SM:'):
                 if sm is not None:
                     sm = MULTIPLE
