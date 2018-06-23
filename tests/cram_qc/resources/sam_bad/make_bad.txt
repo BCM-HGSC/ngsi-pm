@@ -2,34 +2,34 @@
 # /groups/project-managers/topmed/phase3/biome/21/29a-test
 
 # ec_0
-# no error
+# no error, no change
 /groups/project-managers/tech/dev/jwatt/ngsi-pm/tests/cram_qc/resources/sam_good/HH2FHCCXY-2.hgv.cram.mini.sam
 
-# ec_2
+# ec_2, done
 # An RG in the CRAM is missing its PU:
 /groups/project-managers/tech/dev/jwatt/ngsi-pm/tests/cram_qc/resources/sam_bad/HHFLLCCXY-3.hgv.cram.mini.sam
 
-# ec_3
+# ec_3, HHFLLCCXY-4
 # An RG in the CRAM has wrong lane_barcode
 /groups/project-managers/tech/dev/jwatt/ngsi-pm/tests/cram_qc/resources/sam_bad/HHFLLCCXY-5.hgv.cram.mini.sam
 
-# ec_4
+# ec_4, done
 # An RG in the CRAM is missing its SM:
 /groups/project-managers/tech/dev/jwatt/ngsi-pm/tests/cram_qc/resources/sam_bad/HHFLLCCXY-8.hgv.cram.mini.sam
 
-# ec_5
+# ec_5, SM:NWD862895
 # An RG in the CRAM has wrong sample
 /groups/project-managers/tech/dev/jwatt/ngsi-pm/tests/cram_qc/resources/sam_bad/HHGMNCCXY-4.hgv.cram.mini.sam
 
-# ec_6
+# ec_6, done
 # CRAM is missing RG line
 /groups/project-managers/tech/dev/jwatt/ngsi-pm/tests/cram_qc/resources/sam_bad/HHGMNCCXY-5.hgv.cram.mini.sam
 
-# ec_7
+# ec_7,TODO
 # CRAM is invalid
 /groups/project-managers/tech/dev/jwatt/ngsi-pm/tests/cram_qc/resources/sam_bad/HHGMNCCXY-7.hgv.cram.mini.sam
 
-# ec_8
+# ec_8, done
 # CRAM is missing
 /groups/project-managers/tech/dev/jwatt/ngsi-pm/tests/cram_qc/resources/sam_bad/missing_file.sam
 

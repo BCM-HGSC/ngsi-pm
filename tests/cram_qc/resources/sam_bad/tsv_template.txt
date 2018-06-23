@@ -1,0 +1,1 @@
+lane_barcode	hgsc_xfer_subdir	batch	sample_id_nwd_id	run_name	current_cram_name	new_cram_name	result_path	cram_path
