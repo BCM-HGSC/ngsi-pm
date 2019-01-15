@@ -272,13 +272,18 @@ def process_cram(cram_path):
     cram_rg_samples = []
     for rg_line in rg_lines:
         rg_items = rg_line.rstrip().split('\t')[1:]
-        pu = sm = None
+        bc = sm = None
         for rg_item in rg_items:
             if rg_item.startswith('PU:'):
-                if pu is not None:
-                    pu = MULTIPLE
+                if bc is not None:
+                    bc = MULTIPLE
                 else:
-                    pu = rg_item[3:]
+                    pat = re.compile(r'PU:(?:[\w-]+_)?([\w-]+)$')
+                    match = pat.match(rg_item)
+                    if match:
+                        bc = match.group(1)
+                    else:
+                        logger.error('bad PU tag in @RG for %r, PU=%r', cram_path, rg_item)
             elif rg_item.startswith('SM:'):
                 if sm is not None:
                     sm = MULTIPLE
@@ -290,13 +295,13 @@ def process_cram(cram_path):
                     cram_path, rg_items
                 )
             )
-        if not pu:
+        if not bc:
             raise GrosslyBadError(
                 9, 'An RG in the CRAM is missing its PU: {} {}'.format(
                     cram_path, rg_items
                 )
             )
-        cram_rg_barcodes.append(pu)
+        cram_rg_barcodes.append(bc)
         cram_rg_samples.append(sm)
     return cram_rg_barcodes, cram_rg_samples
 
