@@ -169,7 +169,7 @@ def get_new_cram_name(record):
     current_cram_name = record.current_cram_name
     logger.debug('searching: %s', current_cram_name)
     # record.new_cram_name = sample_id_nwd_id + "-" + current_cram_name
-    record.new_cram_name = sample_id_nwd_id + ".hgv.cram"
+    record.new_cram_name = str(sample_id_nwd_id) + ".hgv.cram"
 
 
 def write_tsv_file(output_file, data):
