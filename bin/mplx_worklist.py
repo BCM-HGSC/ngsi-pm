@@ -116,8 +116,12 @@ def read_input(input_file):
     logger.debug('master worksheet name: %s', master_worksheet.title)
     row_iter = iter(master_worksheet.rows)
     header_row = next(row_iter)
-    # Read header row and parse into column names.
+    # Read header row and parse into column names
     column_names = [c.value for c in header_row]
+    # remove NoneType column names
+    column_names = remove_none_type_col(column_names)
+    if any(it is None for it in column_names):
+        sys.exit('NoneType column name in the middle')
     # fix bad names
     column_names = [n.replace('/', '_') for n in column_names]
     logger.debug('columns: %s', column_names)
@@ -169,7 +173,15 @@ def get_new_cram_name(record):
     current_cram_name = record.current_cram_name
     logger.debug('searching: %s', current_cram_name)
     # record.new_cram_name = sample_id_nwd_id + "-" + current_cram_name
-    record.new_cram_name = sample_id_nwd_id + ".hgv.cram"
+    # TODO check for sample_id begin with zero
+    record.new_cram_name = str(sample_id_nwd_id) + ".hgv.cram"
+
+
+def remove_none_type_col(lst):
+    new_lst = list(lst)
+    while new_lst[-1] == None:
+        new_lst.pop()
+    return new_lst
 
 
 def write_tsv_file(output_file, data):
