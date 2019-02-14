@@ -120,9 +120,8 @@ def read_input(input_file):
     column_names = [c.value for c in header_row]
     # remove NoneType column names
     column_names = remove_none_type_col(column_names)
-    for column_name in column_names:
-        if any(it is None for it in column_names):
-            sys.exit('NoneType column name in the middle')
+    if any(it is None for it in column_names):
+        sys.exit('NoneType column name in the middle')
     # fix bad names
     column_names = [n.replace('/', '_') for n in column_names]
     logger.debug('columns: %s', column_names)
