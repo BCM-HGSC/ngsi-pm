@@ -43,7 +43,7 @@ ADDITIONAL_OUTPUT_COLUMN_NAMES = '''
 '''.split()  # The order of the columns in the output
 
 # Extensions, useful when there are many extensions
-JSON_EXT = ('MEDefn.json', 'MergeDefn.json')
+JSON_EXT = ('MEDefn.json', 'MergeDefn.json', 'event.json')
 CRAM_EXT = 'hgv.cram'
 
 
@@ -158,11 +158,14 @@ def add_file_paths(record):
     merge_path = record.merge_path
     logger.debug('searching: %s', merge_path)
     for file_name in os.listdir(merge_path):
+        if file_name.endswith(JSON_EXT):
+            record.json_path = os.path.join(merge_path, file_name)
+    alignments_path = os.path.join(merge_path, 'alignments')
+    for file_name in os.listdir(alignments_path):
         if file_name.endswith(CRAM_EXT):
             record.current_cram_name = file_name
-            record.cram_path = os.path.join(merge_path, file_name)
-        elif file_name.endswith(JSON_EXT):
-            record.json_path = os.path.join(merge_path, file_name)
+            record.cram_path = os.path.join(alignments_path, file_name)
+
 
 
 def get_new_cram_name(record):
