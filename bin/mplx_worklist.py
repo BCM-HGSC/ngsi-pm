@@ -44,8 +44,8 @@ ADDITIONAL_OUTPUT_COLUMN_NAMES = '''
 '''.split()  # The order of the columns in the output
 
 # Extensions, useful when there are many extensions
-JSON_EXT = ('MEDefn.json', 'MergeDefn.json', 'event.json')
-CRAM_EXT = 'hgv.cram'
+MERGE_EVENT_PATTERNS = 'MEDefn.json', 'MergeDefn.json', 'event.json'
+CRAM_EXT = 'hgv.cram', '*.hgv.cram'
 
 
 def main():
