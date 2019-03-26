@@ -156,17 +156,29 @@ def find_master_worksheet(wb):
 
 def add_file_paths(record):
     """Add the file paths found under merge_path."""
-    merge_path = record.merge_path
+    merge_path = Path(record.merge_path)
     logger.debug('searching: %s', merge_path)
-    for file_name in os.listdir(merge_path):
-        if file_name.endswith(JSON_EXT):
-            record.json_path = os.path.join(merge_path, file_name)
-    alignments_path = os.path.join(merge_path, 'alignments')
-    for file_name in os.listdir(alignments_path):
-        if file_name.endswith(CRAM_EXT):
-            record.current_cram_name = file_name
-            record.cram_path = os.path.join(alignments_path, file_name)
-
+    # get json paths
+    hits = sum((list(merge_path.glob(pat)) for pat in MERGE_EVENT_PATTERNS), [])
+    if len(hits) != 1:
+        sys.exit('number of hits: {}'.format(len(hits)))
+    merge_event_path, = hits
+    if merge_event_path.name == 'event.json':
+        # proceed with hg19.2
+        record.json_path = merge_event_path
+    else:
+        # proceed with hg17.5
+        record.json_path = merge_event_path
+    alignments_path = merge_path.joinpath('alignments')
+    logger.debug('searching: %s', alignments_path)
+    # get cram paths
+    crams = sum((list(alignments_path.glob(pat)) for pat in CRAM_EXT), [])
+    if len(crams) != 1:
+        sys.exit('number of crams: {}'.format(len(crams)))
+    merge_cram_path, = crams
+    if merge_cram_path.name.endswith(CRAM_EXT[0]):
+        record.current_cram_name = merge_cram_path.name
+        record.cram_path = merge_cram_path
 
 
 def get_new_cram_name(record):
