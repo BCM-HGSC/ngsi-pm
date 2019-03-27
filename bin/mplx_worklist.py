@@ -169,16 +169,28 @@ def add_file_paths(record):
     else:
         # proceed with hg17.5
         record.json_path = merge_event_path
+
+    # get cram paths
     alignments_path = merge_path.joinpath('alignments')
     logger.debug('searching: %s', alignments_path)
-    # get cram paths
-    crams = sum((list(alignments_path.glob(pat)) for pat in CRAM_EXT), [])
-    if len(crams) != 1:
-        sys.exit('number of crams: {}'.format(len(crams)))
-    merge_cram_path, = crams
-    if merge_cram_path.name.endswith(CRAM_EXT[0]):
-        record.current_cram_name = merge_cram_path.name
-        record.cram_path = merge_cram_path
+    if alignments_path:
+        # proceed with hgv19.2
+        align_hits = sum(
+            (list(alignments_path.glob(pat)) for pat in CRAM_EXT),
+            [],
+        )
+        if len(align_hits) != 1:
+            sys.exit('number of crams: {}'.format(len(align_hits)))
+        align_cram_path, = align_hits
+        if align_cram_path.name.endswith(CRAM_EXT[0]):
+            record.current_cram_name = align_cram_path.name
+            record.cram_path = align_cram_path
+    else:
+        # proceed with hgv17.5
+        if merge_path.name.endswith(CRAM_EXT[0]):
+            record.current_cram_name = merge_path.name
+            # TODO remove PosixPath part of cram_path
+            record.cram_path = merge_path.joinpath(merge_path_name)
 
 
 def get_new_cram_name(record):
