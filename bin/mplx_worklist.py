@@ -168,7 +168,6 @@ def add_file_paths(record):
     merge_event_path, = hits
     if merge_event_path.name == 'event.json':
         # proceed with hgv19.2
-        # TODO remove PosixPath part of json_path
         record.json_path = merge_event_path
     else:
         # proceed with hgv17.5
@@ -193,7 +192,6 @@ def add_file_paths(record):
         # proceed with hgv17.5
         if merge_path.name.endswith(CRAM_EXT[0]):
             record.current_cram_name = merge_path.name
-            # TODO remove PosixPath part of cram_path
             record.cram_path = merge_path.joinpath(merge_path_name)
 
 
