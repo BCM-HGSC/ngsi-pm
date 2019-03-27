@@ -159,15 +159,19 @@ def add_file_paths(record):
     merge_path = Path(record.merge_path)
     logger.debug('searching: %s', merge_path)
     # get json paths
-    hits = sum((list(merge_path.glob(pat)) for pat in MERGE_EVENT_PATTERNS), [])
+    hits = sum(
+        (list(merge_path.glob(pat)) for pat in MERGE_EVENT_PATTERNS),
+        [],
+    )
     if len(hits) != 1:
         sys.exit('number of hits: {}'.format(len(hits)))
     merge_event_path, = hits
     if merge_event_path.name == 'event.json':
-        # proceed with hg19.2
+        # proceed with hgv19.2
+        # TODO remove PosixPath part of json_path
         record.json_path = merge_event_path
     else:
-        # proceed with hg17.5
+        # proceed with hgv17.5
         record.json_path = merge_event_path
 
     # get cram paths
