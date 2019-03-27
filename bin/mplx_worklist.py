@@ -183,7 +183,7 @@ def add_file_paths(record):
             [],
         )
         if len(align_hits) != 1:
-            sys.exit('number of crams: {}'.format(len(align_hits)))
+            sys.exit('number of align_hits: {}'.format(len(align_hits)))
         align_cram_path, = align_hits
         if align_cram_path.name.endswith(CRAM_EXT[0]):
             record.current_cram_name = align_cram_path.name
