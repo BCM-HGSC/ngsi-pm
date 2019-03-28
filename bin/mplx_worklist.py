@@ -45,7 +45,7 @@ ADDITIONAL_OUTPUT_COLUMN_NAMES = '''
 
 # Extensions, useful when there are many extensions
 MERGE_EVENT_PATTERNS = 'MEDefn.json', 'MergeDefn.json', 'event.json'
-CRAM_EXT = 'hgv.cram', '*.hgv.cram'
+CRAM_EXT = 'hgv.cram', '*.hgv.cram', 'alignments/*.hgv.cram'
 
 
 def main():
