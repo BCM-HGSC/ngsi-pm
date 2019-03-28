@@ -108,6 +108,7 @@ def process_input(input_file, output_file):
         add_file_paths(record)
         if (record.json_path and record.cram_path):
             get_new_cram_name(record)
+            detect_legacy_hybrid(record)
         else:
             errors = True
     pprint.pprint(vars(data[0]))
@@ -208,6 +209,18 @@ def remove_none_type_col(lst):
     while new_lst[-1] == None:
         new_lst.pop()
     return new_lst
+
+
+def detect_legacy_hybrid(record):
+    """Detecting the case where the JSON is HGV17- but the CRAM is HGV19+.
+    Warns if this happens. Should never happen. Then again, we work
+    at HGSC."""
+    new_type_json = record.json_path.name == "event.json"
+    new_type_cram = record.cram_path.parent.name == "alignments"
+    if new_type_json != new_type_cram:
+        logger.warning(
+            "{} is a hybrid of legacy and new style".format(record.merge_path)
+        )
 
 
 def write_tsv_file(output_file, data):
