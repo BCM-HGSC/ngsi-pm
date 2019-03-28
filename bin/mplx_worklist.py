@@ -174,25 +174,18 @@ def add_file_paths(record):
         record.json_path = merge_event_path
 
     # get cram paths
-    alignments_path = merge_path.joinpath('alignments')
-    logger.debug('searching: %s', alignments_path)
-    if alignments_path:
-        # proceed with hgv19.2
-        align_hits = sum(
-            (list(alignments_path.glob(pat)) for pat in CRAM_EXT),
-            [],
-        )
-        if len(align_hits) != 1:
-            sys.exit('number of align_hits: {}'.format(len(align_hits)))
-        align_cram_path, = align_hits
-        if align_cram_path.name.endswith(CRAM_EXT[0]):
-            record.current_cram_name = align_cram_path.name
-            record.cram_path = align_cram_path
+    cram_hits = sum(
+        (list(merge_path.glob(pat)) for pat in CRAM_EXT),
+        [],
+    )
+    if len(cram_hits) != 1:
+        sys.exit('number of cram_hits: {}'.format(len(cram_hits)))
+    merge_cram_path, = cram_hits
+    if merge_cram_path.name.endswith(CRAM_EXT[0]):
+        record.current_cram_name = merge_cram_path.name
+        record.cram_path = merge_cram_path
     else:
-        # proceed with hgv17.5
-        if merge_path.name.endswith(CRAM_EXT[0]):
-            record.current_cram_name = merge_path.name
-            record.cram_path = merge_path.joinpath(merge_path_name)
+        sys.exit('merge_cram_path: {}'.format(merge_cram_path))
 
 
 def get_new_cram_name(record):
