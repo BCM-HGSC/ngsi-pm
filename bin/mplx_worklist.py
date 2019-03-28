@@ -45,7 +45,8 @@ ADDITIONAL_OUTPUT_COLUMN_NAMES = '''
 
 # Extensions, useful when there are many extensions
 MERGE_EVENT_PATTERNS = 'MEDefn.json', 'MergeDefn.json', 'event.json'
-CRAM_EXT = 'hgv.cram', '*.hgv.cram', 'alignments/*.hgv.cram'
+CRAM_PATTERNS = '*.hgv.cram', 'alignments/*.hgv.cram'
+CRAM_EXT = '.hgv.cram'
 
 
 def main():
@@ -175,13 +176,13 @@ def add_file_paths(record):
 
     # get cram paths
     cram_hits = sum(
-        (list(merge_path.glob(pat)) for pat in CRAM_EXT),
+        (list(merge_path.glob(pat)) for pat in CRAM_PATTERNS),
         [],
     )
     if len(cram_hits) != 1:
         sys.exit('number of cram_hits: {}'.format(len(cram_hits)))
     merge_cram_path, = cram_hits
-    if merge_cram_path.name.endswith(CRAM_EXT[0]):
+    if merge_cram_path.name.endswith(CRAM_EXT):
         record.current_cram_name = merge_cram_path.name
         record.cram_path = merge_cram_path
     else:
