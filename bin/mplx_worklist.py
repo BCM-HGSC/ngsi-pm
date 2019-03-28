@@ -103,11 +103,18 @@ def process_input(input_file, output_file):
     logger.debug('process_input %s -> %s', input_file, output_file)
     data = read_input(input_file)
     logger.info('found %s records', len(data))
+    errors = False
     for record in data:
         add_file_paths(record)
-        get_new_cram_name(record)
+        if (record.json_path and record.cram_path):
+            get_new_cram_name(record)
+        else:
+            errors = True
     pprint.pprint(vars(data[0]))
-    write_tsv_file(output_file, data)
+    if not errors:
+        write_tsv_file(output_file, data)
+    else:
+        print('ERROR')
 
 
 def read_input(input_file):
@@ -158,35 +165,30 @@ def find_master_worksheet(wb):
 def add_file_paths(record):
     """Add the file paths found under merge_path."""
     merge_path = Path(record.merge_path)
-    logger.debug('searching: %s', merge_path)
+    logger.debug("searching: %s", merge_path)
     # get json paths
     hits = sum(
-        (list(merge_path.glob(pat)) for pat in MERGE_EVENT_PATTERNS),
-        [],
+        (list(merge_path.glob(pat)) for pat in MERGE_EVENT_PATTERNS), []
     )
     if len(hits) != 1:
-        sys.exit('number of hits: {}'.format(len(hits)))
-    merge_event_path, = hits
-    if merge_event_path.name == 'event.json':
-        # proceed with hgv19.2
-        record.json_path = merge_event_path
+        logger.error("{} number of hits: {}".format(merge_path, len(hits)))
+        record.json_path = None
     else:
-        # proceed with hgv17.5
+        merge_event_path, = hits
         record.json_path = merge_event_path
 
     # get cram paths
-    cram_hits = sum(
-        (list(merge_path.glob(pat)) for pat in CRAM_PATTERNS),
-        [],
-    )
+    cram_hits = sum((list(merge_path.glob(pat)) for pat in CRAM_PATTERNS), [])
     if len(cram_hits) != 1:
-        sys.exit('number of cram_hits: {}'.format(len(cram_hits)))
-    merge_cram_path, = cram_hits
-    if merge_cram_path.name.endswith(CRAM_EXT):
+        logger.error(
+            "{} number of cram_hits: {}".format(merge_path, len(cram_hits))
+        )
+        record.current_cram_name = record.cram_path = None
+    else:
+        merge_cram_path, = cram_hits
+        assert merge_cram_path.name.endswith(CRAM_EXT)
         record.current_cram_name = merge_cram_path.name
         record.cram_path = merge_cram_path
-    else:
-        sys.exit('merge_cram_path: {}'.format(merge_cram_path))
 
 
 def get_new_cram_name(record):
