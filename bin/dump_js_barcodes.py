@@ -55,6 +55,24 @@ def parse_merge_definitions(json_path_stream):
 class Merge:
     """Contains global data about a merge and a list of SequencingEvent."""
     def __init__(self, json_path):
+        if json_path.endswith('event.json'):
+            self._load_hgv19(json_path)
+        else:
+            self._load_hgv_legacy(json_path)
+        self.get_sequencing_events_data(json_path)
+
+    def _load_hgv_19(self, json_path):
+        self.json_path = json_path
+        with open(json_path) as fin:
+            merge_definition_dict = json.load(fin)
+        self.id = merge_definition_dict['event_id']
+        self.lib_name = mnerge_definition_dict['lib_name']
+        self.sequencing_events = [
+            SequencingEvent(key, json_daa)
+            for key, json_data in ses.items()
+        ]
+
+    def _load_hgv_legacy(self, json_path):
         self.json_path = json_path
         with open(json_path) as fin:
             merge_definition_dict = json.load(fin)
@@ -66,13 +84,16 @@ class Merge:
             SequencingEvent(key, json_data)
             for key, json_data in ses.items()
         ]
+        # no equivalent in _load_hgv_19
         assert len(self.sequencing_events) == self.num_sequencing_events, (
             json_path, len(self.sequencing_events), self.num_sequencing_events
         )
+
+    def get_sequencing_events_data(self, json_path):
         c = Counter(se.sample_name for se in self.sequencing_events)
         assert len(c) == 1, json_path
         self.sample_name = c.most_common(1)[0][0]
-        r = Counter((se.reference for se in self.sequencing_events))
+        r = Counter(se.reference for se in self.sequencing_events)
         assert len(r) == 1, json_path
         self.reference = r.most_common(1)[0][0]
 
