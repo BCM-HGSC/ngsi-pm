@@ -81,7 +81,7 @@ class Merge:
         self.lib_name = merge_definition_dict['libName']
         ses = merge_definition_dict['seqEvents']
         self.sequencing_events = [
-            SequencingEvent(key, json_data)
+            SequencingEvent(key, json_path, json_data)
             for key, json_data in ses.items()
         ]
         # no equivalent in _load_hgv_19
@@ -100,7 +100,20 @@ class Merge:
 
 class SequencingEvent:
     """Represents everything about a single sequencing event"""
-    def __init__(self, key, json_data):
+    def __init__(self, key, json_path, json_data):
+        self.json_path = json_path
+        if json_path.endswith('event.json'):
+            self._load_hgv_19_se(key, json_data)
+        else:
+            self._load_hgv_legacy_se(key, json_data)
+
+    def _load_hgv_19_se(self, key, json_data):
+        self.barcode = json_data['event_id']
+        assert self.barcode == key, key
+        self.sample_name = json_data['sample_name']
+        self.reference = json_data['reference']
+
+    def _load_hgv_legacy_se(self, key, json_data):
         self.barcode = json_data['eventId']
         assert self.barcode == key, key
         self.sample_name = json_data['sampleName']
