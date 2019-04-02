@@ -66,7 +66,7 @@ class Merge:
 
     def _load_hgv_19(self, json_path):
         self.json_path = json_path
-        with open(json_path) as fin:
+        with open(str(json_path)) as fin:
             merge_definition_dict = json.load(fin)
         self.id = merge_definition_dict['event_id']
         self.lib_name = merge_definition_dict['library_name']
@@ -78,7 +78,7 @@ class Merge:
 
     def _load_hgv_legacy(self, json_path):
         self.json_path = json_path
-        with open(json_path) as fin:
+        with open(str(json_path)) as fin:
             merge_definition_dict = json.load(fin)
         self.num_sequencing_events = merge_definition_dict['seNum']
         self.id = merge_definition_dict['eventId']

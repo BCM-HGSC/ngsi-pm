@@ -197,7 +197,7 @@ def generate_xlsx_rows(input_path):
 
 def generate_tsv_rows(input_path):
     """Generator function that yields rows as lists of values from the TSV."""
-    with open(input_path) as fin:
+    with open(str(input_path)) as fin:
         for raw_line in fin:
             yield raw_line.rstrip('\r\n').split('\t')
 
