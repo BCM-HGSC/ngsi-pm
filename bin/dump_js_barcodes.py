@@ -9,6 +9,7 @@ from collections import Counter
 import json
 import os
 import sys
+from pathlib import Path
 from subprocess import run, DEVNULL, PIPE
 
 
@@ -55,7 +56,9 @@ def parse_merge_definitions(json_path_stream):
 class Merge:
     """Contains global data about a merge and a list of SequencingEvent."""
     def __init__(self, json_path):
-        if json_path.endswith('event.json'):
+        self.json_path = json_path
+        json_path = Path(json_path)
+        if json_path.name == 'event.json':
             self._load_hgv_19(json_path)
         else:
             self._load_hgv_legacy(json_path)
@@ -103,7 +106,8 @@ class SequencingEvent:
     """Represents everything about a single sequencing event"""
     def __init__(self, key, json_path, json_data):
         self.json_path = json_path
-        if json_path.endswith('event.json'):
+        json_path = Path(json_path)
+        if json_path.name == 'event.json':
             self._load_hgv_19_se(key, json_data)
         else:
             self._load_hgv_legacy_se(key, json_data)
