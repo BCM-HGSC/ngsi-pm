@@ -12,6 +12,7 @@ import pprint
 import re
 import sys
 import warnings
+from pathlib import Path
 
 # After a blank line, import third-party libraries.
 import openpyxl
@@ -20,7 +21,7 @@ from openpyxl.styles import Font
 
 # After another blank line, import local libraries.
 
-__version__ = '2.1.1'
+__version__ = '2.2.0'
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +44,9 @@ ADDITIONAL_OUTPUT_COLUMN_NAMES = '''
 '''.split()  # The order of the columns in the output
 
 # Extensions, useful when there are many extensions
-JSON_EXT = ('MEDefn.json', 'MergeDefn.json')
-CRAM_EXT = 'hgv.cram'
+MERGE_EVENT_PATTERNS = 'MEDefn.json', 'MergeDefn.json', 'event.json'
+CRAM_PATTERNS = '*.hgv.cram', 'alignments/*.hgv.cram'
+CRAM_EXT = '.hgv.cram'
 
 
 def main():
@@ -101,11 +103,19 @@ def process_input(input_file, output_file):
     logger.debug('process_input %s -> %s', input_file, output_file)
     data = read_input(input_file)
     logger.info('found %s records', len(data))
+    errors = False
     for record in data:
         add_file_paths(record)
-        get_new_cram_name(record)
+        if (record.json_path and record.cram_path):
+            get_new_cram_name(record)
+            detect_legacy_hybrid(record)
+        else:
+            errors = True
     pprint.pprint(vars(data[0]))
-    write_tsv_file(output_file, data)
+    if not errors:
+        write_tsv_file(output_file, data)
+    else:
+        print('ERROR')
 
 
 def read_input(input_file):
@@ -155,14 +165,31 @@ def find_master_worksheet(wb):
 
 def add_file_paths(record):
     """Add the file paths found under merge_path."""
-    merge_path = record.merge_path
-    logger.debug('searching: %s', merge_path)
-    for file_name in os.listdir(merge_path):
-        if file_name.endswith(CRAM_EXT):
-            record.current_cram_name = file_name
-            record.cram_path = os.path.join(merge_path, file_name)
-        elif file_name.endswith(JSON_EXT):
-            record.json_path = os.path.join(merge_path, file_name)
+    merge_path = Path(record.merge_path)
+    logger.debug("searching: %s", merge_path)
+    # get json paths
+    hits = sum(
+        (list(merge_path.glob(pat)) for pat in MERGE_EVENT_PATTERNS), []
+    )
+    if len(hits) != 1:
+        logger.error("{} number of hits: {}".format(merge_path, len(hits)))
+        record.json_path = None
+    else:
+        merge_event_path, = hits
+        record.json_path = merge_event_path
+
+    # get cram paths
+    cram_hits = sum((list(merge_path.glob(pat)) for pat in CRAM_PATTERNS), [])
+    if len(cram_hits) != 1:
+        logger.error(
+            "{} number of cram_hits: {}".format(merge_path, len(cram_hits))
+        )
+        record.current_cram_name = record.cram_path = None
+    else:
+        merge_cram_path, = cram_hits
+        assert merge_cram_path.name.endswith(CRAM_EXT)
+        record.current_cram_name = merge_cram_path.name
+        record.cram_path = merge_cram_path
 
 
 def get_new_cram_name(record):
@@ -182,6 +209,18 @@ def remove_none_type_col(lst):
     while new_lst[-1] == None:
         new_lst.pop()
     return new_lst
+
+
+def detect_legacy_hybrid(record):
+    """Detecting the case where the JSON is HGV17- but the CRAM is HGV19+.
+    Warns if this happens. Should never happen. Then again, we work
+    at HGSC."""
+    new_type_json = record.json_path.name == "event.json"
+    new_type_cram = record.cram_path.parent.name == "alignments"
+    if new_type_json != new_type_cram:
+        logger.warning(
+            "{} is a hybrid of legacy and new style".format(record.merge_path)
+        )
 
 
 def write_tsv_file(output_file, data):
