@@ -14,6 +14,11 @@ RESOURCE_BASE = Path('tests/mplx_qc/resources')
 
 # Functional tests
 
+def test_hgv19_ec0(tmpdir):
+    cp = run_mplx_qc_xlsx(tmpdir, 'tsv_hgv19/hgv19_ec_0.tsv')
+    check_output(cp, 0, 0, None, None)
+
+
 def test_ec0(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_0.xlsx.tsv')
     check_output(cp, 0, 0, None, None)
@@ -125,7 +130,15 @@ def check_output(cp, returncode, num_errs, error_prefix, expected_out_path):
         assert not cp.stdout
 
 
-# Unit tetss
+# Unit tests
+
+def test_hgv19_ec0_unit(capsys):
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_0.tsv'))
+    out, err = capsys.readouterr()
+    print(out)
+    print(err, file=sys.stderr)
+    assert error_code == 0
+
 
 def test_ec0_unit(capsys):
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_0.xlsx.tsv'))
