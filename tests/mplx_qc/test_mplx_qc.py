@@ -14,8 +14,8 @@ RESOURCE_BASE = Path('tests/mplx_qc/resources')
 
 # Functional tests
 
-def test_hgv19_ec0(tmpdir):
-    cp = run_mplx_qc_xlsx(tmpdir, 'tsv_hgv19/hgv19_ec_0.tsv')
+def test_hgv19_ec0():
+    cp = run_mplx_qc(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_0.tsv')
     check_output(cp, 0, 0, None, None)
 
 
