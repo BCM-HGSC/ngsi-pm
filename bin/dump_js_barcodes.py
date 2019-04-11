@@ -12,6 +12,8 @@ import sys
 from pathlib import Path
 from subprocess import run, DEVNULL, PIPE
 
+MESSAGE = "The key does not exist!"
+
 
 def main():
     args = parse_args()
@@ -68,9 +70,9 @@ class Merge:
         self.json_path = json_path
         with open(str(json_path)) as fin:
             merge_definition_dict = json.load(fin)
-        self.id = merge_definition_dict['event_id']
-        self.lib_name = merge_definition_dict['library_name']
-        ses = merge_definition_dict['sequencing_events']
+        self.id = merge_definition_dict.get('event_id', MESSAGE)
+        self.lib_name = merge_definition_dict.get('library_name', MESSAGE)
+        ses = merge_definition_dict.get('sequencing_events', MESSAGE)
         self.sequencing_events = [
             SequencingEvent(key, json_path, json_data)
             for key, json_data in ses.items()
@@ -80,10 +82,10 @@ class Merge:
         self.json_path = json_path
         with open(str(json_path)) as fin:
             merge_definition_dict = json.load(fin)
-        self.num_sequencing_events = merge_definition_dict['seNum']
-        self.id = merge_definition_dict['eventId']
-        self.lib_name = merge_definition_dict['libName']
-        ses = merge_definition_dict['seqEvents']
+        self.num_sequencing_events = merge_definition_dict.get('seNum', MESSAGE)
+        self.id = merge_definition_dict.get('eventId', MESSAGE)
+        self.lib_name = merge_definition_dict.get('libName', MESSAGE)
+        ses = merge_definition_dict.get('seqEvents', MESSAGE)
         self.sequencing_events = [
             SequencingEvent(key, json_path, json_data)
             for key, json_data in ses.items()
@@ -113,16 +115,16 @@ class SequencingEvent:
             self._load_hgv_legacy_se(key, json_data)
 
     def _load_hgv_19_se(self, key, json_data):
-        self.barcode = json_data['event_id']
+        self.barcode = json_data.get('event_id', MESSAGE)
         assert self.barcode == key, key
-        self.sample_name = json_data['sample_name']
-        self.reference = json_data['reference']
+        self.sample_name = json_data.get('sample_name', MESSAGE)
+        self.reference = json_data.get('reference', MESSAGE)
 
     def _load_hgv_legacy_se(self, key, json_data):
-        self.barcode = json_data['eventId']
+        self.barcode = json_data.get('eventId', MESSAGE)
         assert self.barcode == key, key
-        self.sample_name = json_data['sampleName']
-        self.reference = json_data['reference']
+        self.sample_name = json_data.get('sampleName', MESSAGE)
+        self.reference = json_data.get('reference', MESSAGE)
 
 
 if __name__ == '__main__':
