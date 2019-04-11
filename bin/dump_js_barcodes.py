@@ -97,11 +97,18 @@ class Merge:
 
     def get_sequencing_events_data(self, json_path):
         c = Counter(se.sample_name for se in self.sequencing_events)
-        assert len(c) == 1, json_path
-        self.sample_name = c.most_common(1)[0][0]
+        try:
+            assert len(c) == 1, json_path
+            self.sample_name = c.most_common(1)[0][0]
+        except AssertionError:
+            raise AssertionError('Sample_name is {} and count is {}'.format(c, len(c)))
+
         r = Counter(se.reference for se in self.sequencing_events)
-        assert len(r) == 1, json_path
-        self.reference = r.most_common(1)[0][0]
+        try:
+            assert len(r) == 1, json_path
+            self.reference = r.most_common(1)[0][0]
+        except AssertionError:
+            raise AssertionError('Reference is {} and count is {}'.format(r, len(r)))
 
 
 class SequencingEvent:
