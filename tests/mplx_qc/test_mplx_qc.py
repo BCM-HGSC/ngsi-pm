@@ -296,6 +296,26 @@ def test_ec20_xlsx_unit(capsys):
                  RESOURCE_BASE/'empty_file')
 
 
+def test_hgv19_ec21_unit(capsys):
+    """If the JSON has the hgv19 extention but SE key is wrong..."""
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_21.tsv'))
+    assert error_code == 21
+    check_run_qc(capsys, 1,
+                 'ERROR: JSON has wrong keys.',
+                 # RESOURCE_BASE/'tsv_hgv19/hgv19_ec_21_expect.tsv')
+                 )
+
+
+def test_hgv19_ec22_unit(capsys):
+    """If the JSON has the hgv19 extention but Merge key is wrong..."""
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_22.tsv'))
+    assert error_code == 22
+    check_run_qc(capsys, 1,
+                 'ERROR: JSON has wrong keys.',
+                 # RESOURCE_BASE/'tsv_hgv19/hgv19_ec_22_expect.tsv')
+                 )
+
+
 def check_run_qc(capsys, num_errs, error_prefix, expected_out_path):
     out, err = capsys.readouterr()
     print(out)
