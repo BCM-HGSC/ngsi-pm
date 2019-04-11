@@ -7,6 +7,7 @@ barcode, sample, and reference.
 import argparse
 from collections import Counter
 import json
+from logging import error
 import os
 from pathlib import Path
 from subprocess import run, DEVNULL, PIPE
@@ -100,13 +101,18 @@ class Merge:
         if len(c) == 1:
             self.sample_name = c.most_common(1)[0][0]
         else:
-            raise ValueError('sample names: {}; count: {}'.format(c, len(c)))
+            # breakpoint()
+            error(
+                'count: %r; sample names: %r; json: %r', len(c), c, json_path
+            )
 
         r = Counter(se.reference for se in self.sequencing_events)
         if len(r) == 1:
             self.reference = r.most_common(1)[0][0]
         else:
-            raise ValueError('references: {}; count is {}'.format(r, len(r)))
+            error(
+                'references: %r; count is %r; json: %r', r, len(r), json_path
+            )
 
 
 class SequencingEvent:
