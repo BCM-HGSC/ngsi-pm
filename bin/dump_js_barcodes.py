@@ -8,9 +8,9 @@ import argparse
 from collections import Counter
 import json
 import os
-import sys
 from pathlib import Path
 from subprocess import run, DEVNULL, PIPE
+import sys
 
 MESSAGE = "The key does not exist!"
 
