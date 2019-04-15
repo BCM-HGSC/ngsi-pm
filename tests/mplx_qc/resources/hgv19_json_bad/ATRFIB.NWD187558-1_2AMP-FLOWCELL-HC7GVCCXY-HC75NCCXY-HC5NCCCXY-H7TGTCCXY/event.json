@@ -7,9 +7,9 @@
     "bam_file": "/stornext/snfs0/next-gen/HgVMerge/ATRFIB.NWD187558-1_2AMP-FLOWCELL-HC7GVCCXY-HC75NCCXY-HC5NCCCXY-H7TGTCCXY/ATRFIB.NWD187558-1_2AMP-FLOWCELL-HC7GVCCXY-HC75NCCXY-HC5NCCCXY-H7TGTCCXY.hgv.bam",
     "reference": "/stornext/snfs5/next-gen/Illumina/bwa_references/g/GRCh38_1000Genomes",
     "bam_list_fn": "/stornext/snfs0/next-gen/HgVMerge/ATRFIB.NWD187558-1_2AMP-FLOWCELL-HC7GVCCXY-HC75NCCXY-HC5NCCCXY-H7TGTCCXY/MergeBams.txt",
-    "seqEvents": {
+    "sequencing_events": {
+            "eventId": "HC7GVCCXY-5-IDDUI037",
         "HC7GVCCXY-5-IDDUI037": {
-            "event_id": "HC7GVCCXY-5-IDDUI037",
             "path": "/stornext/snfs160/next-gen/Illumina/Instruments/E00212/171006_ST-E00212_0614_BHC7GVCCXY/Results/Project_HC7GVCCXY/Sample_HC7GVCCXY-5-IDDUI037",
             "fastq_read1": "/stornext/snfs160/next-gen/Illumina/Instruments/E00212/171006_ST-E00212_0614_BHC7GVCCXY/Results/Project_HC7GVCCXY/Sample_HC7GVCCXY-5-IDDUI037/HC7GVCCXY-5-IDDUI037_S12_L005_R1_001.fastq.gz",
             "fastq_read2": "/stornext/snfs160/next-gen/Illumina/Instruments/E00212/171006_ST-E00212_0614_BHC7GVCCXY/Results/Project_HC7GVCCXY/Sample_HC7GVCCXY-5-IDDUI037/HC7GVCCXY-5-IDDUI037_S12_L005_R2_001.fastq.gz",
