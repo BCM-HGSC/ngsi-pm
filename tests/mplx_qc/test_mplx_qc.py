@@ -297,22 +297,79 @@ def test_ec20_xlsx_unit(capsys):
 
 
 def test_hgv19_ec21_unit(capsys):
-    """If the JSON has the hgv19 extention but SE key is wrong..."""
+    """
+    If the JSON has the hgv19 extention but SE key is wrong...
+    A SE key changed from 'sample_name' to 'sampleName'
+    """
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_21.tsv'))
-    assert error_code == 21
+    assert error_code == 5
     check_run_qc(capsys, 1,
-                 'ERROR: JSON has wrong keys.',
-                 # RESOURCE_BASE/'tsv_hgv19/hgv19_ec_21_expect.tsv')
-                 )
+                 'ERROR: CRAM and JSON have different sample names',
+                 RESOURCE_BASE/'tsv_hgv19/hgv19_ec_21_expect.tsv')
 
 
 def test_hgv19_ec22_unit(capsys):
-    """If the JSON has the hgv19 extention but Merge key is wrong..."""
+    """
+    If the JSON has the hgv19 extention but SE key is wrong...
+    A SE key change from 'event_id' to 'eventID'
+    """
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_22.tsv'))
-    assert error_code == 22
+    assert error_code == 2
     check_run_qc(capsys, 1,
-                 'ERROR: JSON has wrong keys.',
+                 'ERROR: CRAM and JSON have mismatching set of barcodes',
                  # RESOURCE_BASE/'tsv_hgv19/hgv19_ec_22_expect.tsv')
+                 )
+
+
+def test_hgv19_ec23_unit(capsys):
+    """
+    If the JSON has the hgv19 extention but SE key is wrong...
+    A SE key changed from 'library_name' to 'libraryName'
+    No error detected since SE library_name is not being used
+    """
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_23.tsv'))
+    out, err = capsys.readouterr()
+    print(out)
+    print(err, file=sys.stderr)
+    assert error_code == 0
+
+
+def test_hgv19_ec24_unit(capsys):
+    """
+    If the JSON has the hgv19 extention but Merge key is wrong...
+    A Merge key changed from 'event_id' to 'eventID'
+    """
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_24.tsv'))
+    assert error_code == 21
+    check_run_qc(capsys, 1,
+                 'ERROR: JSON has wrong keys',
+                 # RESOURCE_BASE/'tsv_hgv19/hgv19_ec_24_expect.tsv')
+                 )
+
+
+def test_hgv19_ec25_unit(capsys):
+    """
+    If the JSON has the hgv19 extention but Merge key is wrong...
+    A Merge key changed from 'library_name' to 'libName'
+    """
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_25.tsv'))
+    assert error_code == 21
+    check_run_qc(capsys, 1,
+                 'ERROR: JSON has wrong keys',
+                 # RESOURCE_BASE/'tsv_hgv19/hgv19_ec_25_expect.tsv')
+                 )
+
+
+def test_hgv19_ec26_unit(capsys):
+    """
+    If the JSON has the hgv19 extention but Merge key is wrong...
+    A Merge key changed from 'sequencing_events' to 'seqEvents'
+    """
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_26.tsv'))
+    assert error_code == 21
+    check_run_qc(capsys, 1,
+                 'ERROR: JSON has wrong keys',
+                 # RESOURCE_BASE/'tsv_hgv19/hgv19_ec_26_expect.tsv')
                  )
 
 
