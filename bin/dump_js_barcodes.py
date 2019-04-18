@@ -13,7 +13,7 @@ from pathlib import Path
 from subprocess import run, DEVNULL, PIPE
 import sys
 
-MESSAGE = "The key does not exist!"
+MESSAGE = "THE KEY MISSING"
 
 
 def main():
@@ -72,12 +72,19 @@ class Merge:
         with open(str(json_path)) as fin:
             merge_definition_dict = json.load(fin)
         self.id = merge_definition_dict.get('event_id', MESSAGE)
+        if self.id == MESSAGE:
+            error("key 'event_id' in Merge is missing; %r", json_path)
         self.lib_name = merge_definition_dict.get('library_name', MESSAGE)
+        if self.lib_name == MESSAGE:
+            error("key 'library_name' in Merge is missing; %r", json_path)
         ses = merge_definition_dict.get('sequencing_events', MESSAGE)
-        self.sequencing_events = [
-            SequencingEvent(key, json_path, json_data)
-            for key, json_data in ses.items()
-        ]
+        if ses == MESSAGE:
+            error("key 'sequencing_events' in Merge is missing; %r", json_path)
+        else:
+            self.sequencing_events = [
+                SequencingEvent(key, json_path, json_data)
+                for key, json_data in ses.items()
+            ]
 
     def _load_hgv_legacy(self, json_path):
         self.json_path = json_path
@@ -127,14 +134,22 @@ class SequencingEvent:
 
     def _load_hgv_19_se(self, key, json_data):
         self.barcode = json_data.get('event_id', MESSAGE)
-        assert self.barcode == key, key
+        # assert self.barcode == key, key
+        if self.barcode == MESSAGE:
+            error("key 'event_id' in SE is missing; %r", key)
         self.sample_name = json_data.get('sample_name', MESSAGE)
+        if self.sample_name == MESSAGE:
+            error("key 'sample_name' in SE is missing; %r", key)
         self.reference = json_data.get('reference', MESSAGE)
 
     def _load_hgv_legacy_se(self, key, json_data):
         self.barcode = json_data.get('eventId', MESSAGE)
-        assert self.barcode == key, key
+        # assert self.barcode == key, key
+        if self.barcode == MESSAGE:
+            error("key 'eventId' in SE is missing; %r", key)
         self.sample_name = json_data.get('sampleName', MESSAGE)
+        if self.sample_name == MESSAGE:
+            error("key 'sampleName' in SE is missing; %r", key)
         self.reference = json_data.get('reference', MESSAGE)
 
 
