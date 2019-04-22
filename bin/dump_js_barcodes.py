@@ -80,6 +80,7 @@ class Merge:
         ses = merge_definition_dict.get('sequencing_events', MESSAGE)
         if ses == MESSAGE:
             error("key 'sequencing_events' in Merge is missing; %r", json_path)
+            self.sequencing_events = []
         else:
             self.sequencing_events = [
                 SequencingEvent(key, json_path, json_data)

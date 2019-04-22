@@ -220,7 +220,8 @@ def compare_read_groups(sample_id_nwd_id, cram_path, json_path):
     logger.info('found %s cram_rg_barcodes, %s json_rg_barcodes',
                 len(cram_rg_barcodes), len(json_rg_barcodes))
     logger.debug('first barcodes: %s, %s',
-                 cram_rg_barcodes[0], json_rg_barcodes[0])
+                 cram_rg_barcodes[0],
+                 json_rg_barcodes[0] if json_rg_barcodes else 'MISSING')
     cram_rg_sample_set = set(cram_rg_samples)
     json_rg_sample_set = set(json_rg_samples)
     cram_rg_sample = next(iter(cram_rg_sample_set))

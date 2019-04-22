@@ -303,8 +303,8 @@ def test_hgv19_ec21_unit(capsys):
     """
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_21.tsv'))
     assert error_code == 5
-    check_run_qc(capsys, 1,
-                 'ERROR: CRAM and JSON have different sample names',
+    check_run_qc(capsys, 3,
+                 'ERROR:',
                  RESOURCE_BASE/'tsv_hgv19/hgv19_ec_21_expect.tsv')
 
 
