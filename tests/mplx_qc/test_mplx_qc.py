@@ -14,11 +14,6 @@ RESOURCE_BASE = Path('tests/mplx_qc/resources')
 
 # Functional tests
 
-def test_hgv19_ec0():
-    cp = run_mplx_qc(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_0.tsv')
-    check_output(cp, 0, 0, None, None)
-
-
 def test_ec0(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_0.xlsx.tsv')
     check_output(cp, 0, 0, None, None)
@@ -131,14 +126,6 @@ def check_output(cp, returncode, num_errs, error_prefix, expected_out_path):
 
 
 # Unit tests
-
-def test_hgv19_ec0_unit(capsys):
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_0.tsv'))
-    out, err = capsys.readouterr()
-    print(out)
-    print(err, file=sys.stderr)
-    assert error_code == 0
-
 
 def test_ec0_unit(capsys):
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_0.xlsx.tsv'))
@@ -296,81 +283,98 @@ def test_ec20_xlsx_unit(capsys):
                  RESOURCE_BASE/'empty_file')
 
 
-def test_hgv19_ec21_unit(capsys):
-    """
-    If the JSON has the hgv19 extention but SE key is wrong...
-    A SE key changed from 'sample_name' to 'sampleName'
-    """
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_21.tsv'))
-    assert error_code == 5
-    check_run_qc(capsys, 3,
-                 'ERROR:',
-                 RESOURCE_BASE/'tsv_hgv19/hgv19_ec_21_expect.tsv')
+# Hgv19 Functional tests
+
+def test_ec0():
+    cp = run_mplx_qc(RESOURCE_BASE/'tsv_hgv19_main/ec_0.tsv')
+    check_output(cp, 0, 0, None, None)
 
 
-def test_hgv19_ec22_unit(capsys):
-    """
-    If the JSON has the hgv19 extention but SE key is wrong...
-    A SE key change from 'event_id' to 'eventID'
-    """
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_22.tsv'))
-    assert error_code == 2
-    check_run_qc(capsys, 1,
-                 'ERROR: CRAM and JSON have mismatching set of barcodes',
-                 # RESOURCE_BASE/'tsv_hgv19/hgv19_ec_22_expect.tsv')
-                 )
+# Hgv19 Unit tests
 
+"""
+tsv_hgv19_main
+ec_0_unit: no error
 
-def test_hgv19_ec23_unit(capsys):
-    """
-    If the JSON has the hgv19 extention but SE key is wrong...
-    A SE key changed from 'library_name' to 'libraryName'
-    No error detected since SE library_name is not being used
-    """
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_23.tsv'))
+tsv_hgv19_se
+ec_5_unit: 'sample_name' --> 'sampleName' for hgv19_json_bad/NWD161809
+ec_2_unit: 'event_id' --> 'eventaId' for hgv19_json_bad/NWD187558
+ec_0_unit: 'library_name' --> 'libraryName' for hgv19_json_bad/NWD204470
+
+tsv_hgv19_merge
+ec_0_unit: 'event_id' --> 'eventId' for hgv19_json_bad/NWD210697
+ec_0_unit: 'library_name' --> 'libName' for hgv19_json_bad/NWD213294
+ec_5_unit: 'sequencing_events' --> 'seqEvents' for hgv19_json_bad/NWD307732
+"""
+
+def test_ec0_unit(capsys):
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_main/ec_0.tsv'))
     out, err = capsys.readouterr()
     print(out)
     print(err, file=sys.stderr)
     assert error_code == 0
 
 
-def test_hgv19_ec24_unit(capsys):
+def test_ec5_unit(capsys):
+    """
+    If the JSON has the hgv19 extention but SE key is wrong...
+    A SE key changed from 'sample_name' to 'sampleName'
+    """
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_5.tsv'))
+    assert error_code == 5
+    check_run_qc(capsys, 3,
+                 'ERROR:',
+                 RESOURCE_BASE/'tsv_hgv19_se/ec_5_expect.tsv')
+
+
+def test_ec2_unit(capsys):
+    """
+    If the JSON has the hgv19 extention but SE key is wrong...
+    A SE key change from 'event_id' to 'eventID'
+    """
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_2.tsv'))
+    assert error_code == 2
+    check_run_qc(capsys, 2,
+                 'ERROR:',
+                 RESOURCE_BASE/'tsv_hgv19_se/ec_2_expect.tsv')
+
+
+def test_ec0_unit(capsys):
+    """
+    If the JSON has the hgv19 extention but SE key is wrong...
+    A SE key changed from 'library_name' to 'libraryName'
+    No error detected since SE library_name is not being used
+    """
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_0.tsv'))
+    out, err = capsys.readouterr()
+    print(out)
+    print(err, file=sys.stderr)
+    assert error_code == 0
+
+
+def test_ec0_unit(capsys):
     """
     If the JSON has the hgv19 extention but Merge key is wrong...
     A Merge key changed from 'event_id' to 'eventID'
-    """
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_24.tsv'))
-    assert error_code == 21
-    check_run_qc(capsys, 1,
-                 'ERROR: JSON has wrong keys',
-                 # RESOURCE_BASE/'tsv_hgv19/hgv19_ec_24_expect.tsv')
-                 )
-
-
-def test_hgv19_ec25_unit(capsys):
-    """
-    If the JSON has the hgv19 extention but Merge key is wrong...
     A Merge key changed from 'library_name' to 'libName'
     """
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_25.tsv'))
-    assert error_code == 21
-    check_run_qc(capsys, 1,
-                 'ERROR: JSON has wrong keys',
-                 # RESOURCE_BASE/'tsv_hgv19/hgv19_ec_25_expect.tsv')
-                 )
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_0.tsv'))
+    out, err = capsys.readouterr()
+    print(out)
+    print(err, file=sys.stderr)
+    assert error_code == 0
 
 
-def test_hgv19_ec26_unit(capsys):
+def test_ec5_unit(capsys):
     """
     If the JSON has the hgv19 extention but Merge key is wrong...
     A Merge key changed from 'sequencing_events' to 'seqEvents'
     """
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19/hgv19_ec_26.tsv'))
-    assert error_code == 21
-    check_run_qc(capsys, 1,
-                 'ERROR: JSON has wrong keys',
-                 # RESOURCE_BASE/'tsv_hgv19/hgv19_ec_26_expect.tsv')
-                 )
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_5.tsv'))
+    assert error_code == 5
+    check_run_qc(capsys, 4,
+                 'ERROR:',
+                 RESOURCE_BASE/'tsv_hgv19_merge/ec_5_expect.tsv')
 
 
 def check_run_qc(capsys, num_errs, error_prefix, expected_out_path):
