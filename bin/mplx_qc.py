@@ -91,7 +91,7 @@ def run_qc(input_file):
     18: Input file has bad extension
     19: Input is not a file
     20: Input file is missing
-    21: JSON has wrong keys
+    21: JSON has wrong keys (unused)
     """
     logger.debug('input_file: %r', input_file)
     input_path = Path(input_file)
