@@ -307,7 +307,7 @@ ec_0_unit: 'library_name' --> 'libName' for hgv19_json_bad/NWD213294
 ec_5_unit: 'sequencing_events' --> 'seqEvents' for hgv19_json_bad/NWD307732
 """
 
-def test_ec0_unit(capsys):
+def test_hgv19_ec0_unit(capsys):
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_main/ec_0.tsv'))
     out, err = capsys.readouterr()
     print(out)
@@ -315,7 +315,7 @@ def test_ec0_unit(capsys):
     assert error_code == 0
 
 
-def test_ec5_unit(capsys):
+def test_hgv19_se_ec5_unit(capsys):
     """
     If the JSON has the hgv19 extention but SE key is wrong...
     A SE key changed from 'sample_name' to 'sampleName'
@@ -327,7 +327,7 @@ def test_ec5_unit(capsys):
                  RESOURCE_BASE/'tsv_hgv19_se/ec_5_expect.tsv')
 
 
-def test_ec2_unit(capsys):
+def test_hgv19_se_ec2_unit(capsys):
     """
     If the JSON has the hgv19 extention but SE key is wrong...
     A SE key change from 'event_id' to 'eventID'
@@ -339,7 +339,7 @@ def test_ec2_unit(capsys):
                  RESOURCE_BASE/'tsv_hgv19_se/ec_2_expect.tsv')
 
 
-def test_ec0_unit(capsys):
+def test_hgv19_se_ec0_unit(capsys):
     """
     If the JSON has the hgv19 extention but SE key is wrong...
     A SE key changed from 'library_name' to 'libraryName'
@@ -352,20 +352,31 @@ def test_ec0_unit(capsys):
     assert error_code == 0
 
 
-def test_ec0_unit(capsys):
+def test_hgv19_merge_ec21_unit(capsys):
     """
     If the JSON has the hgv19 extention but Merge key is wrong...
-    A Merge key changed from 'event_id' to 'eventID'
     A Merge key changed from 'library_name' to 'libName'
     """
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_0.tsv'))
-    out, err = capsys.readouterr()
-    print(out)
-    print(err, file=sys.stderr)
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_21.tsv'))
     assert error_code == 0
+    check_run_qc(capsys, 1,
+                 'ERROR:',
+                 RESOURCE_BASE/'tsv_hgv19_merge/ec_21_expect.tsv')
 
 
-def test_ec5_unit(capsys):
+def test_hgv19_merge_ec22_unit(capsys):
+    """
+    If the JSON has the hgv19 extention but Merge key is wrong...
+    A Merge key changed from 'library_name' to 'libName'
+    """
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_22.tsv'))
+    assert error_code == 0
+    check_run_qc(capsys, 1,
+                 'ERROR:',
+                 RESOURCE_BASE/'tsv_hgv19_merge/ec_22_expect.tsv')
+
+
+def test_hgv19_merge_ec5_unit(capsys):
     """
     If the JSON has the hgv19 extention but Merge key is wrong...
     A Merge key changed from 'sequencing_events' to 'seqEvents'
