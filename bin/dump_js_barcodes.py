@@ -7,13 +7,16 @@ barcode, sample, and reference.
 import argparse
 from collections import Counter
 import json
-from logging import error
+import logging
 import os
 from pathlib import Path
 from subprocess import run, DEVNULL, PIPE
 import sys
 
 MESSAGE = "THE KEY MISSING"
+
+logger = logging.getLogger(__name__)
+error = logger.error
 
 
 def main():
