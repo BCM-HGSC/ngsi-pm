@@ -39,6 +39,12 @@ ADDITIONAL_OUTPUT_COLUMN_NAMES = '''
     indel_path
 '''.split()  # The order of the columns in the output
 
+# Extensions, useful when there are many extensions
+MERGE_EVENT_PATTERNS = 'MEDefn.json', 'MergeDefn.json', 'event.json'
+VARIANTS_DIR = 'variants', 'variants/xAtlas'
+SNP_EXT = '_snp_Annotated.vcf', '_snp.vcf.gz'
+INDEL_EXT = '_indel_Annotated.vcf', '_indel.vcf.gz'
+
 
 def main():
     args = parse_args()
@@ -140,16 +146,12 @@ def add_file_paths(record):
     """Add the file paths found under result_path."""
     result_path = record.result_path
     logger.debug('searching: %s', result_path)
-    for file_name in os.listdir(result_path):
-        if file_name.endswith('.hgv.bam'):
-            record.current_bam_name = file_name
-            record.bam_path = os.path.join(result_path, file_name)
-    variants_path = os.path.join(result_path, 'variants')
+    variants_path = os.path.join(result_path, VARIANTS_DIR)
     for file_name in os.listdir(variants_path):
-        if file_name.endswith('_snp_Annotated.vcf'):
+        if file_name.endswith(SNP_EXT):
             record.snp_file = file_name
             record.snp_path = os.path.join(variants_path, file_name)
-        elif file_name.endswith('_indel_Annotated.vcf'):
+        elif file_name.endswith(INDEL_EXT):
             record.indel_file = file_name
             record.indel_path = os.path.join(variants_path, file_name)
 
