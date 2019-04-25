@@ -359,7 +359,7 @@ def test_hgv19_merge_ec21_unit(capsys):
     A Merge key changed from 'library_name' to 'libName'
     """
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_21.tsv'))
-    assert error_code == 0
+    assert error_code == 21
     check_run_qc(capsys, 1,
                  'ERROR:',
                  RESOURCE_BASE/'tsv_hgv19_merge/ec_21_expect.tsv')
