@@ -17,12 +17,11 @@ import openpyxl
 
 # After another blank line, import local libraries.
 
-# When your code is something you would use cautiously in production,
-# delete the "-unstable" suffix. That suffix is saying that this script
-# could change behaviour without the version number changing. In other
-# words, a later version of this script will be 1.0.0, but you aren't
-# there just yet.
-__version__ = '1.0.0-unstable'
+# Since this script has been used with no known issue in production,
+# deleting the "-unstable" suffix.
+# Hgv19 feature will be added to the script,
+# so changing the version to 1.1.0
+__version__ = '1.1.0'
 
 logger = logging.getLogger(__name__)
 
