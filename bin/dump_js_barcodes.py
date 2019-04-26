@@ -13,7 +13,7 @@ from pathlib import Path
 from subprocess import run, DEVNULL, PIPE
 import sys
 
-MESSAGE = "THE KEY MISSING"
+MISSING_KEY = "THE KEY MISSING"
 
 logger = logging.getLogger(__name__)
 error = logger.error
@@ -74,14 +74,14 @@ class Merge:
         self.json_path = json_path
         with open(str(json_path)) as fin:
             merge_definition_dict = json.load(fin)
-        self.id = merge_definition_dict.get('event_id', MESSAGE)
-        if self.id == MESSAGE:
+        self.id = merge_definition_dict.get('event_id', MISSING_KEY)
+        if self.id == MISSING_KEY:
             error("key 'event_id' in Merge is missing; %r", json_path)
-        self.lib_name = merge_definition_dict.get('library_name', MESSAGE)
-        if self.lib_name == MESSAGE:
+        self.lib_name = merge_definition_dict.get('library_name', MISSING_KEY)
+        if self.lib_name == MISSING_KEY:
             error("key 'library_name' in Merge is missing; %r", json_path)
-        ses = merge_definition_dict.get('sequencing_events', MESSAGE)
-        if ses == MESSAGE:
+        ses = merge_definition_dict.get('sequencing_events', MISSING_KEY)
+        if ses == MISSING_KEY:
             error("key 'sequencing_events' in Merge is missing; %r", json_path)
             self.sequencing_events = []
         else:
@@ -94,10 +94,12 @@ class Merge:
         self.json_path = json_path
         with open(str(json_path)) as fin:
             merge_definition_dict = json.load(fin)
-        self.num_sequencing_events = merge_definition_dict.get('seNum', MESSAGE)
-        self.id = merge_definition_dict.get('eventId', MESSAGE)
-        self.lib_name = merge_definition_dict.get('libName', MESSAGE)
-        ses = merge_definition_dict.get('seqEvents', MESSAGE)
+        self.num_sequencing_events = merge_definition_dict.get(
+            'seNum', MISSING_KEY
+        )
+        self.id = merge_definition_dict.get('eventId', MISSING_KEY)
+        self.lib_name = merge_definition_dict.get('libName', MISSING_KEY)
+        ses = merge_definition_dict.get('seqEvents', MISSING_KEY)
         self.sequencing_events = [
             SequencingEvent(key, json_path, json_data)
             for key, json_data in ses.items()
@@ -137,24 +139,24 @@ class SequencingEvent:
             self._load_hgv_legacy_se(key, json_data)
 
     def _load_hgv_19_se(self, key, json_data):
-        self.barcode = json_data.get('event_id', MESSAGE)
+        self.barcode = json_data.get('event_id', MISSING_KEY)
         # assert self.barcode == key, key
-        if self.barcode == MESSAGE:
+        if self.barcode == MISSING_KEY:
             error("key 'event_id' in SE is missing; %r", key)
-        self.sample_name = json_data.get('sample_name', MESSAGE)
-        if self.sample_name == MESSAGE:
+        self.sample_name = json_data.get('sample_name', MISSING_KEY)
+        if self.sample_name == MISSING_KEY:
             error("key 'sample_name' in SE is missing; %r", key)
-        self.reference = json_data.get('reference', MESSAGE)
+        self.reference = json_data.get('reference', MISSING_KEY)
 
     def _load_hgv_legacy_se(self, key, json_data):
-        self.barcode = json_data.get('eventId', MESSAGE)
+        self.barcode = json_data.get('eventId', MISSING_KEY)
         # assert self.barcode == key, key
-        if self.barcode == MESSAGE:
+        if self.barcode == MISSING_KEY:
             error("key 'eventId' in SE is missing; %r", key)
-        self.sample_name = json_data.get('sampleName', MESSAGE)
-        if self.sample_name == MESSAGE:
+        self.sample_name = json_data.get('sampleName', MISSING_KEY)
+        if self.sample_name == MISSING_KEY:
             error("key 'sampleName' in SE is missing; %r", key)
-        self.reference = json_data.get('reference', MESSAGE)
+        self.reference = json_data.get('reference', MISSING_KEY)
 
 
 if __name__ == '__main__':

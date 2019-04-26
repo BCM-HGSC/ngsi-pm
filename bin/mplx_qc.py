@@ -26,6 +26,7 @@ import openpyxl
 # After another blank line, import local libraries.
 from dump_js_barcodes import Merge
 from dump_js_barcodes import SequencingEvent
+from dump_js_barcodes import MISSING_KEY
 
 __version__ = '1.2.0'
 
@@ -91,7 +92,7 @@ def run_qc(input_file):
     18: Input file has bad extension
     19: Input is not a file
     20: Input file is missing
-    21: JSON has wrong keys (unused)
+    21: JSON has wrong keys
     """
     logger.debug('input_file: %r', input_file)
     input_path = Path(input_file)
@@ -332,6 +333,8 @@ def process_json(json_path):
     logger.debug('parsing: %s', json_path)
     try:
         merge = Merge(json_path)
+        if merge.id == MISSING_KEY:
+            raise GrosslyBadError(21, 'JSON is bad: {}', json_path)
     except JSONDecodeError as e:
         raise GrosslyBadError(12, 'JSON is bad: {}', json_path)
     barcodes = [s.barcode for s in merge.sequencing_events]
