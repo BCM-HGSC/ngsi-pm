@@ -27,9 +27,9 @@ logger = logging.getLogger(__name__)
 
 REQUIRED_INPUT_COLUMN_NAMES = '''
     sample_id/nwd_id
-    lane_barcode
+    merge_id
     vcf_batch
-    result_path
+    merge_path
 '''.split()  # The order of the columns in the output
 REQUIRED_INPUT_COLUMN_NAMES_SET = set(REQUIRED_INPUT_COLUMN_NAMES)
 ADDITIONAL_OUTPUT_COLUMN_NAMES = '''
@@ -40,8 +40,8 @@ ADDITIONAL_OUTPUT_COLUMN_NAMES = '''
 '''.split()  # The order of the columns in the output
 
 # Extensions, useful when there are many extensions
-MERGE_EVENT_PATTERNS = 'MEDefn.json', 'MergeDefn.json', 'event.json'
 VARIANTS_DIR = 'variants', 'variants/xAtlas'
+HGV19_VARIANTS_DIR = 'variants/xAtlas'
 SNP_EXT = '_snp_Annotated.vcf', '_snp.vcf.gz'
 INDEL_EXT = '_indel_Annotated.vcf', '_indel.vcf.gz'
 
@@ -124,7 +124,7 @@ def read_input(input_file):
             if column_name in REQUIRED_INPUT_COLUMN_NAMES_SET:
                 value = cell.value
                 setattr(record, column_name, value)
-        if record.result_path and record.result_path[0] != '#':
+        if record.merge_path and record.merge_path[0] != '#':
             data.append(record)
     return data
 
@@ -143,10 +143,10 @@ def find_master_worksheet(wb):
 
 
 def add_file_paths(record):
-    """Add the file paths found under result_path."""
-    result_path = record.result_path
-    logger.debug('searching: %s', result_path)
-    variants_path = os.path.join(result_path, VARIANTS_DIR)
+    """Add the file paths found under merge_path."""
+    merge_path = record.merge_path
+    logger.debug('searching: %s', merge_path)
+    variants_path = os.path.join(merge_path, HGV19_VARIANTS_DIR)
     for file_name in os.listdir(variants_path):
         if file_name.endswith(SNP_EXT):
             record.snp_file = file_name
