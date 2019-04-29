@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-"""Read a master workbook and output an XLSX workbook annotated with
-absolute paths read from the filesystem."""
+"""To create VCF WORKLIST.
+Read a master workbook and output an TSV file."""
 
 # First come standard libraries, in alphabetical order.
 import argparse
@@ -61,8 +61,9 @@ def parse_args():
             'in the first worksheet'
     )
     parser.add_argument('-o', '--output_file',
-                        help='will default to MASTER_annotated.xlsx')
-    parser.add_argument('-v', '--verbose', action='store_true')
+                        help='will default to MASTER_vcf.tsv')
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='increase output verbosity')
     parser.add_argument('--version', action='version',
                         version='%(prog)s {}'.format(__version__))
     args = parser.parse_args()
@@ -72,16 +73,16 @@ def parse_args():
 
 
 def munge_input_file_name(input_file_name):
-    """X.xlsx -> X_vcfs.xlsx"""
+    """X.xlsx -> X_vcf.tsv"""
     assert input_file_name.endswith('.xlsx')
-    return input_file_name[:-5] + '_vcfs.xlsx'
+    return input_file_name[:-5] + '_vcf.tsv'
 
 
 def config_logging(args):
     global logger
     level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(level=level)
-    logger = logging.getLogger('vcfs_worklist')
+    logger = logging.getLogger('vcf_worklist')
 
 
 def run(args):
