@@ -18,14 +18,12 @@ import openpyxl
 
 # After another blank line, import local libraries.
 
-# Since this script has been used with no known issue in production,
-# deleting the "-unstable" suffix.
-# Hgv19 feature will be added to the script,
-# so changing the version to 1.1.0
-__version__ = '1.1.0'
+# Output is now TSV instead of XLSX, so changing the version
+__version__ = '2.0.0-snapshot'
 
 logger = logging.getLogger(__name__)
 
+# column names
 REQUIRED_INPUT_COLUMN_NAMES = '''
     sample_id/nwd_id
     merge_id
@@ -104,7 +102,7 @@ def process_input(input_file, output_file):
     for record in data:
         add_file_paths(record)
     pprint.pprint(vars(data[0]))
-    write_annotated_workbook(output_file, data)
+    write_tsv_file(output_file, data)
 
 
 def read_input(input_file):
@@ -148,20 +146,6 @@ def add_file_paths(record):
     """Add the file paths found under merge_path."""
     merge_path = Path(str(record.merge_path))
     logger.debug('searching: %s', merge_path)
-def write_annotated_workbook(output_file, data):
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "smpls"
-    header = REQUIRED_INPUT_COLUMN_NAMES + ADDITIONAL_OUTPUT_COLUMN_NAMES
-    ws.append(header)
-    for record in data:
-        row = [getattr(record, name) for name in header]
-        ws.append(row)
-    # bold = openpyxl.styles.Font(bold=True)
-    # for c in ws.rows[0]:
-    #     c.font = bold
-    # TODO: Investigate setting column widths.
-    wb.save(output_file)
     # get SNP paths
     snp_hits = sum(
             (list(merge_path.glob(pat)) for pat in SNP_PATTERNS), []
@@ -198,6 +182,15 @@ def write_annotated_workbook(output_file, data):
         record.indel_path = variants_indel_path
 
 
+def write_tsv_file(output_file, data):
+    """Write data to TSV file"""
+    with open(output_file, 'w') as fout:
+        writer = csv.writer(fout, delimiter='\t', lineterminator='\n')
+        header = REQUIRED_INPUT_COLUMN_NAMES + ADDITIONAL_OUTPUT_COLUMN_NAMES
+        writer.writerow(header)
+        for record in data:
+            row = [getattr(record, name) for name in header]
+            writer.writerow(row)
 
 
 class Generic:
