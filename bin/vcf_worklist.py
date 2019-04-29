@@ -11,6 +11,7 @@ import os
 import pprint
 import sys
 import warnings
+from pathlib import Path
 
 # After a blank line, import third-party libraries.
 import openpyxl
@@ -40,9 +41,9 @@ ADDITIONAL_OUTPUT_COLUMN_NAMES = '''
 '''.split()  # The order of the columns in the output
 
 # Extensions, useful when there are many extensions
-VARIANTS_DIR = 'variants', 'variants/xAtlas'
-HGV19_VARIANTS_DIR = 'variants/xAtlas'
+SNP_PATTERNS = 'variants/*_snp_Annotated.vcf', 'variants/xAtlas/*_snp.vcf.gz'
 SNP_EXT = '_snp_Annotated.vcf', '_snp.vcf.gz'
+INDEL_PATTERNS = 'variants/*_indel_Annotated.vcf', 'variants/xAtlas/*_indel.vcf.gz'
 INDEL_EXT = '_indel_Annotated.vcf', '_indel.vcf.gz'
 
 
@@ -145,18 +146,8 @@ def find_master_worksheet(wb):
 
 def add_file_paths(record):
     """Add the file paths found under merge_path."""
-    merge_path = record.merge_path
+    merge_path = Path(str(record.merge_path))
     logger.debug('searching: %s', merge_path)
-    variants_path = os.path.join(merge_path, HGV19_VARIANTS_DIR)
-    for file_name in os.listdir(variants_path):
-        if file_name.endswith(SNP_EXT):
-            record.snp_file = file_name
-            record.snp_path = os.path.join(variants_path, file_name)
-        elif file_name.endswith(INDEL_EXT):
-            record.indel_file = file_name
-            record.indel_path = os.path.join(variants_path, file_name)
-
-
 def write_annotated_workbook(output_file, data):
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -171,6 +162,42 @@ def write_annotated_workbook(output_file, data):
     #     c.font = bold
     # TODO: Investigate setting column widths.
     wb.save(output_file)
+    # get SNP paths
+    snp_hits = sum(
+            (list(merge_path.glob(pat)) for pat in SNP_PATTERNS), []
+    )
+    if len(snp_hits) != 1:
+        logger.error(
+             "{} number of snp_hits: {}".format(merge_path, len(snp_hits))
+             )
+        record.snp_file = None
+        record.snp_path = None
+    else:
+        variants_snp_path, = snp_hits
+        assert variants_snp_path.name.endswith(
+            SNP_EXT[0]
+        ) or variants_snp_path.name.endswith(SNP_EXT[1])
+        record.snp_file = variants_snp_path.name
+        record.snp_path = variants_snp_path
+    # get INDEL paths
+    indel_hits = sum(
+            (list(merge_path.glob(pat)) for pat in INDEL_PATTERNS), []
+    )
+    if len(indel_hits) != 1:
+        logger.error(
+            "{} number of indel_hits: {}".format(merge_path, len(indel_hits))
+        )
+        record.indel_file = None
+        record.indel_path = None
+    else:
+        variants_indel_path, = indel_hits
+        assert variants_indel_path.name.endswith(
+            INDEL_EXT[0]
+        ) or variants_indel_path.name.endswith(INDEL_EXT[1])
+        record.indel_file = variants_indel_path.name
+        record.indel_path = variants_indel_path
+
+
 
 
 class Generic:
