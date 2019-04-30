@@ -6,7 +6,7 @@ import openpyxl
 
 
 wb = openpyxl.load_workbook(sys.argv[1])
-sheet = wb.get_sheet_by_name('smpls')
+sheet = wb['smpls']
 active_sheet = wb.active
 assert sheet == active_sheet, (sheet.title, active_sheet.title)
 row_iter = iter(active_sheet.rows)
