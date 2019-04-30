@@ -187,7 +187,7 @@ def generate_xlsx_rows(input_path):
     worksheet."""
     wb = openpyxl.load_workbook(str(input_path),
                                 data_only=True, read_only=True)
-    sheet = wb.get_sheet_by_name('smpls')
+    sheet = wb['smpls']
     active_sheet = wb.active
     assert sheet == active_sheet, (sheet.title, active_sheet.title)
     logger.debug('active_sheet name: %s', active_sheet.title)
