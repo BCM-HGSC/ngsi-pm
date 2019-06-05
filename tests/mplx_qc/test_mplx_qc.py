@@ -400,8 +400,6 @@ def test_hgv19_merge_ec5_unit(capsys):
 
 def check_run_qc(capsys, num_errs, error_prefix, expected_out_path):
     out, err = capsys.readouterr()
-    print(out)
-    print(err, file=sys.stderr)
     error_lines = err.splitlines()
     assert any(error_prefix in s for s in error_lines)
     assert len(error_lines) == num_errs
