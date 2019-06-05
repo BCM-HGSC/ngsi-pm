@@ -308,6 +308,7 @@ ec_0_unit: 'library_name' --> 'libName' for hgv19_json_bad/NWD213294
 ec_5_unit: 'sequencing_events' --> 'seqEvents' for hgv19_json_bad/NWD307732
 """
 
+
 def test_hgv19_ec0_unit(capsys):
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_main/ec_0.tsv'))
     out, err = capsys.readouterr()
@@ -316,7 +317,6 @@ def test_hgv19_ec0_unit(capsys):
     assert error_code == 0
 
 
-@pytest.mark.xfail(reason="expected to fail", raises=AssertionError)
 def test_hgv19_se_ec5_unit(capsys):
     """
     If the JSON has the hgv19 extention but SE key is wrong...
@@ -325,11 +325,10 @@ def test_hgv19_se_ec5_unit(capsys):
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_5.tsv'))
     assert error_code == 5
     check_run_qc(capsys, 3,
-                 'ERROR:',
+                 'CRAM and JSON have different sample names',
                  RESOURCE_BASE/'tsv_hgv19_se/ec_5_expect.tsv')
 
 
-@pytest.mark.xfail(reason="expected to fail", raises=AssertionError)
 def test_hgv19_se_ec2_unit(capsys):
     """
     If the JSON has the hgv19 extention but SE key is wrong...
@@ -338,7 +337,7 @@ def test_hgv19_se_ec2_unit(capsys):
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_2.tsv'))
     assert error_code == 2
     check_run_qc(capsys, 2,
-                 'ERROR:',
+                 'CRAM and JSON have mismatching sets of barcodes',
                  RESOURCE_BASE/'tsv_hgv19_se/ec_2_expect.tsv')
 
 
@@ -377,19 +376,24 @@ def test_hgv19_merge_ec21_library_name_unit(capsys):
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_22.tsv'))
     assert error_code == 21
     check_run_qc(capsys, 1,
-                 'ERROR:',
+                 'JSON has wrong keys',
                  RESOURCE_BASE/'tsv_hgv19_merge/ec_22_expect.tsv')
 
 
-@pytest.mark.xfail(reason="expected to fail", raises=AssertionError)
 def test_hgv19_merge_ec5_unit(capsys):
     """
     If the JSON has the hgv19 extention but a merge key is wrong:
     instead of 'sequencing_events' have 'seqEvents'.
+
+    Errors expected:
+    - key 'sequencing_events' in Merge is missing;
+    - count: 0; sample names: Counter(); json:
+    - references: Counter(); count is 0; json:
+    - CRAM and JSON have different sample names
     """
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_5.tsv'))
     assert error_code == 5
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, 4,
                  "CRAM and JSON have different sample names",
                  RESOURCE_BASE/'tsv_hgv19_merge/ec_5_expect.tsv')
 
@@ -399,7 +403,6 @@ def check_run_qc(capsys, num_errs, error_prefix, expected_out_path):
     print(out)
     print(err, file=sys.stderr)
     error_lines = err.splitlines()
+    assert any(error_prefix in s for s in error_lines)
     assert len(error_lines) == num_errs
-    for l in error_lines:
-        assert l.startswith(error_prefix)
     assert out == Path(expected_out_path).read_text()
