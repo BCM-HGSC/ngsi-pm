@@ -1,5 +1,7 @@
 #! /usr/bin/env python3
 
+""" Reads the input text and returns the SM and PU."""
+
 import re
 import sys
 
