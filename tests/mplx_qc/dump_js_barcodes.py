@@ -1,1 +1,0 @@
-../../bin/dump_js_barcodes.py
