@@ -1,1 +1,0 @@
-../../ngsi_pm_py/mplx_qc.py

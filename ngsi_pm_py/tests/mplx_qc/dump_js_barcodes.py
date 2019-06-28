@@ -1,1 +1,0 @@
-../../ngsi_pm_py/dump_js_barcodes.py
