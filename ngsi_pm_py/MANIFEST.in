@@ -1,0 +1,8 @@
+include *.md
+
+recursive-include tests *
+
+recursive-include conda.recipe *
+
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
