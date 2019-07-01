@@ -1,6 +1,6 @@
 package:
   name: ngsi_pm_sh
-  version: 2.2.0rc1
+  version: 3.0.0b1
 
 about:
   home: https://github.com/BCM-HGSC/nsgi-pm
