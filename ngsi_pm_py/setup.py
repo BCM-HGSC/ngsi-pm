@@ -1,4 +1,4 @@
-"""A setuptools based setup module for bhaou_intake."""
+"""A setuptools based setup module for ngsi-pm."""
 
 
 from os import path
