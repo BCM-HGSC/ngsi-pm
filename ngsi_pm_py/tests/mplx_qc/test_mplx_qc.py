@@ -5,11 +5,10 @@ import sys
 
 import pytest
 
-import mplx_qc
+from ngsi_pm_py import mplx_qc
 
-
-SCRIPT_PATH = 'bin/mplx_qc.py'
-RESOURCE_BASE = Path('tests/mplx_qc/resources')
+current_path = Path(__file__).resolve()
+RESOURCE_BASE = current_path.parent / "resources"
 
 
 # Functional tests
@@ -100,7 +99,7 @@ def convert_tsv(tsv_path, dst_path):
 
 def run_mplx_qc(input_path):
     """Runs mplx_qc, returning the completed process object."""
-    args = [SCRIPT_PATH, input_path]
+    args = ["mplx_qc", input_path]
     cp = run(args, stdin=DEVNULL, stdout=PIPE, stderr=PIPE,
              universal_newlines=True, timeout=20)
     print(cp.stdout)

@@ -1,20 +1,20 @@
 #! /usr/bin/env python3
 
-"""Outputs the cram paths of a workbook file."""
+"""Output the bam paths of a workbook file."""
 
 import argparse
 import logging
 
 import openpyxl
 
-logger = logging.getLogger(__name__)
+from .version import __version__
 
-__version__ = "1.0.0"
+logger = logging.getLogger(__name__)
 
 
 def main():
     args = parse_args()
-    config_logging(args.verbose)
+    configure_logging(args.verbose)
     run(args.input_file)
 
 
@@ -31,11 +31,11 @@ def parse_args():
     return args
 
 
-def config_logging(verbose):
+def configure_logging(verbose):
     global logger
-    err_handler = logging.StreamHandler()
     level = logging.DEBUG if verbose else logging.INFO
-    logger = logging.getLogger("dump_xl_cram_paths")
+    err_handler = logging.StreamHandler()
+    logger = logging.getLogger("dump_xl_bam_paths")
     logger.addHandler(err_handler)
     logger.setLevel(level)
 
@@ -49,11 +49,11 @@ def run(input_file):
     header_row = next(row_iter)
     column_names = [c.value for c in header_row]
     records = [
-        dict((k, v.value) for k, v in zip(column_names, row) if k in ("cram_path",))
+        dict((k, v.value) for k, v in zip(column_names, row) if k in ("bam_path",))
         for row in row_iter
     ]
     for record in records:
-        logger.info(record["cram_path"])
+        logger.info(record["bam_path"])
 
 
 if __name__ == "__main__":

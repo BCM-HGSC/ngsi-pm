@@ -1,20 +1,20 @@
 #! /usr/bin/env python3
 
-"""Output the bam paths of a workbook file."""
+"""Outputs the barcodes of a workbook file."""
 
 import argparse
 import logging
 
 import openpyxl
 
-logger = logging.getLogger(__name__)
+from .version import __version__
 
-__version__ = "1.0.0"
+logger = logging.getLogger(__name__)
 
 
 def main():
     args = parse_args()
-    configure_logging(args.verbose)
+    config_logging(args.verbose)
     run(args.input_file)
 
 
@@ -31,11 +31,11 @@ def parse_args():
     return args
 
 
-def configure_logging(verbose):
+def config_logging(verbose):
     global logger
     level = logging.DEBUG if verbose else logging.INFO
     err_handler = logging.StreamHandler()
-    logger = logging.getLogger("dump_xl_bam_paths")
+    logger = logging.getLogger("dump_xl_barcodes")
     logger.addHandler(err_handler)
     logger.setLevel(level)
 
@@ -49,11 +49,15 @@ def run(input_file):
     header_row = next(row_iter)
     column_names = [c.value for c in header_row]
     records = [
-        dict((k, v.value) for k, v in zip(column_names, row) if k in ("bam_path",))
+        dict(
+            (k, v.value)
+            for k, v in zip(column_names, row)
+            if k in ("lane_barcode", "sample_id_nwd_id")
+        )
         for row in row_iter
     ]
     for record in records:
-        logger.info(record["bam_path"])
+        logger.info(f"{record['lane_barcode']} \t {record['sample_id_nwd_id']}")
 
 
 if __name__ == "__main__":

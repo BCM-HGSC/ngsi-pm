@@ -24,10 +24,9 @@ from subprocess import run, DEVNULL, PIPE
 import openpyxl
 
 # After another blank line, import local libraries.
-from dump_js_barcodes import Merge
-from dump_js_barcodes import SequencingEvent
-
-__version__ = '1.2.0'
+from .dump_js_barcodes import Merge
+from .dump_js_barcodes import SequencingEvent
+from .version import __version__
 
 logger = logging.getLogger(__name__)
 

@@ -1,15 +1,15 @@
 #! /usr/bin/env python3
 
-"""Outputs the barcodes of a workbook file."""
+"""Outputs the cram paths of a workbook file."""
 
 import argparse
 import logging
 
 import openpyxl
 
-logger = logging.getLogger(__name__)
+from .version import __version__
 
-__version__ = "1.0.0"
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -33,9 +33,9 @@ def parse_args():
 
 def config_logging(verbose):
     global logger
-    level = logging.DEBUG if verbose else logging.INFO
     err_handler = logging.StreamHandler()
-    logger = logging.getLogger("dump_xl_barcodes")
+    level = logging.DEBUG if verbose else logging.INFO
+    logger = logging.getLogger("dump_xl_cram_paths")
     logger.addHandler(err_handler)
     logger.setLevel(level)
 
@@ -49,15 +49,11 @@ def run(input_file):
     header_row = next(row_iter)
     column_names = [c.value for c in header_row]
     records = [
-        dict(
-            (k, v.value)
-            for k, v in zip(column_names, row)
-            if k in ("lane_barcode", "sample_id_nwd_id")
-        )
+        dict((k, v.value) for k, v in zip(column_names, row) if k in ("cram_path",))
         for row in row_iter
     ]
     for record in records:
-        logger.info(f"{record['lane_barcode']} \t {record['sample_id_nwd_id']}")
+        logger.info(record["cram_path"])
 
 
 if __name__ == "__main__":
