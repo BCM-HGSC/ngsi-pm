@@ -22,7 +22,7 @@ import openpyxl
 # could change behaviour without the version number changing. In other
 # words, a later version of this script will be 1.0.0, but you aren't
 # there just yet.
-__version__ = '1.0.0-unstable'
+from .version import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ REQUIRED_INPUT_COLUMN_NAMES = '''
     collaborator_sample_id
     internal_processing_sample_id
     number_of_seq_events
-    dbgap_sample_id 
+    dbgap_sample_id
     run_name
     bam_library_name
     insert_size

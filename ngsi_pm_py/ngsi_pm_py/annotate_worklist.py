@@ -22,7 +22,7 @@ import openpyxl
 # could change behaviour without the version number changing. In other
 # words, a later version of this script will be 1.0.0, but you aren't
 # there just yet.
-__version__ = '1.0.0-unstable'
+from .version import __version__
 
 logger = logging.getLogger(__name__)
 

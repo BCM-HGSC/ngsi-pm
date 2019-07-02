@@ -7,9 +7,9 @@ import logging
 
 import openpyxl
 
-logger = logging.getLogger(__name__)
+from .version import __version__
 
-__version__ = "1.0.0"
+logger = logging.getLogger(__name__)
 
 
 def main():

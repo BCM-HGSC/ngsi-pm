@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """To create Globus WORKLIST.
-Read a master workbook and output an XLSX workbook.""" 
+Read a master workbook and output an XLSX workbook."""
 
 # First come standard libraries, in alphabetical order.
 import argparse
@@ -18,7 +18,7 @@ import openpyxl
 
 # After another blank line, import local libraries.
 
-__version__ = '1.0.0-unstable'
+from .version import __version__
 
 logger = logging.getLogger(__name__)
 
@@ -59,8 +59,8 @@ def parse_args():
     )
     parser.add_argument('-o', '--output_file',
                         help='will default to MASTER_globus.xlsx')
-    parser.add_argument('-v', '--verbose', action='store_true', 
-                        help='increase output verbosity') 
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='increase output verbosity')
     parser.add_argument('--version', action='version',
                         version='%(prog)s {}'.format(__version__))
     args = parser.parse_args()
