@@ -21,7 +21,7 @@ def test_ec0(tmpdir):
 def test_ec2(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_jwatt/ec_2_b.xlsx.tsv')
     check_output(cp, 2, 3,
-                 'ERROR:mplx_qc:CRAM and JSON '
+                 'CRAM and JSON '
                  'have mismatching sets of barcodes.',
                  RESOURCE_BASE/'tsv_jwatt/ec_2_expect.tsv')
 
@@ -34,35 +34,35 @@ def test_ec3(tmpdir):
     impossible."""
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_jwatt/ec_3_b.xlsx.tsv')
     check_output(cp, 3, 3,
-                 'ERROR:mplx_qc:Duplicate barcodes in JSON.',
+                 'Duplicate barcodes in JSON.',
                  RESOURCE_BASE/'tsv_jwatt/ec_3_expect.tsv')
 
 
 def test_ec4(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_4.xlsx.tsv')
     check_output(cp, 4, 1,
-                 'ERROR:mplx_qc:Duplicate barcodes in CRAM.',
+                 'Duplicate barcodes in CRAM.',
                  RESOURCE_BASE/'tsv_main/ec_4_expect.tsv')
 
 
 def test_ec5(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_jwatt/ec_5_b.xlsx.tsv')
     check_output(cp, 5, 3,
-                 'ERROR:mplx_qc:CRAM and JSON have different sample names.',
+                 'CRAM and JSON have different sample names.',
                  RESOURCE_BASE/'tsv_jwatt/ec_5_expect.tsv')
 
 
 def test_ec6(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_6.xlsx.tsv')
     check_output(cp, 6, 1,
-                 'ERROR:mplx_qc:CRAM has wrong sample name.',
+                 'CRAM has wrong sample name.',
                  RESOURCE_BASE/'tsv_main/ec_6_expect.tsv')
 
 
 def test_ec7(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_7.xlsx.tsv')
     check_output(cp, 7, 1,
-                 'ERROR:mplx_qc:CRAM contains multiple values for sample.',
+                 'CRAM contains multiple values for sample.',
                  RESOURCE_BASE/'tsv_main/ec_7_expect.tsv')
 
 
@@ -74,7 +74,7 @@ def test_ec0_tsv():
 def test_ec7_tsv():
     cp = run_mplx_qc(RESOURCE_BASE/'tsv_main/ec_7.xlsx.tsv')
     check_output(cp, 7, 1,
-                 'ERROR:mplx_qc:CRAM contains multiple values for sample.',
+                 'CRAM contains multiple values for sample.',
                  RESOURCE_BASE/'tsv_main/ec_7_expect.tsv')
 
 
