@@ -92,7 +92,12 @@ def run_qc(input_file):
     18: Input file has bad extension
     19: Input is not a file
     20: Input file is missing
-    21: JSON has wrong keys
+    21: JSON is bad (invalid Merge key for 'event_id')
+    22: JSON is bad (invalid Merge key for 'sequencing_events')
+    23: JSON is bad (invalid Merge key for 'library_name')
+    24: JSON is bad (invalid SE key for 'event_id')
+    25: JSON is bad (invalid SE key for 'sample_name')
+    26: JSON is bad (invalid SE key for 'library_name)
     """
     logger.debug('input_file: %r', input_file)
     input_path = Path(input_file)
