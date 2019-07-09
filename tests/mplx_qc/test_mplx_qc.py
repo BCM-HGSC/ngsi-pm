@@ -293,22 +293,6 @@ def test_hgv19_ec0():
 
 # Hgv19 Unit tests
 
-"""
-tsv_hgv19_main
-ec_0_unit: no error
-
-tsv_hgv19_se
-ec_5_unit: 'sample_name' --> 'sampleName' for hgv19_json_bad/NWD161809
-ec_2_unit: 'event_id' --> 'eventaId' for hgv19_json_bad/NWD187558
-ec_0_unit: 'library_name' --> 'libraryName' for hgv19_json_bad/NWD204470
-
-tsv_hgv19_merge
-ec_0_unit: 'event_id' --> 'eventId' for hgv19_json_bad/NWD210697
-ec_0_unit: 'library_name' --> 'libName' for hgv19_json_bad/NWD213294
-ec_5_unit: 'sequencing_events' --> 'seqEvents' for hgv19_json_bad/NWD307732
-"""
-
-
 def test_hgv19_ec0_unit(capsys):
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_main/ec_0.tsv'))
     out, err = capsys.readouterr()
