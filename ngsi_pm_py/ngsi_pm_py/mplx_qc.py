@@ -62,8 +62,10 @@ def config_logging(args):
         level = logging.INFO
     else:
         level = logging.DEBUG
-    logging.basicConfig(level=level)
     logger = logging.getLogger('mplx_qc')
+    err_handler = logging.StreamHandler()
+    logger.addHandler(err_handler)
+    logger.setLevel(level)
 
 
 def run_qc(input_file):
