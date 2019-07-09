@@ -301,22 +301,57 @@ def test_hgv19_ec0_unit(capsys):
     assert error_code == 0
 
 
-def test_hgv19_se_ec5_unit(capsys):
+# Hgv19 Unit tests for Merge
+
+def test_hgv19_merge_ec21_unit(capsys):
     """
-    If the JSON has the hgv19 extention but SE key is wrong...
-    A SE key changed from 'sample_name' to 'sampleName'
+    If the JSON has the hgv19 extention but a merge key is wrong:
+    instead of 'event_id' have 'eventId'.
+    NWD210697
     """
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_5.tsv'))
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_21.tsv'))
+    assert error_code == 21
+    check_run_qc(capsys, 2,
+                 'JSON is bad:',
+                 RESOURCE_BASE/'tsv_hgv19_merge/ec_21_expect.tsv')
+
+
+# should really be ec22
+def test_hgv19_merge_ec5_unit(capsys):
+    """
+    If the JSON has the hgv19 extention but a merge key is wrong:
+    instead of 'sequencing_events' have 'seqEvents'.
+    NWD307732
+    """
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_5.tsv'))
     assert error_code == 5
-    check_run_qc(capsys, 3,
+    check_run_qc(capsys, 4,
                  'CRAM and JSON have different sample names',
-                 RESOURCE_BASE/'tsv_hgv19_se/ec_5_expect.tsv')
+                 RESOURCE_BASE/'tsv_hgv19_merge/ec_5_expect.tsv')
 
 
+def test_hgv19_merge_ec23_unit(capsys):
+    """
+    If the JSON has the hgv19 extention but a merge key is wrong:
+    instead of 'library_name' have 'libraryName'.
+    Hgv17.5 merge: 'libraryName', Hgv19.2 merge: 'library_name'
+    NWD213294
+    """
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_23.tsv'))
+    assert error_code == 23
+    check_run_qc(capsys, 2,
+                 'JSON is bad:',
+                 RESOURCE_BASE/'tsv_hgv19_merge/ec_23_expect.tsv')
+
+
+# Hgv19 Unit tests for SE
+
+# should really be ec24
 def test_hgv19_se_ec2_unit(capsys):
     """
-    If the JSON has the hgv19 extention but SE key is wrong...
-    A SE key change from 'event_id' to 'eventID'
+    If the JSON has the hgv19 extention but SE key is wrong:
+    instead of from 'event_id' have 'eventID'.
+    NWD187558
     """
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_2.tsv'))
     assert error_code == 2
@@ -325,61 +360,34 @@ def test_hgv19_se_ec2_unit(capsys):
                  RESOURCE_BASE/'tsv_hgv19_se/ec_2_expect.tsv')
 
 
-def test_hgv19_se_ec0_unit(capsys):
+# should really be ec25
+def test_hgv19_se_ec5_unit(capsys):
     """
-    If the JSON has the hgv19 extention but SE key is wrong...
-    A SE key changed from 'library_name' to 'libraryName'
-    No error detected since SE library_name is not being used
+    If the JSON has the hgv19 extention but SE key is wrong:
+    instead of 'sample_name' have 'sampleName'.
+    NWD161809
+    """
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_5.tsv'))
+    assert error_code == 5
+    check_run_qc(capsys, 3,
+                 'CRAM and JSON have different sample names',
+                 RESOURCE_BASE/'tsv_hgv19_se/ec_5_expect.tsv')
+
+
+# ec26
+def test_hgv19_se_ec0_library_name_unit(capsys):
+    """
+    If the JSON has the hgv19 extention but a SE key is wrong:
+    instead of 'library_name' have 'libName'.
+    Hgv17.5 SE: 'libName', Hgv19.2 SE: 'library_name'
+    No error expected since SE library_name is not being used.
+    NWD204470
     """
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_0.tsv'))
     out, err = capsys.readouterr()
     print(out)
     print(err, file=sys.stderr)
     assert error_code == 0
-
-
-@pytest.mark.xfail(reason="expected to fail", raises=AssertionError)
-def test_hgv19_merge_ec21_event_id_unit(capsys):
-    """
-    If the JSON has the hgv19 extention but a merge key is wrong:
-    instead of 'event_id' have 'eventId'.
-    """
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_21.tsv'))
-    assert error_code == 21
-    check_run_qc(capsys, 2,
-                 "key 'event_id' in Merge is missing",
-                 RESOURCE_BASE/'tsv_hgv19_merge/ec_21_expect.tsv')
-
-
-@pytest.mark.xfail(reason="expected to fail", raises=AssertionError)
-def test_hgv19_merge_ec21_library_name_unit(capsys):
-    """
-    If the JSON has the hgv19 extention but a merge key is wrong:
-    instead of 'library_name' have 'libName'
-    """
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_22.tsv'))
-    assert error_code == 21
-    check_run_qc(capsys, 1,
-                 'JSON has wrong keys',
-                 RESOURCE_BASE/'tsv_hgv19_merge/ec_22_expect.tsv')
-
-
-def test_hgv19_merge_ec5_unit(capsys):
-    """
-    If the JSON has the hgv19 extention but a merge key is wrong:
-    instead of 'sequencing_events' have 'seqEvents'.
-
-    Errors expected:
-    - key 'sequencing_events' in Merge is missing;
-    - count: 0; sample names: Counter(); json:
-    - references: Counter(); count is 0; json:
-    - CRAM and JSON have different sample names
-    """
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_5.tsv'))
-    assert error_code == 5
-    check_run_qc(capsys, 4,
-                 "CRAM and JSON have different sample names",
-                 RESOURCE_BASE/'tsv_hgv19_merge/ec_5_expect.tsv')
 
 
 def check_run_qc(capsys, num_errs, error_prefix, expected_out_path):
