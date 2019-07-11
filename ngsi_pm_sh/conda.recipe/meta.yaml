@@ -20,4 +20,5 @@ requirements:
   run:
     - bash
     - coreutils
+    - samtools
     - ngsi_pm_py
