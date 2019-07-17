@@ -22,18 +22,21 @@ import openpyxl
 # could change behaviour without the version number changing. In other
 # words, a later version of this script will be 1.0.0, but you aren't
 # there just yet.
-__version__ = '1.0.0-unstable'
+from .version import __version__
 
 logger = logging.getLogger(__name__)
 
 REQUIRED_INPUT_COLUMN_NAMES = '''
-    sample_id/nwd_id
+    sample_id_nwd_id
     lane_barcode
+    batch
     vcf_batch
     result_path
 '''.split()  # The order of the columns in the output
 REQUIRED_INPUT_COLUMN_NAMES_SET = set(REQUIRED_INPUT_COLUMN_NAMES)
 ADDITIONAL_OUTPUT_COLUMN_NAMES = '''
+    bam_file
+    bam_path
     snp_file
     snp_path
     indel_file
@@ -67,16 +70,16 @@ def parse_args():
 
 
 def munge_input_file_name(input_file_name):
-    """X.xlsx -> X_vcfs.xlsx"""
+    """X.xlsx -> X_topmed.xlsx"""
     assert input_file_name.endswith('.xlsx')
-    return input_file_name[:-5] + '_vcfs.xlsx'
+    return input_file_name[:-5] + '_topmed.xlsx'
 
 
 def config_logging(args):
     global logger
     level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(level=level)
-    logger = logging.getLogger('vcfs_worklist')
+    logger = logging.getLogger('topmed_worklist')
 
 
 def run(args):
@@ -108,7 +111,11 @@ def read_input(input_file):
     logger.debug('master worksheet name: %s', master_worksheet.title)
     row_iter = iter(master_worksheet.rows)
     header_row = next(row_iter)
+    # read header row and parse into column names
     column_names = [c.value for c in header_row]
+    # fix bad names
+    column_names = [n.replace('/', '_') for n in column_names]
+    # column_names = re.sub(r\'[-"/\.$]', '_', column_names)
     logger.debug('columns: %s', column_names)
     missing = set(REQUIRED_INPUT_COLUMN_NAMES) - set(column_names)
     assert not missing, 'missing: {}'.format(sorted(missing))
@@ -143,7 +150,7 @@ def add_file_paths(record):
     logger.debug('searching: %s', result_path)
     for file_name in os.listdir(result_path):
         if file_name.endswith('.hgv.bam'):
-            record.current_bam_name = file_name
+            record.bam_file = file_name
             record.bam_path = os.path.join(result_path, file_name)
     variants_path = os.path.join(result_path, 'variants')
     for file_name in os.listdir(variants_path):

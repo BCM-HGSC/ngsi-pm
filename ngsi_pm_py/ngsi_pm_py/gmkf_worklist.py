@@ -22,26 +22,30 @@ import openpyxl
 # could change behaviour without the version number changing. In other
 # words, a later version of this script will be 1.0.0, but you aren't
 # there just yet.
-__version__ = '1.0.0-unstable'
+from .version import __version__
 
 logger = logging.getLogger(__name__)
 
 REQUIRED_INPUT_COLUMN_NAMES = '''
     lane_barcode
-    hgsc_xfer_subdir
+    sub_project
     batch
-    sample_id/nwd_id
+    collaborator_sample_id
+    internal_processing_sample_id
+    number_of_seq_events
+    dbgap_sample_id
     run_name
-    current_bam_name
-    new_bam_name
+    bam_library_name
+    insert_size
     result_path
 '''.split()  # The order of the columns in the output
 REQUIRED_INPUT_COLUMN_NAMES_SET = set(REQUIRED_INPUT_COLUMN_NAMES)
 ADDITIONAL_OUTPUT_COLUMN_NAMES = '''
+    bam_file
     bam_path
-    fastq1_path
-    fastq2_path
+    snp_file
     snp_path
+    indel_file
     indel_path
 '''.split()  # The order of the columns in the output
 
@@ -61,7 +65,7 @@ def parse_args():
             'in the first worksheet'
     )
     parser.add_argument('-o', '--output_file',
-                        help='will default to MASTER_annotated.xlsx')
+                        help='will default to MASTER_gmkf.xlsx')
     parser.add_argument('-v', '--verbose', action='store_true')
     parser.add_argument('--version', action='version',
                         version='%(prog)s {}'.format(__version__))
@@ -72,16 +76,16 @@ def parse_args():
 
 
 def munge_input_file_name(input_file_name):
-    """X.xlsx -> X_annotated.xlsx"""
+    """X.xlsx -> X_gmkf.xlsx"""
     assert input_file_name.endswith('.xlsx')
-    return input_file_name[:-5] + '_annotated.xlsx'
+    return input_file_name[:-5] + '_gmkf.xlsx'
 
 
 def config_logging(args):
     global logger
     level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(level=level)
-    logger = logging.getLogger('annotate_worklist')
+    logger = logging.getLogger('gmkf_worklist')
 
 
 def run(args):
@@ -121,9 +125,8 @@ def read_input(input_file):
     for row in row_iter:
         record = Generic()
         for column_name, cell in zip(column_names, row):
-            if column_name in REQUIRED_INPUT_COLUMN_NAMES_SET:
-                value = cell.value
-                setattr(record, column_name, value)
+            value = cell.value
+            setattr(record, column_name, value)
         if record.result_path and record.result_path[0] != '#':
             data.append(record)
     return data
@@ -148,16 +151,15 @@ def add_file_paths(record):
     logger.debug('searching: %s', result_path)
     for file_name in os.listdir(result_path):
         if file_name.endswith('.hgv.bam'):
+            record.bam_file = file_name
             record.bam_path = os.path.join(result_path, file_name)
-        elif file_name.endswith('_R1_001.fastq.gz'):
-            record.fastq1_path = os.path.join(result_path, file_name)
-        elif file_name.endswith('_R2_001.fastq.gz'):
-            record.fastq2_path = os.path.join(result_path, file_name)
     variants_path = os.path.join(result_path, 'variants')
     for file_name in os.listdir(variants_path):
         if file_name.endswith('_snp_Annotated.vcf'):
+            record.snp_file = file_name
             record.snp_path = os.path.join(variants_path, file_name)
         elif file_name.endswith('_indel_Annotated.vcf'):
+            record.indel_file = file_name
             record.indel_path = os.path.join(variants_path, file_name)
 
 

@@ -1,0 +1,24 @@
+package:
+  name: ngsi_pm_sh
+  version: 3.0.0b1
+
+about:
+  home: https://github.com/BCM-HGSC/nsgi-pm
+  license: MIT
+  summary: ngsi-pm bash scripts package
+
+source:
+  path: ..
+
+build:
+  noarch: generic
+
+requirements:
+  build:
+    - bash
+    - coreutils
+  run:
+    - bash
+    - coreutils
+    - samtools
+    - ngsi_pm_py

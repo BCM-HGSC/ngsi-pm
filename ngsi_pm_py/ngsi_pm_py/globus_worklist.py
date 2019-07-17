@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-"""Read a master workbook and output an XLSX workbook annotated with
-absolute paths read from the filesystem."""
+"""To create Globus WORKLIST.
+Read a master workbook and output an XLSX workbook."""
 
 # First come standard libraries, in alphabetical order.
 import argparse
@@ -9,6 +9,7 @@ import csv
 import logging
 import os
 import pprint
+import re
 import sys
 import warnings
 
@@ -17,31 +18,29 @@ import openpyxl
 
 # After another blank line, import local libraries.
 
-# When your code is something you would use cautiously in production,
-# delete the "-unstable" suffix. That suffix is saying that this script
-# could change behaviour without the version number changing. In other
-# words, a later version of this script will be 1.0.0, but you aren't
-# there just yet.
-__version__ = '1.0.0-unstable'
+from .version import __version__
 
 logger = logging.getLogger(__name__)
 
+# Column names
 REQUIRED_INPUT_COLUMN_NAMES = '''
-    sample_id_nwd_id
     lane_barcode
+    hgsc_xfer_subdir
     batch
-    vcf_batch
+    sample_id_nwd_id
+    run_name
+    current_bam_name
+    new_bam_name
     result_path
 '''.split()  # The order of the columns in the output
+
 REQUIRED_INPUT_COLUMN_NAMES_SET = set(REQUIRED_INPUT_COLUMN_NAMES)
 ADDITIONAL_OUTPUT_COLUMN_NAMES = '''
-    bam_file
     bam_path
-    snp_file
-    snp_path
-    indel_file
-    indel_path
 '''.split()  # The order of the columns in the output
+
+# Extensions, useful when there are many extensions
+BAM_EXT = 'hgv.bam'
 
 
 def main():
@@ -59,8 +58,9 @@ def parse_args():
             'in the first worksheet'
     )
     parser.add_argument('-o', '--output_file',
-                        help='will default to MASTER_annotated.xlsx')
-    parser.add_argument('-v', '--verbose', action='store_true')
+                        help='will default to MASTER_globus.xlsx')
+    parser.add_argument('-v', '--verbose', action='store_true',
+                        help='increase output verbosity')
     parser.add_argument('--version', action='version',
                         version='%(prog)s {}'.format(__version__))
     args = parser.parse_args()
@@ -70,16 +70,16 @@ def parse_args():
 
 
 def munge_input_file_name(input_file_name):
-    """X.xlsx -> X_topmed.xlsx"""
+    """X.xlsx ->X_globus.xlsx"""
     assert input_file_name.endswith('.xlsx')
-    return input_file_name[:-5] + '_topmed.xlsx'
+    return input_file_name[:-5] + '_globus.xlsx'
 
 
 def config_logging(args):
     global logger
     level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(level=level)
-    logger = logging.getLogger('topmed_worklist')
+    logger = logging.getLogger('globus_worklist')
 
 
 def run(args):
@@ -99,6 +99,7 @@ def process_input(input_file, output_file):
     logger.info('found %s records', len(data))
     for record in data:
         add_file_paths(record)
+        get_new_bam_name(record)
     pprint.pprint(vars(data[0]))
     write_annotated_workbook(output_file, data)
 
@@ -117,7 +118,7 @@ def read_input(input_file):
     column_names = [n.replace('/', '_') for n in column_names]
     # column_names = re.sub(r\'[-"/\.$]', '_', column_names)
     logger.debug('columns: %s', column_names)
-    missing = set(REQUIRED_INPUT_COLUMN_NAMES) - set(column_names)
+    missing = REQUIRED_INPUT_COLUMN_NAMES_SET - set(column_names)
     assert not missing, 'missing: {}'.format(sorted(missing))
     data = []
     for row in row_iter:
@@ -149,17 +150,18 @@ def add_file_paths(record):
     result_path = record.result_path
     logger.debug('searching: %s', result_path)
     for file_name in os.listdir(result_path):
-        if file_name.endswith('.hgv.bam'):
-            record.bam_file = file_name
+        if file_name.endswith(BAM_EXT):
+            record.current_bam_name = file_name
             record.bam_path = os.path.join(result_path, file_name)
-    variants_path = os.path.join(result_path, 'variants')
-    for file_name in os.listdir(variants_path):
-        if file_name.endswith('_snp_Annotated.vcf'):
-            record.snp_file = file_name
-            record.snp_path = os.path.join(variants_path, file_name)
-        elif file_name.endswith('_indel_Annotated.vcf'):
-            record.indel_file = file_name
-            record.indel_path = os.path.join(variants_path, file_name)
+
+
+def get_new_bam_name(record):
+    """new_bam_name = sample_id_nwd_id + "-" + current_bam_name"""
+    sample_id_nwd_id = record.sample_id_nwd_id
+    logger.debug('searching: %s', sample_id_nwd_id)
+    current_bam_name = record.current_bam_name
+    logger.debug('searching: %s', current_bam_name)
+    record.new_bam_name = sample_id_nwd_id + "-" + current_bam_name
 
 
 def write_annotated_workbook(output_file, data):
@@ -175,6 +177,7 @@ def write_annotated_workbook(output_file, data):
     # for c in ws.rows[0]:
     #     c.font = bold
     # TODO: Investigate setting column widths.
+    # wh: replace 'sample_id_nwd_id' back to 'sample_id/nwd_id' for wb.save
     wb.save(output_file)
 
 

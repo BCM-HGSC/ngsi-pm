@@ -2,4 +2,4 @@
 
 Highly customized scrips for working with NGSI metadata.
 
-version 2.2.0rc1
+version 3.0.0b1

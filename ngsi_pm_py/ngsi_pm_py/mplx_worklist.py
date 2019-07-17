@@ -21,7 +21,7 @@ from openpyxl.styles import Font
 
 # After another blank line, import local libraries.
 
-__version__ = '2.2.0'
+from .version import __version__
 
 logger = logging.getLogger(__name__)
 

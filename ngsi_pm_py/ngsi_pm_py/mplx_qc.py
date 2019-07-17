@@ -24,11 +24,11 @@ from subprocess import run, DEVNULL, PIPE
 import openpyxl
 
 # After another blank line, import local libraries.
-from dump_js_barcodes import Merge
-from dump_js_barcodes import SequencingEvent
-from dump_js_barcodes import MISSING_KEY
+from .dump_js_barcodes import Merge
+from .dump_js_barcodes import SequencingEvent
+from .dump_js_barcodes import MISSING_KEY
+from .version import __version__
 
-__version__ = '1.2.0'
 
 logger = logging.getLogger(__name__)
 
@@ -64,8 +64,10 @@ def config_logging(args):
         level = logging.INFO
     else:
         level = logging.DEBUG
-    logging.basicConfig(level=level)
     logger = logging.getLogger('mplx_qc')
+    err_handler = logging.StreamHandler()
+    logger.addHandler(err_handler)
+    logger.setLevel(level)
 
 
 def run_qc(input_file):
@@ -195,7 +197,7 @@ def generate_xlsx_rows(input_path):
     worksheet."""
     wb = openpyxl.load_workbook(str(input_path),
                                 data_only=True, read_only=True)
-    sheet = wb.get_sheet_by_name('smpls')
+    sheet = wb['smpls']
     active_sheet = wb.active
     assert sheet == active_sheet, (sheet.title, active_sheet.title)
     logger.debug('active_sheet name: %s', active_sheet.title)

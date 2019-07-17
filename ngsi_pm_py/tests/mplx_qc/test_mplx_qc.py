@@ -6,11 +6,10 @@ import sys
 
 import pytest
 
-import mplx_qc
+from ngsi_pm_py import mplx_qc
 
-
-SCRIPT_PATH = 'bin/mplx_qc.py'
-RESOURCE_BASE = Path('tests/mplx_qc/resources')
+current_path = Path(__file__).resolve()
+RESOURCE_BASE = current_path.parent / "resources"
 
 
 # Functional tests
@@ -23,7 +22,7 @@ def test_ec0(tmpdir):
 def test_ec2(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_jwatt/ec_2_b.xlsx.tsv')
     check_output(cp, 2, 3,
-                 'ERROR:mplx_qc:CRAM and JSON '
+                 'CRAM and JSON '
                  'have mismatching sets of barcodes.',
                  RESOURCE_BASE/'tsv_jwatt/ec_2_expect.tsv')
 
@@ -36,35 +35,35 @@ def test_ec3(tmpdir):
     impossible."""
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_jwatt/ec_3_b.xlsx.tsv')
     check_output(cp, 3, 3,
-                 'ERROR:mplx_qc:Duplicate barcodes in JSON.',
+                 'Duplicate barcodes in JSON.',
                  RESOURCE_BASE/'tsv_jwatt/ec_3_expect.tsv')
 
 
 def test_ec4(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_4.xlsx.tsv')
     check_output(cp, 4, 1,
-                 'ERROR:mplx_qc:Duplicate barcodes in CRAM.',
+                 'Duplicate barcodes in CRAM.',
                  RESOURCE_BASE/'tsv_main/ec_4_expect.tsv')
 
 
 def test_ec5(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_jwatt/ec_5_b.xlsx.tsv')
     check_output(cp, 5, 3,
-                 'ERROR:mplx_qc:CRAM and JSON have different sample names.',
+                 'CRAM and JSON have different sample names.',
                  RESOURCE_BASE/'tsv_jwatt/ec_5_expect.tsv')
 
 
 def test_ec6(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_6.xlsx.tsv')
     check_output(cp, 6, 1,
-                 'ERROR:mplx_qc:CRAM has wrong sample name.',
+                 'CRAM has wrong sample name.',
                  RESOURCE_BASE/'tsv_main/ec_6_expect.tsv')
 
 
 def test_ec7(tmpdir):
     cp = run_mplx_qc_xlsx(tmpdir, 'tsv_main/ec_7.xlsx.tsv')
     check_output(cp, 7, 1,
-                 'ERROR:mplx_qc:CRAM contains multiple values for sample.',
+                 'CRAM contains multiple values for sample.',
                  RESOURCE_BASE/'tsv_main/ec_7_expect.tsv')
 
 
@@ -76,7 +75,7 @@ def test_ec0_tsv():
 def test_ec7_tsv():
     cp = run_mplx_qc(RESOURCE_BASE/'tsv_main/ec_7.xlsx.tsv')
     check_output(cp, 7, 1,
-                 'ERROR:mplx_qc:CRAM contains multiple values for sample.',
+                 'CRAM contains multiple values for sample.',
                  RESOURCE_BASE/'tsv_main/ec_7_expect.tsv')
 
 
@@ -101,7 +100,7 @@ def convert_tsv(tsv_path, dst_path):
 
 def run_mplx_qc(input_path):
     """Runs mplx_qc, returning the completed process object."""
-    args = [SCRIPT_PATH, input_path]
+    args = ["mplx_qc", input_path]
     cp = run(args, stdin=DEVNULL, stdout=PIPE, stderr=PIPE,
              universal_newlines=True, timeout=20)
     print(cp.stdout)
@@ -136,150 +135,150 @@ def test_ec0_unit(capsys):
     assert error_code == 0
 
 
-def test_ec2_unit(capsys):
+def test_ec2_unit(capsys, caplog):
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_jwatt/ec_2_b.xlsx.tsv'))
     assert error_code == 2
-    check_run_qc(capsys, 3,
+    check_run_qc(capsys, caplog, 3,
                  'CRAM and JSON have mismatching sets of barcodes.',
                  RESOURCE_BASE/'tsv_jwatt/ec_2_expect.tsv')
 
 
-def test_ec4_unit(capsys):
+def test_ec4_unit(capsys, caplog):
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_4.xlsx.tsv'))
     assert error_code == 4
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, caplog, 1,
                  'Duplicate barcodes in CRAM.',
                  RESOURCE_BASE/'tsv_main/ec_4_expect.tsv')
 
 
-def test_ec5_unit(capsys):
+def test_ec5_unit(capsys, caplog):
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_jwatt/ec_5_b.xlsx.tsv'))
     assert error_code == 5
-    check_run_qc(capsys, 3,
+    check_run_qc(capsys, caplog, 3,
                  'CRAM and JSON have different sample names.',
                  RESOURCE_BASE/'tsv_jwatt/ec_5_expect.tsv')
 
 
-def test_ec6_unit(capsys):
+def test_ec6_unit(capsys, caplog):
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_6.xlsx.tsv'))
     assert error_code == 6
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, caplog, 1,
                  'CRAM has wrong sample name.',
                  RESOURCE_BASE/'tsv_main/ec_6_expect.tsv')
 
 
-def test_ec7_unit(capsys):
+def test_ec7_unit(capsys, caplog):
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_7.xlsx.tsv'))
     assert error_code == 7
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, caplog, 1,
                  'CRAM contains multiple values for sample.',
                  RESOURCE_BASE/'tsv_main/ec_7_expect.tsv')
 
 
-def test_ec9_unit(capsys):
+def test_ec9_unit(capsys, caplog):
     """If an RG in a CRAM file is missing a PU..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_9.tsv'))
     assert error_code == 9
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, caplog, 1,
                  'An RG in the CRAM is missing its PU:',
                  RESOURCE_BASE/'tsv_main/ec_9_expect.tsv')
 
 
-def test_ec10_unit(capsys):
+def test_ec10_unit(capsys, caplog):
     """If an RG in a CRAM file is missing an SM..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_10.tsv'))
     assert error_code == 10
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, caplog, 1,
                  'An RG in the CRAM is missing its SM:',
                  RESOURCE_BASE/'tsv_main/ec_10_expect.tsv')
 
 
-def test_ec12_unit(capsys):
+def test_ec12_unit(capsys, caplog):
     """If a JSON file is too bad to read..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_12.tsv'))
     assert error_code == 12
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, caplog, 1,
                  'JSON is bad:',
                  RESOURCE_BASE/'tsv_main/ec_12_expect.tsv')
 
 
-def test_ec13_unit(capsys):
+def test_ec13_unit(capsys, caplog):
     """If a CRAM file is too bad to read..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_13.tsv'))
     assert error_code == 13
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, caplog, 1,
                  'CRAM is bad:',
                  RESOURCE_BASE/'tsv_main/ec_13_expect.tsv')
 
 
-def test_ec14_unit(capsys):
+def test_ec14_unit(capsys, caplog):
     """If a JSON is missing or not a file..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_14.tsv'))
     assert error_code == 14
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, caplog, 1,
                  'JSON is missing:',
                  RESOURCE_BASE/'tsv_main/ec_14_expect.tsv')
 
 
-def test_ec15_unit(capsys):
+def test_ec15_unit(capsys, caplog):
     """If a CRAM is missing or not a file..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_15.tsv'))
     assert error_code == 15
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, caplog, 1,
                  'CRAM is missing:',
                  RESOURCE_BASE/'tsv_main/ec_15_expect.tsv')
 
 
-def test_ec17_unit(capsys):
+def test_ec17_unit(capsys, caplog):
     """If the input worklist file has bad contents..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_main/ec_17.tsv'))
     assert error_code == 17
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, caplog, 1,
                  'Input file has bad contents:',
                  RESOURCE_BASE/'empty_file')
 
 
-def test_ec17_xlsx_unit(capsys):
+def test_ec17_xlsx_unit(capsys, caplog):
     """If the input worklist file has bad contents..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'bad.xlsx'))
     assert error_code == 17
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, caplog, 1,
                  'Input file has bad contents:',
                  RESOURCE_BASE/'empty_file')
 
 
-def test_ec18_unit(capsys):
+def test_ec18_unit(capsys, caplog):
     """If the input worklist file has the wrong extension..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'foo.foo'))
     assert error_code == 18
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, caplog, 1,
                  'Input file has bad extension:',
                  RESOURCE_BASE/'empty_file')
 
 
-def test_ec19_unit(capsys):
+def test_ec19_unit(capsys, caplog):
     """If the input worklist file isn't a file..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE))
     assert error_code == 19
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, caplog, 1,
                  'Input is not a file:',
                  RESOURCE_BASE/'empty_file')
 
 
-def test_ec20_unit(capsys):
+def test_ec20_unit(capsys, caplog):
     """If the input worklist file doesn't even exist..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'foo.tsv'))
     assert error_code == 20
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, caplog, 1,
                  'Input file is missing:',
                  RESOURCE_BASE/'empty_file')
 
 
-def test_ec20_xlsx_unit(capsys):
+def test_ec20_xlsx_unit(capsys, caplog):
     """If the input worklist file doesn't even exist..."""
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'foo.xlsx'))
     assert error_code == 20
-    check_run_qc(capsys, 1,
+    check_run_qc(capsys, caplog, 1,
                  'Input file is missing:',
                  RESOURCE_BASE/'empty_file')
 
@@ -303,7 +302,7 @@ def test_hgv19_ec0_unit(capsys):
 
 # Hgv19 Unit tests for Merge
 
-def test_hgv19_merge_ec21_unit(capsys):
+def test_hgv19_merge_ec21_unit(capsys, caplog):
     """
     If the JSON has the hgv19 extention but a merge key is wrong:
     instead of 'event_id' have 'eventId'.
@@ -311,13 +310,13 @@ def test_hgv19_merge_ec21_unit(capsys):
     """
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_21.tsv'))
     assert error_code == 21
-    check_run_qc(capsys, 2,
+    check_run_qc(capsys, caplog, 2,
                  'JSON is bad:',
                  RESOURCE_BASE/'tsv_hgv19_merge/ec_21_expect.tsv')
 
 
 # should really be ec22
-def test_hgv19_merge_ec5_unit(capsys):
+def test_hgv19_merge_ec5_unit(capsys, caplog):
     """
     If the JSON has the hgv19 extention but a merge key is wrong:
     instead of 'sequencing_events' have 'seqEvents'.
@@ -325,12 +324,12 @@ def test_hgv19_merge_ec5_unit(capsys):
     """
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_5.tsv'))
     assert error_code == 5
-    check_run_qc(capsys, 4,
+    check_run_qc(capsys, caplog, 4,
                  'CRAM and JSON have different sample names',
                  RESOURCE_BASE/'tsv_hgv19_merge/ec_5_expect.tsv')
 
 
-def test_hgv19_merge_ec23_unit(capsys):
+def test_hgv19_merge_ec23_unit(capsys, caplog):
     """
     If the JSON has the hgv19 extention but a merge key is wrong:
     instead of 'library_name' have 'libraryName'.
@@ -339,7 +338,7 @@ def test_hgv19_merge_ec23_unit(capsys):
     """
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_23.tsv'))
     assert error_code == 23
-    check_run_qc(capsys, 2,
+    check_run_qc(capsys, caplog, 2,
                  'JSON is bad:',
                  RESOURCE_BASE/'tsv_hgv19_merge/ec_23_expect.tsv')
 
@@ -347,7 +346,7 @@ def test_hgv19_merge_ec23_unit(capsys):
 # Hgv19 Unit tests for SE
 
 # should really be ec24
-def test_hgv19_se_ec2_unit(capsys):
+def test_hgv19_se_ec2_unit(capsys, caplog):
     """
     If the JSON has the hgv19 extention but SE key is wrong:
     instead of from 'event_id' have 'eventID'.
@@ -355,13 +354,13 @@ def test_hgv19_se_ec2_unit(capsys):
     """
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_2.tsv'))
     assert error_code == 2
-    check_run_qc(capsys, 2,
+    check_run_qc(capsys, caplog, 2,
                  'CRAM and JSON have mismatching sets of barcodes',
                  RESOURCE_BASE/'tsv_hgv19_se/ec_2_expect.tsv')
 
 
 # should really be ec25
-def test_hgv19_se_ec5_unit(capsys):
+def test_hgv19_se_ec5_unit(capsys, caplog):
     """
     If the JSON has the hgv19 extention but SE key is wrong:
     instead of 'sample_name' have 'sampleName'.
@@ -369,13 +368,13 @@ def test_hgv19_se_ec5_unit(capsys):
     """
     error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_5.tsv'))
     assert error_code == 5
-    check_run_qc(capsys, 3,
+    check_run_qc(capsys, caplog, 3,
                  'CRAM and JSON have different sample names',
                  RESOURCE_BASE/'tsv_hgv19_se/ec_5_expect.tsv')
 
 
 # ec26
-def test_hgv19_se_ec0_library_name_unit(capsys):
+def test_hgv19_se_ec0_library_name_unit(capsys, caplog):
     """
     If the JSON has the hgv19 extention but a SE key is wrong:
     instead of 'library_name' have 'libName'.
@@ -390,9 +389,11 @@ def test_hgv19_se_ec0_library_name_unit(capsys):
     assert error_code == 0
 
 
-def check_run_qc(capsys, num_errs, error_prefix, expected_out_path):
+def check_run_qc(capsys, caplog, num_errs, error_prefix, expected_out_path):
     out, err = capsys.readouterr()
     error_lines = err.splitlines()
-    assert any(error_prefix in s for s in error_lines)
-    assert len(error_lines) == num_errs
+    assert not error_lines
     assert out == Path(expected_out_path).read_text()
+    assert len(caplog.records) == num_errs
+    for record in caplog.records:
+        assert record.msg.startswith(error_prefix)
