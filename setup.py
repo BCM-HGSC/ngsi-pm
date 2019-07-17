@@ -6,7 +6,7 @@ from os import path
 from setuptools import setup, find_packages
 
 HERE = path.abspath(path.dirname(__file__))
-NAME = "ngsi_pm_py"
+NAME = "ngsi_pm"
 
 # Load the version
 with open(path.join(HERE, NAME, "version.py")) as version_file:
