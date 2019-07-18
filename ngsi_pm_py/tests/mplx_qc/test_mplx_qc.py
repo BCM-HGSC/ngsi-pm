@@ -357,7 +357,6 @@ def test_hgv19_se_ec24_unit(capsys, caplog):
                  RESOURCE_BASE/'tsv_hgv19_se/ec_24_expect.tsv')
 
 
-# should really be ec25
 def test_hgv19_se_ec25_unit(capsys, caplog):
     """
     If the JSON has the hgv19 extention but SE key is wrong:
