@@ -344,18 +344,17 @@ def test_hgv19_merge_ec23_unit(capsys, caplog):
 
 # Hgv19 Unit tests for SE
 
-# should really be ec24
-def test_hgv19_se_ec2_unit(capsys, caplog):
+def test_hgv19_se_ec24_unit(capsys, caplog):
     """
     If the JSON has the hgv19 extention but SE key is wrong:
     instead of from 'event_id' have 'eventID'.
     NWD187558
     """
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_2.tsv'))
-    assert error_code == 2
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_24.tsv'))
+    assert error_code == 24
     check_run_qc(capsys, caplog, 2,
-                 'CRAM and JSON have mismatching sets of barcodes',
-                 RESOURCE_BASE/'tsv_hgv19_se/ec_2_expect.tsv')
+                 'JSON is bad:',
+                 RESOURCE_BASE/'tsv_hgv19_se/ec_24_expect.tsv')
 
 
 # should really be ec25
