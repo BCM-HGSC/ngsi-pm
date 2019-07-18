@@ -315,18 +315,17 @@ def test_hgv19_merge_ec21_unit(capsys, caplog):
                  RESOURCE_BASE/'tsv_hgv19_merge/ec_21_expect.tsv')
 
 
-# should really be ec22
-def test_hgv19_merge_ec5_unit(capsys, caplog):
+def test_hgv19_merge_ec22_unit(capsys, caplog):
     """
     If the JSON has the hgv19 extention but a merge key is wrong:
     instead of 'sequencing_events' have 'seqEvents'.
     NWD307732
     """
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_5.tsv'))
-    assert error_code == 5
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_merge/ec_22.tsv'))
+    assert error_code == 22
     check_run_qc(capsys, caplog, 4,
-                 'CRAM and JSON have different sample names',
-                 RESOURCE_BASE/'tsv_hgv19_merge/ec_5_expect.tsv')
+                 'JSON is bad:',
+                 RESOURCE_BASE/'tsv_hgv19_merge/ec_22_expect.tsv')
 
 
 def test_hgv19_merge_ec23_unit(capsys, caplog):
