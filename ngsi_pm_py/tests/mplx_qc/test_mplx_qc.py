@@ -395,5 +395,4 @@ def check_run_qc(capsys, caplog, num_errs, error_prefix, expected_out_path):
     assert not error_lines
     assert out == Path(expected_out_path).read_text()
     assert len(caplog.records) == num_errs
-    for record in caplog.records:
-        assert record.msg.startswith(error_prefix)
+    assert any(error_prefix in record.msg for record in caplog.records)
