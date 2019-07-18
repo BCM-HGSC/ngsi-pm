@@ -358,17 +358,17 @@ def test_hgv19_se_ec24_unit(capsys, caplog):
 
 
 # should really be ec25
-def test_hgv19_se_ec5_unit(capsys, caplog):
+def test_hgv19_se_ec25_unit(capsys, caplog):
     """
     If the JSON has the hgv19 extention but SE key is wrong:
     instead of 'sample_name' have 'sampleName'.
     NWD161809
     """
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_5.tsv'))
-    assert error_code == 5
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_25.tsv'))
+    assert error_code == 25
     check_run_qc(capsys, caplog, 3,
-                 'CRAM and JSON have different sample names',
-                 RESOURCE_BASE/'tsv_hgv19_se/ec_5_expect.tsv')
+                 'JSON is bad:',
+                 RESOURCE_BASE/'tsv_hgv19_se/ec_25_expect.tsv')
 
 
 # ec26

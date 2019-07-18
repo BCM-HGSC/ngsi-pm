@@ -350,6 +350,8 @@ def process_json(json_path):
         for se in merge.sequencing_events:
             if se.barcode == MISSING_KEY:
                 raise GrosslyBadError(24, 'JSON is bad: {}', json_path)
+            elif se.sample_name == MISSING_KEY:
+                raise GrosslyBadError(25, 'JSON is bad: {}', json_path)
     except JSONDecodeError as e:
         raise GrosslyBadError(12, 'JSON is bad: {}', json_path)
     barcodes = [s.barcode for s in merge.sequencing_events]
