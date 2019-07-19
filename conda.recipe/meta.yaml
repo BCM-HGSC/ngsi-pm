@@ -1,11 +1,13 @@
+{% set data = load_setup_py_data() %}
+
 package:
-  name: ngsi_pm_sh
-  version: 3.0.0b1
+  name: ngsi_pm
+  version: {{ data['version'] }}
 
 about:
-  home: https://github.com/BCM-HGSC/nsgi-pm
+  home: https://github.com/BCM-HGSC/ngsi-pm
   license: MIT
-  summary: ngsi-pm bash scripts package
+  summary: ngsi-pm scripts package
 
 source:
   path: ..
@@ -15,10 +17,26 @@ build:
 
 requirements:
   build:
+    - python>=3.6,<4
+    - setuptools
+    {% for dep in data['setup_requires'] %}
+    - {{ dep.lower() }}
+    {% endfor %}
     - bash
     - coreutils
   run:
+    - python>=3.6,<4
+    {% for dep in data['install_requires'] %}
+    - {{ dep.lower() }}
+    {% endfor %}
     - bash
     - coreutils
     - samtools
-    - ngsi_pm_py
+
+test:
+  source_files:
+    - tests
+  requires:
+    - pytest
+  commands:
+    - pytest
