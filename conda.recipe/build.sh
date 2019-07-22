@@ -2,6 +2,8 @@
 
 set -ex
 
+$PYTHON setup.py install --single-version-externally-managed --record=record.txt
+
 mkdir -p $PREFIX/bin
 
 for f in $(ls bin); do
