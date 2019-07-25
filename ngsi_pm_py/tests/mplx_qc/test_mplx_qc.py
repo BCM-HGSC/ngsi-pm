@@ -370,8 +370,8 @@ def test_hgv19_se_ec25_unit(capsys, caplog):
                  RESOURCE_BASE/'tsv_hgv19_se/ec_25_expect.tsv')
 
 
-# ec26
-def test_hgv19_se_ec0_library_name_unit(capsys, caplog):
+@pytest.mark.xfail(reason="expected to fail", raises=AssertionError)
+def test_hgv19_se_ec26_unit(capsys, caplog):
     """
     If the JSON has the hgv19 extention but a SE key is wrong:
     instead of 'library_name' have 'libName'.
@@ -379,11 +379,11 @@ def test_hgv19_se_ec0_library_name_unit(capsys, caplog):
     No error expected since SE library_name is not being used.
     NWD204470
     """
-    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_0.tsv'))
-    out, err = capsys.readouterr()
-    print(out)
-    print(err, file=sys.stderr)
-    assert error_code == 0
+    error_code = mplx_qc.run_qc(str(RESOURCE_BASE/'tsv_hgv19_se/ec_26.tsv'))
+    assert error_code == 26
+    check_run_qc(capsys, caplog, 2,
+                 'JSON is bad:',
+                 RESOURCE_BASE/'tsv_hgv19_se/ec_26_expect.tsv')
 
 
 def check_run_qc(capsys, caplog, num_errs, error_prefix, expected_out_path):
