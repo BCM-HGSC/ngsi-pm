@@ -6,7 +6,7 @@ from os import path
 from setuptools import setup, find_packages
 
 HERE = path.abspath(path.dirname(__file__))
-NAME = "ngsi_pm_py"
+NAME = "ngsi_pm"
 
 # Load the version
 with open(path.join(HERE, NAME, "version.py")) as version_file:
@@ -51,19 +51,19 @@ setup(
     setup_requires=SETUP_REQUIREMENTS,
     entry_points={
         "console_scripts": [
-            "annotate_worklist=ngsi_pm_py.annotate_worklist:main",
-            "cram_worklist=ngsi_pm_py.cram_worklist:main",
-            "dump_js_barcodes=ngsi_pm_py.dump_js_barcodes:main",
-            "dump_rgs=ngsi_pm_py.dump_rgs:main",
-            "dump_xl_bam_paths=ngsi_pm_py.dump_xl_bam_paths:main",
-            "dump_xl_barcodes=ngsi_pm_py.dump_xl_barcodes:main",
-            "dump_xl_cram_paths=ngsi_pm_py.dump_xl_cram_paths:main",
-            "globus_worklist=ngsi_pm_py.globus_worklist:main",
-            "gmkf_worklist=ngsi_pm_py.gmkf_worklist:main",
-            "mplx_qc=ngsi_pm_py.mplx_qc:main",
-            "mplx_worklist=ngsi_pm_py.mplx_worklist:main",
-            "topmed_worklist=ngsi_pm_py.topmed_worklist:main",
-            "vcf_worklist=ngsi_pm_py.vcf_worklist:main"
+            "annotate_worklist=ngsi_pm.annotate_worklist:main",
+            "cram_worklist=ngsi_pm.cram_worklist:main",
+            "dump_js_barcodes=ngsi_pm.dump_js_barcodes:main",
+            "dump_rgs=ngsi_pm.dump_rgs:main",
+            "dump_xl_bam_paths=ngsi_pm.dump_xl_bam_paths:main",
+            "dump_xl_barcodes=ngsi_pm.dump_xl_barcodes:main",
+            "dump_xl_cram_paths=ngsi_pm.dump_xl_cram_paths:main",
+            "globus_worklist=ngsi_pm.globus_worklist:main",
+            "gmkf_worklist=ngsi_pm.gmkf_worklist:main",
+            "mplx_qc=ngsi_pm.mplx_qc:main",
+            "mplx_worklist=ngsi_pm.mplx_worklist:main",
+            "topmed_worklist=ngsi_pm.topmed_worklist:main",
+            "vcf_worklist=ngsi_pm.vcf_worklist:main"
         ],
     },
 )

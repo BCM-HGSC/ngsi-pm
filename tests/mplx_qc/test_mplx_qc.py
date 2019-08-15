@@ -6,7 +6,7 @@ import sys
 
 import pytest
 
-from ngsi_pm_py import mplx_qc
+from ngsi_pm import mplx_qc
 
 current_path = Path(__file__).resolve()
 RESOURCE_BASE = current_path.parent / "resources"
