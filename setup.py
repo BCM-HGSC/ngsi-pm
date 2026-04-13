@@ -21,7 +21,7 @@ REQUIREMENTS = [
 ]
 
 TEST_REQUIREMENTS = [
-    "pytest==3.0.7",
+    "pytest==9.0.3",
 ]
 
 SETUP_REQUIREMENTS = [
